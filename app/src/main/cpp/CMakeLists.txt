@@ -9,6 +9,16 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project("litmustestandroid")
 
+# Sets easyvk_DIR to the path of the target CMake project and desired output directory.
+
+#set(easyvk_DIR easyvk)
+#file(MAKE_DIRECTORY  ${easyvk_DIR})
+
+# Adds the CmakeLists.txt file located in the specified directory as a build dependency.
+
+#add_subdirectory( # Specifies the directory of the CMakeLists.txt file and build outputs
+                  #${easyvk_DIR} )
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -21,7 +31,15 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             native-lib.cpp )
+             native-lib.cpp easyvk/easyvk.cpp)
+
+# Adds the output of the additional CMake build as a prebuilt static
+# library and names it lib_easyvk
+
+#add_library( easyvk-lib SHARED easyvk/easyvk.cpp)
+#set_target_properties( easyvk-lib PROPERTIES IMPORTED_LOCATION
+                       #easyvk/${ANDROID_ABI}/libeasyvk-lib.so )
+#include_directories( easyvk )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -45,4 +63,5 @@ target_link_libraries( # Specifies the target library.
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} )
+                       ${log-lib} vulkan)
+

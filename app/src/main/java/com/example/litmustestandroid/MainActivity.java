@@ -3,6 +3,7 @@ package com.example.litmustestandroid;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.example.litmustestandroid.databinding.ActivityMainBinding;
@@ -25,19 +26,13 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Example of a call to a native method
-        TextView tv = binding.sampleText;
-        tv.setText(stringFromJNI());
-
-        //TextView tv2 = binding.sampleNumber;
-        //tv2.setText(intFromJNI(number).toString());
+        TextView tv = binding.sampleNumber;
+        tv.setText(String.valueOf(main()));
     }
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    public native String stringFromJNI();
-
-    public native Integer intFromJNI(Integer number);
+    public native int main();
 }
