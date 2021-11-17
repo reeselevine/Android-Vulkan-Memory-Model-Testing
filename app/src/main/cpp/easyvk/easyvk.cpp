@@ -4,6 +4,7 @@
 #include <iostream>
 #include "easyvk.h"
 #include <fstream>
+#include <filesystem>
 
 namespace easyvk {
 
@@ -148,6 +149,7 @@ namespace easyvk {
 				VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 				1
 			};
+
 			vkAllocateCommandBuffers(device, &commandBufferAI, &computeCommandBuffer);
 		}
 
@@ -200,22 +202,21 @@ namespace easyvk {
 		device(_device),
 		buffer(getNewBuffer(_device, size))
 			{
-				auto memId = device.selectMemory(buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+	            auto memId = _device.selectMemory(buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
 				VkMemoryRequirements memReqs;
 				vkGetBufferMemoryRequirements(device.device, buffer, &memReqs);
 
-				vkAllocateMemory(device.device, new VkMemoryAllocateInfo {
+				vkAllocateMemory(_device.device, new VkMemoryAllocateInfo {
 				    VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 				    nullptr,
 				    memReqs.size,
 				    memId}, nullptr, &memory);
 
-                vkBindBufferMemory(device.device, buffer, memory, 0);
+                vkBindBufferMemory(_device.device, buffer, memory, 0);
 
-                void** newData;
-                vkMapMemory(device.device, memory, 0, VK_WHOLE_SIZE, VkMemoryMapFlags {}, newData);
-				//data = static_cast<uint32_t*>(newData);
+                void** newData = new void*;
+                vkMapMemory(_device.device, memory, 0, VK_WHOLE_SIZE, VkMemoryMapFlags {}, newData);
 				data = (uint32_t*)newData;
 			}
 
@@ -255,9 +256,9 @@ namespace easyvk {
 
 	VkDescriptorSetLayout createDescriptorSetLayout(easyvk::Device &device, uint32_t size) {
 		std::vector<VkDescriptorSetLayoutBinding> layouts;
-		for (int i = 0; i < size; i++) {
+		for (uint32_t i = 0; i < size; i++) {
 			layouts.push_back(VkDescriptorSetLayoutBinding {
-				1,
+				i,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				1,
 				VK_SHADER_STAGE_COMPUTE_BIT
@@ -324,20 +325,18 @@ namespace easyvk {
 			stageCI,
 			pipelineLayout
 		};
-		//VkPipeline pipelineCreateResult;
-		vkCreateComputePipelines(device.device, VK_NULL_HANDLE, 1, &pipelineCI, nullptr,  &pipeline);
 
-		/*switch (pipelineCreateResult.result) {
+		VkPipeline pipelineCreateResult;
+		VkResult pipelineResult = vkCreateComputePipelines(device.device, {}, 1, &pipelineCI, nullptr,  &pipelineCreateResult);
+
+		switch (pipelineResult) {
 				case VK_SUCCESS:
-					pipeline = pipelineCreateResult.value;
-					break;
-				case VkResult::ePipelineCompileRequiredEXT:
-					std::cout << "uh what\n";
+					pipeline = pipelineCreateResult;
 					break;
 				default:
 					// should never get here
 					break;
-		}*/
+		}
 		vkBeginCommandBuffer(device.computeCommandBuffer, new VkCommandBufferBeginInfo {});
 		vkCmdBindPipeline(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
@@ -358,7 +357,7 @@ namespace easyvk {
 		};
 
 		auto queue = device.computeQueue();
-		vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE); // NOTE 3: Submit Count?
 		vkQueueWaitIdle(queue);
 	}
 
@@ -371,7 +370,9 @@ namespace easyvk {
 	}
 
 	Program::Program(easyvk::Device &_device, const char* filepath, std::vector<easyvk::Buffer> &_buffers) :
-		device(_device), shaderModule(initShaderModule(_device, filepath)), buffers(_buffers) {
+		device(_device),
+		shaderModule(initShaderModule(_device, filepath)),
+		buffers(_buffers) {
 			descriptorSetLayout = createDescriptorSetLayout(device, buffers.size());
 			VkPipelineLayoutCreateInfo createInfo {
 				VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -404,7 +405,7 @@ namespace easyvk {
 
 			writeSets(descriptorSet, buffers, writeDescriptorSets, bufferInfos);
 
-			vkUpdateDescriptorSets(device.device, 1, &writeDescriptorSets.front(), 0, VK_NULL_HANDLE);
+			vkUpdateDescriptorSets(device.device, writeDescriptorSets.size(), &writeDescriptorSets.front(), 0,{});
 		}
 
 	void Program::teardown() {

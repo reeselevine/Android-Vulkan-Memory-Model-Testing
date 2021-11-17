@@ -51,7 +51,7 @@ namespace easyvk {
 			easyvk::Device &device;
 			VkDeviceMemory memory;
 			uint32_t size;
-			uint32_t* data;
+            uint32_t* data;
 	};
 
 	class Program {
