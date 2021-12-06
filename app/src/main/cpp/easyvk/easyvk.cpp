@@ -5,6 +5,8 @@
 #include "easyvk.h"
 #include <fstream>
 #include <filesystem>
+#include "assert.h"
+#include <fstream>
 
 namespace easyvk {
 
@@ -42,9 +44,9 @@ namespace easyvk {
             nullptr,
 			VkInstanceCreateFlags {},
             &appInfo,
-            static_cast<uint32_t>(enabledLayers.size()),
+            (uint32_t)(enabledLayers.size()),
             enabledLayers.data(),
-			static_cast<uint32_t>(enabledExtensions.size()),
+			(uint32_t)(enabledExtensions.size()),
             enabledExtensions.data()
         };
 
@@ -132,7 +134,9 @@ namespace easyvk {
 				1,
 				queues.data()
 			};
-			vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
+			if(vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device) != VK_SUCCESS) {
+				assert(0);
+			}
 
 			VkCommandPoolCreateInfo commandPoolCreateInfo {
 				VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -140,7 +144,9 @@ namespace easyvk {
 				VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 				computeFamilyId
 			};
-			vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &computePool);
+			if(vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &computePool) != VK_SUCCESS) {
+				assert(0);
+			}
 
 			VkCommandBufferAllocateInfo commandBufferAI {
 				VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -150,7 +156,9 @@ namespace easyvk {
 				1
 			};
 
-			vkAllocateCommandBuffers(device, &commandBufferAI, &computeCommandBuffer);
+			if(vkAllocateCommandBuffers(device, &commandBufferAI, &computeCommandBuffer) != VK_SUCCESS) {
+				assert(0);
+			}
 		}
 
 	VkPhysicalDeviceProperties Device::properties() {
@@ -215,8 +223,8 @@ namespace easyvk {
 
                 vkBindBufferMemory(_device.device, buffer, memory, 0);
 
-                void** newData = new void*;
-                vkMapMemory(_device.device, memory, 0, VK_WHOLE_SIZE, VkMemoryMapFlags {}, newData);
+                void* newData = new void*;
+                vkMapMemory(_device.device, memory, 0, VK_WHOLE_SIZE, VkMemoryMapFlags {}, &newData);
 				data = (uint32_t*)newData;
 			}
 
@@ -247,7 +255,7 @@ namespace easyvk {
 		vkCreateShaderModule(device.device, new VkShaderModuleCreateInfo {
 			VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 			nullptr,
-			VkShaderModuleCreateFlags {},
+			0,
 			code.size() * sizeof(uint32_t),
 			code.data()
 		}, nullptr, &shaderModule);
@@ -289,13 +297,14 @@ namespace easyvk {
 				VK_WHOLE_SIZE
 			});
 		}
+
 		// wow this bug sucked: https://medium.com/@arpytoth/the-dangerous-pointer-to-vector-a139cc42a192
-		for (uint32_t i = 0; i < buffers.size(); i++) {
+		for (int i = 0; i < buffers.size(); i++) {
 			writeDescriptorSets.push_back(VkWriteDescriptorSet {
 				VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 				nullptr,
 				descriptorSet,
-				i,
+				(uint32_t)i,
 				0,
 				1,
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
@@ -321,23 +330,29 @@ namespace easyvk {
 		VkComputePipelineCreateInfo pipelineCI{
 			VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
 			nullptr,
-			VkPipelineCreateFlags {},
+			{},
 			stageCI,
 			pipelineLayout
 		};
 
 		VkPipeline pipelineCreateResult;
 		VkResult pipelineResult = vkCreateComputePipelines(device.device, {}, 1, &pipelineCI, nullptr,  &pipelineCreateResult);
+		/*
+		 * Error: vkCreatecomputePipelines is returning VK_ERROR_INITIALIZATION_FAILED (12/6/21)
+		 */
 
 		switch (pipelineResult) {
 				case VK_SUCCESS:
 					pipeline = pipelineCreateResult;
 					break;
+				/*case VK_ERROR_INITIALIZATION_FAILED:
+					assert(0);*/
 				default:
 					// should never get here
 					break;
 		}
-		vkBeginCommandBuffer(device.computeCommandBuffer, new VkCommandBufferBeginInfo {});
+
+		vkBeginCommandBuffer(device.computeCommandBuffer, new VkCommandBufferBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO});
 		vkCmdBindPipeline(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
 						  pipelineLayout, 0, 1, &descriptorSet, 0, 0);
@@ -357,7 +372,7 @@ namespace easyvk {
 		};
 
 		auto queue = device.computeQueue();
-		vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE); // NOTE 3: Submit Count?
+		vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
 		vkQueueWaitIdle(queue);
 	}
 
@@ -381,27 +396,33 @@ namespace easyvk {
 				1,
 				&descriptorSetLayout
 			};
-			vkCreatePipelineLayout(device.device, &createInfo, nullptr, &pipelineLayout);
+			if(vkCreatePipelineLayout(device.device, &createInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+				assert(0);
+			}
 			VkDescriptorPoolSize poolSize {
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-				static_cast<uint32_t>(buffers.size())
+				(uint32_t)buffers.size()
 			};
 			auto descriptorSizes = std::array<VkDescriptorPoolSize, 1>({poolSize});
 
-			vkCreateDescriptorPool(device.device, new VkDescriptorPoolCreateInfo {
+			if(vkCreateDescriptorPool(device.device, new VkDescriptorPoolCreateInfo {
 				VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 				nullptr,
 				VkDescriptorPoolCreateFlags {},
 				1,
 				uint32_t(descriptorSizes.size()),
-				descriptorSizes.data()}, nullptr, &descriptorPool);
+				descriptorSizes.data()}, nullptr, &descriptorPool) != VK_SUCCESS) {
+				assert(0);
+			}
 
-			vkAllocateDescriptorSets(device.device, new VkDescriptorSetAllocateInfo {
+			if(vkAllocateDescriptorSets(device.device, new VkDescriptorSetAllocateInfo {
 				VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
 				nullptr,
 				descriptorPool,
 				1,
-				&descriptorSetLayout}, &descriptorSet);
+				&descriptorSetLayout}, &descriptorSet) != VK_SUCCESS) {
+				assert(0);
+			}
 
 			writeSets(descriptorSet, buffers, writeDescriptorSets, bufferInfos);
 

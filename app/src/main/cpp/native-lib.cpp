@@ -21,6 +21,7 @@ jint main() {
     auto c = easyvk::Buffer(device, size);
 
     ofstream outputFile("/data/data/com.example.litmustestandroid/files/output.txt");
+    //ofstream outputFile("/sdcard/Download/output.txt");
 
     outputFile << "BEFORE:\n";
     for (int i = 0; i < size; i++) {
@@ -41,7 +42,7 @@ jint main() {
 
     vector<easyvk::Buffer> bufs = {a, b, c};
     const char* testFile = "/data/data/com.example.litmustestandroid/files/vect-add.spv";
-
+    //const char* testFile = "/sdcard/Download/vect-add.spv";
     auto program = easyvk::Program(device, testFile, bufs);
     program.setWorkgroups(size);
     program.setWorkgroupSize(1);
@@ -65,16 +66,6 @@ jint main() {
     return 0;
 }
 
-/*jint fileMain() {
-    auto file = ifstream("/data/data/com.example.litmustestandroid/files/test.txt");
-    if (file.is_open()) {
-        return 1;
-    }
-    else {
-        return 2;
-    }
-}*/
-
 extern "C" JNIEXPORT jint JNICALL
 Java_com_example_litmustestandroid_MainActivity_main(
         JNIEnv* env,
@@ -82,5 +73,4 @@ Java_com_example_litmustestandroid_MainActivity_main(
 
     return (jint) main();
 }
-
 
