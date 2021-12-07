@@ -8,6 +8,16 @@
 #include "assert.h"
 #include <fstream>
 
+#define vulkanCheck(result) { vulkanAssert((result), __FILE__, __LINE__); }
+inline void vulkanAssert(VkResult result, const char *file, int line, bool abort = true){
+	if (result != VK_SUCCESS) {
+		std::ofstream outputFile("/data/data/com.example.litmustestandroid/files/output.txt");
+		outputFile << "vulkanAssert: ERROR " << result << " " << file << " line " << line;
+		outputFile.close();
+		assert(0);
+	}
+}
+
 namespace easyvk {
 
 	static auto VKAPI_ATTR debugReporter(
@@ -134,9 +144,7 @@ namespace easyvk {
 				1,
 				queues.data()
 			};
-			if(vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device) != VK_SUCCESS) {
-				assert(0);
-			}
+			vulkanCheck(vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device));
 
 			VkCommandPoolCreateInfo commandPoolCreateInfo {
 				VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -144,9 +152,7 @@ namespace easyvk {
 				VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 				computeFamilyId
 			};
-			if(vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &computePool) != VK_SUCCESS) {
-				assert(0);
-			}
+			vulkanCheck(vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &computePool));
 
 			VkCommandBufferAllocateInfo commandBufferAI {
 				VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
@@ -156,9 +162,7 @@ namespace easyvk {
 				1
 			};
 
-			if(vkAllocateCommandBuffers(device, &commandBufferAI, &computeCommandBuffer) != VK_SUCCESS) {
-				assert(0);
-			}
+			vulkanCheck(vkAllocateCommandBuffers(device, &commandBufferAI, &computeCommandBuffer));
 		}
 
 	VkPhysicalDeviceProperties Device::properties() {
@@ -335,22 +339,11 @@ namespace easyvk {
 			pipelineLayout
 		};
 
-		VkPipeline pipelineCreateResult;
-		VkResult pipelineResult = vkCreateComputePipelines(device.device, {}, 1, &pipelineCI, nullptr,  &pipelineCreateResult);
+		vulkanCheck(vkCreateComputePipelines(device.device, {}, 1, &pipelineCI, nullptr,  &pipeline));
+
 		/*
 		 * Error: vkCreatecomputePipelines is returning VK_ERROR_INITIALIZATION_FAILED (12/6/21)
 		 */
-
-		switch (pipelineResult) {
-				case VK_SUCCESS:
-					pipeline = pipelineCreateResult;
-					break;
-				/*case VK_ERROR_INITIALIZATION_FAILED:
-					assert(0);*/
-				default:
-					// should never get here
-					break;
-		}
 
 		vkBeginCommandBuffer(device.computeCommandBuffer, new VkCommandBufferBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO});
 		vkCmdBindPipeline(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
@@ -396,33 +389,27 @@ namespace easyvk {
 				1,
 				&descriptorSetLayout
 			};
-			if(vkCreatePipelineLayout(device.device, &createInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-				assert(0);
-			}
+			vulkanCheck(vkCreatePipelineLayout(device.device, &createInfo, nullptr, &pipelineLayout));
 			VkDescriptorPoolSize poolSize {
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				(uint32_t)buffers.size()
 			};
 			auto descriptorSizes = std::array<VkDescriptorPoolSize, 1>({poolSize});
 
-			if(vkCreateDescriptorPool(device.device, new VkDescriptorPoolCreateInfo {
+			vulkanCheck(vkCreateDescriptorPool(device.device, new VkDescriptorPoolCreateInfo {
 				VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 				nullptr,
 				VkDescriptorPoolCreateFlags {},
 				1,
 				uint32_t(descriptorSizes.size()),
-				descriptorSizes.data()}, nullptr, &descriptorPool) != VK_SUCCESS) {
-				assert(0);
-			}
+				descriptorSizes.data()}, nullptr, &descriptorPool));
 
-			if(vkAllocateDescriptorSets(device.device, new VkDescriptorSetAllocateInfo {
+			vulkanCheck(vkAllocateDescriptorSets(device.device, new VkDescriptorSetAllocateInfo {
 				VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
 				nullptr,
 				descriptorPool,
 				1,
-				&descriptorSetLayout}, &descriptorSet) != VK_SUCCESS) {
-				assert(0);
-			}
+				&descriptorSetLayout}, &descriptorSet));
 
 			writeSets(descriptorSet, buffers, writeDescriptorSets, bufferInfos);
 
