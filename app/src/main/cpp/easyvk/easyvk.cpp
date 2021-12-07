@@ -12,7 +12,7 @@
 inline void vulkanAssert(VkResult result, const char *file, int line, bool abort = true){
 	if (result != VK_SUCCESS) {
 		std::ofstream outputFile("/data/data/com.example.litmustestandroid/files/output.txt");
-		outputFile << "vulkanAssert: ERROR " << result << " " << file << " line " << line;
+		outputFile << "vulkanAssert: ERROR " << result << "\n" << file << "\nline: " << line;
 		outputFile.close();
 		assert(0);
 	}
@@ -60,7 +60,7 @@ namespace easyvk {
             enabledExtensions.data()
         };
 
-		vkCreateInstance(&createInfo, nullptr, &instance);
+		vulkanCheck(vkCreateInstance(&createInfo, nullptr, &instance));
 
 		if (enableValidationLayers) {
 			VkDebugReportCallbackCreateInfoEXT debugCreateInfo {
@@ -79,10 +79,10 @@ namespace easyvk {
 
 	std::vector<easyvk::Device> Instance::devices() {
 		uint32_t deviceCount = 0;
-		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+		vulkanCheck(vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr));
 
 		std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
-		vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data());
+		vulkanCheck(vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data()));
 
 		auto devices = std::vector<easyvk::Device>{};
 		for (auto device : physicalDevices) {
@@ -201,12 +201,12 @@ namespace easyvk {
 
 	VkBuffer getNewBuffer(easyvk::Device &_device, uint32_t size) {
 		VkBuffer newBuffer;
-		vkCreateBuffer(_device.device, new VkBufferCreateInfo {
+		vulkanCheck(vkCreateBuffer(_device.device, new VkBufferCreateInfo {
 			VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 			nullptr,
 			VkBufferCreateFlags {},
 			size * sizeof(uint32_t),
-			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT }, nullptr, &newBuffer);
+			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT }, nullptr, &newBuffer));
 		return newBuffer;
 	}
 
@@ -219,16 +219,16 @@ namespace easyvk {
 				VkMemoryRequirements memReqs;
 				vkGetBufferMemoryRequirements(device.device, buffer, &memReqs);
 
-				vkAllocateMemory(_device.device, new VkMemoryAllocateInfo {
+				vulkanCheck(vkAllocateMemory(_device.device, new VkMemoryAllocateInfo {
 				    VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 				    nullptr,
 				    memReqs.size,
-				    memId}, nullptr, &memory);
+				    memId}, nullptr, &memory));
 
-                vkBindBufferMemory(_device.device, buffer, memory, 0);
+				vulkanCheck(vkBindBufferMemory(_device.device, buffer, memory, 0));
 
                 void* newData = new void*;
-                vkMapMemory(_device.device, memory, 0, VK_WHOLE_SIZE, VkMemoryMapFlags {}, &newData);
+				vulkanCheck(vkMapMemory(_device.device, memory, 0, VK_WHOLE_SIZE, VkMemoryMapFlags {}, &newData));
 				data = (uint32_t*)newData;
 			}
 
@@ -256,13 +256,13 @@ namespace easyvk {
 	VkShaderModule initShaderModule(easyvk::Device& device, const char* filepath) {
 		std::vector<uint32_t> code = read_spirv(filepath);
 		VkShaderModule shaderModule;
-		vkCreateShaderModule(device.device, new VkShaderModuleCreateInfo {
+		vulkanCheck(vkCreateShaderModule(device.device, new VkShaderModuleCreateInfo {
 			VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
 			nullptr,
 			0,
 			code.size() * sizeof(uint32_t),
 			code.data()
-		}, nullptr, &shaderModule);
+		}, nullptr, &shaderModule));
 		return shaderModule;
 	}
 
@@ -284,7 +284,7 @@ namespace easyvk {
 			layouts.data()
 		};
 		VkDescriptorSetLayout descriptorSetLayout;
-		vkCreateDescriptorSetLayout(device.device, &createInfo, nullptr, &descriptorSetLayout);
+		vulkanCheck(vkCreateDescriptorSetLayout(device.device, &createInfo, nullptr, &descriptorSetLayout));
 		return descriptorSetLayout;
 	}
 
@@ -339,18 +339,18 @@ namespace easyvk {
 			pipelineLayout
 		};
 
+		/*
+		* Error: vkCreatecomputePipelines is returning VK_ERROR_INITIALIZATION_FAILED (12/6/21)
+		*/
+
 		vulkanCheck(vkCreateComputePipelines(device.device, {}, 1, &pipelineCI, nullptr,  &pipeline));
 
-		/*
-		 * Error: vkCreatecomputePipelines is returning VK_ERROR_INITIALIZATION_FAILED (12/6/21)
-		 */
-
-		vkBeginCommandBuffer(device.computeCommandBuffer, new VkCommandBufferBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO});
+		vulkanCheck(vkBeginCommandBuffer(device.computeCommandBuffer, new VkCommandBufferBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO}));
 		vkCmdBindPipeline(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
 						  pipelineLayout, 0, 1, &descriptorSet, 0, 0);
 		vkCmdDispatch(device.computeCommandBuffer, numWorkgroups, 1, 1);
-		vkEndCommandBuffer(device.computeCommandBuffer);
+		vulkanCheck(vkEndCommandBuffer(device.computeCommandBuffer));
 	}
 
 	void Program::run() {
@@ -365,8 +365,8 @@ namespace easyvk {
 		};
 
 		auto queue = device.computeQueue();
-		vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(queue);
+		vulkanCheck(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+		vulkanCheck(vkQueueWaitIdle(queue));
 	}
 
 	void Program::setWorkgroups(uint32_t _numWorkgroups) {
