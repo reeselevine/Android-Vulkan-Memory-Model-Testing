@@ -7,6 +7,7 @@
 #include <filesystem>
 #include "assert.h"
 #include <fstream>
+#include <android/asset_manager.h>
 
 #define vulkanCheck(result) { vulkanAssert((result), __FILE__, __LINE__); }
 inline void vulkanAssert(VkResult result, const char *file, int line, bool abort = true){

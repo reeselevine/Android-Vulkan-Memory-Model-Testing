@@ -31,7 +31,7 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             native-lib.cpp easyvk/easyvk.cpp)
+            vect_add.cpp easyvk/easyvk.cpp)
 
 # Adds the output of the additional CMake build as a prebuilt static
 # library and names it lib_easyvk

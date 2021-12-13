@@ -5,23 +5,32 @@
 #include <thread>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "easyvk/easyvk.h"
 #include <android/log.h>
-#include <unistd.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
-using namespace std;
+#define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__))
 
 const int size = 4;
 
-jint main() {
+constexpr char* TAG = "MainActivityVectAdd";
+constexpr char* FILE_NAME = "vect_add.spv";
+constexpr char* OUTPUT_NAME = "vect_add_output.txt";
+
+std::string getFileDirFromJava(JNIEnv* env, jobject obj);
+std::string readOutput(std::basic_string<char, std::char_traits<char>, std::allocator<char>> basicString);
+
+jint runTest(std::string filePath) {
+
     auto instance = easyvk::Instance(false);
     auto device = instance.devices().at(0);
     auto a = easyvk::Buffer(device, size);
     auto b = easyvk::Buffer(device, size);
     auto c = easyvk::Buffer(device, size);
 
-    ofstream outputFile("/data/data/com.example.litmustestandroid/files/output.txt");
-    //ofstream outputFile("/sdcard/Download/output.txt");
+    std::ofstream outputFile(filePath + "/" + OUTPUT_NAME);
 
     outputFile << "BEFORE:\n";
     for (int i = 0; i < size; i++) {
@@ -40,9 +49,10 @@ jint main() {
         outputFile <<  "\n";
     }
 
-    vector<easyvk::Buffer> bufs = {a, b, c};
-    const char* testFile = "/data/data/com.example.litmustestandroid/files/vect-add.spv";
-    //const char* testFile = "/sdcard/Download/vect-add.spv";
+    std::vector<easyvk::Buffer> bufs = {a, b, c};
+    std::string testFilePath = filePath + "/" + FILE_NAME;
+    const char* testFile = testFilePath.c_str();
+
     auto program = easyvk::Program(device, testFile, bufs);
     program.setWorkgroups(size);
     program.setWorkgroupSize(1);
@@ -54,7 +64,6 @@ jint main() {
         outputFile << "b[" << i << "]:" << b.load(i) << "\n";
         outputFile << "c[" << i << "]:" << c.load(i) << "\n";
         outputFile <<  "\n";
-        //assert(c.load(i) == a.load(i) + b.load(i));
     }
     outputFile.close();
     program.teardown();
@@ -66,11 +75,47 @@ jint main() {
     return 0;
 }
 
+void readFileFromResRaw(JNIEnv* env, jobject obj) {
+    LOGD("Get file path via JNI");
+    std::string filePath = getFileDirFromJava(env, obj);
+
+    runTest(filePath);
+
+    LOGD(
+        "%s/%s:\n%s",
+        filePath.c_str(),
+        OUTPUT_NAME,
+        readOutput(filePath + "/" + OUTPUT_NAME).c_str());
+}
+
+std::string readOutput(std::string filePath) {
+    std::ifstream ifs(filePath);
+    std::stringstream ss;
+
+    ss << ifs.rdbuf();
+
+    return ss.str();
+}
+
+std::string getFileDirFromJava(JNIEnv* env, jobject obj) {
+    jclass clazz = env->GetObjectClass(obj);
+    jmethodID method = env->GetMethodID(clazz, "getFileDir", "()Ljava/lang/String;");
+    jobject ret = env->CallObjectMethod(obj, method);
+
+    jstring jFilePath = (jstring)ret;
+
+    return std::string(env->GetStringUTFChars(jFilePath, nullptr));
+}
+
 extern "C" JNIEXPORT jint JNICALL
 Java_com_example_litmustestandroid_MainActivity_main(
         JNIEnv* env,
-        jobject) {
+        jobject obj) {
 
-    return (jint) main();
+    // ndk-config-provider
+    // Source: https://github.com/nkh-lab/ndk-config-provider
+    readFileFromResRaw(env, obj);
+
+    return 0;
 }
 
