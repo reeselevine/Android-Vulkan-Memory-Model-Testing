@@ -2,8 +2,8 @@
     <string name="app_name">LitmusTestAndroid</string>
 
     <string-array name="litmusTests">
-        <item>Empty Kernel</item>
-        <item>Vector Addition</item>
+        <item>kernel_test</item>
+        <item>vect_add</item>
         <item>2+2-write</item>
         <item>atom</item>
         <item>corr</item>
@@ -14,10 +14,10 @@
         <item>env</item>
         <item>iriw</item>
         <item>isa2</item>
-        <item>load-buffer</item>
-        <item>message-passing</item>
+        <item>load_buffer</item>
+        <item>message_passing</item>
         <item>read</item>
-        <item>store-buffer</item>
+        <item>store_buffer</item>
         <item>store</item>
     </string-array>
 </resources>

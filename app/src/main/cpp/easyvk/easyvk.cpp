@@ -7,7 +7,9 @@
 #include <filesystem>
 #include "assert.h"
 #include <fstream>
-#include <android/asset_manager.h>
+#include <android/log.h>
+
+#define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, "EASYVK", __VA_ARGS__))
 
 #define vulkanCheck(result) { vulkanAssert((result), __FILE__, __LINE__); }
 inline void vulkanAssert(VkResult result, const char *file, int line, bool abort = true){
@@ -15,6 +17,7 @@ inline void vulkanAssert(VkResult result, const char *file, int line, bool abort
 		std::ofstream outputFile("/data/data/com.example.litmustestandroid/files/output.txt");
 		outputFile << "vulkanAssert: ERROR " << result << "\n" << file << "\nline: " << line;
 		outputFile.close();
+		//LOGD("vulkanAssert: ERROR %d \n %s \n %d", result, file, line);
 		assert(0);
 	}
 }
@@ -23,10 +26,14 @@ namespace easyvk {
 
 	static auto VKAPI_ATTR debugReporter(
 			VkDebugReportFlagsEXT , VkDebugReportObjectTypeEXT, uint64_t, size_t, int32_t
-	, const char*                pLayerPrefix
-	, const char*                pMessage
-	, void*                      /*pUserData*/)-> VkBool32 {
-	std::cerr << "[Vulkan]:" << pLayerPrefix << ": " << pMessage << "\n";
+			, const char*                pLayerPrefix
+			, const char*                pMessage
+			, void*                      pUserData)-> VkBool32 {
+		/*std::ofstream debugFile("/data/data/com.example.litmustestandroid/files/debug.txt");
+		debugFile << "[Vulkan]:" << pLayerPrefix << ": " << pMessage << "\n";
+		debugFile.close();
+		LOGD("[Vulkan]: %s: %s\n", pLayerPrefix, pMessage);*/
+
 	return VK_FALSE;
 }
 
@@ -71,9 +78,14 @@ namespace easyvk {
 				| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
 				debugReporter
 			};
+			//vkCreateDebugReportCallbackEXT(instance, &debugCreateInfo, nullptr, &debugReportCallback);
 			auto createFN = PFN_vkCreateDebugReportCallbackEXT(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
 			if(createFN) {
+				LOGD("EASYVK createFN SUCCESSFUL");
 				createFN(instance, &debugCreateInfo, nullptr, &debugReportCallback);
+			}
+			else {
+				LOGD("EASYVK createFN NOT SUCCESSFUL");
 			}
 		}
 	}

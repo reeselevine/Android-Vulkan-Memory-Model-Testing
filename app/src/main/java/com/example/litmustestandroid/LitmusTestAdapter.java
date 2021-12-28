@@ -1,5 +1,6 @@
 package com.example.litmustestandroid;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -17,10 +18,13 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
 
     String litmusTestName[];
     Context context;
+    MainActivity mainActivity;
+    Integer testExists[] = {1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0};
 
-    public LitmusTestAdapter(Context ct, String testNames[]) {
+    public LitmusTestAdapter(Context ct, String testNames[], MainActivity mainAct) {
         litmusTestName = testNames;
         context = ct;
+        mainActivity = mainAct;
     }
 
     @NotNull
@@ -36,19 +40,27 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
         String currentTestName = litmusTestName[position];
 
         holder.testName.setText(currentTestName);
+
+        if(testExists[position] == 0) {
+            holder.startButton.setEnabled(false);
+            holder.startButton.setBackgroundColor(Color.GRAY);
+        }
+
         holder.startButton.setOnClickListener(new View.OnClickListener() { // Start Test
             public void onClick (View v) {
                 holder.startButton.setEnabled(false);
-                holder.startButton.setBackgroundColor(Color.GRAY);
+                holder.startButton.setBackgroundColor(Color.BLUE);
 
                 holder.resultButton.setEnabled(false);
                 holder.resultButton.setBackgroundColor(Color.GRAY);
-                MainActivity.litmusTestStart(currentTestName, holder.startButton, holder.resultButton);
+                mainActivity.litmusTestStart(currentTestName, holder.startButton, holder.resultButton);
+
+
             }
         });
         holder.resultButton.setOnClickListener(new View.OnClickListener() { // Show Result
             public void onClick (View v) {
-
+                mainActivity.litmusTestResult(currentTestName);
             }
         });
     }
@@ -61,8 +73,8 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
     public class LitmusTestViewHolder extends RecyclerView.ViewHolder {
 
         TextView testName;
-        Button startButton;
-        Button resultButton;
+        public Button startButton;
+        public Button resultButton;
 
         public LitmusTestViewHolder(@NonNull @org.jetbrains.annotations.NotNull View itemView) {
             super(itemView);
@@ -70,8 +82,12 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
             startButton = itemView.findViewById(R.id.startButton);
             resultButton = itemView.findViewById(R.id.resultButton);
 
+            // Temporary
+            // Look for output file
+            // If exists, set it enabled.
             resultButton.setEnabled(false);
             resultButton.setBackgroundColor(Color.GRAY);
+
         }
     }
 }

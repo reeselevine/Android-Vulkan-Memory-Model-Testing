@@ -12,21 +12,17 @@
 
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__))
 
-namespace vect_add {
-
+namespace kernel_test {
     const int size = 4;
 
-    constexpr char *TAG = "MainActivityVectAdd";
-    constexpr char *FILE_NAME = "vect_add.spv";
-    constexpr char *OUTPUT_NAME = "vect_add_output.txt";
+    constexpr char *TAG = "MainActivityKernelTest";
+    constexpr char *FILE_NAME = "kernel_test.spv";
+    constexpr char *OUTPUT_NAME = "kernel_test_output.txt";
 
     jint runTest(std::string filePath) {
-
         auto instance = easyvk::Instance(false);
         auto device = instance.devices().at(0);
         auto a = easyvk::Buffer(device, size);
-        auto b = easyvk::Buffer(device, size);
-        auto c = easyvk::Buffer(device, size);
 
         std::ofstream outputFile(filePath + "/" + OUTPUT_NAME);
 
@@ -36,18 +32,10 @@ namespace vect_add {
             a.store(i, i);
             outputFile << "Loading a[" << i << "]:" << a.load(i) << "\n";
 
-            outputFile << "Storing " << i + 1 << " in b[" << i << "]\n";
-            b.store(i, i + 1);
-            outputFile << "Loading b[" << i << "]:" << b.load(i) << "\n";
-
-            outputFile << "Storing " << 0 << " in c[" << i << "]\n";
-            c.store(i, 0);
-            outputFile << "Loading c[" << i << "]:" << c.load(i) << "\n";
-
-            outputFile << "\n";
+            outputFile <<  "\n";
         }
 
-        std::vector<easyvk::Buffer> bufs = {a, b, c};
+        std::vector<easyvk::Buffer> bufs = {a};
         std::string testFilePath = filePath + "/" + FILE_NAME;
         const char *testFile = testFilePath.c_str();
 
@@ -59,15 +47,12 @@ namespace vect_add {
         outputFile << "AFTER:\n";
         for (int i = 0; i < size; i++) {
             outputFile << "a[" << i << "]:" << a.load(i) << "\n";
-            outputFile << "b[" << i << "]:" << b.load(i) << "\n";
-            outputFile << "c[" << i << "]:" << c.load(i) << "\n";
-            outputFile << "\n";
+            outputFile <<  "\n";
         }
+        outputFile << "SUCCESSFUL\n";
         outputFile.close();
         program.teardown();
         a.teardown();
-        b.teardown();
-        c.teardown();
         device.teardown();
         instance.teardown();
         return 0;
@@ -107,6 +92,9 @@ namespace vect_add {
 
         return ss.str();
     }
-
 }
+
+
+
+
 
