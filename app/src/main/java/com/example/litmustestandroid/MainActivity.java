@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private RecyclerView litmusTestRV;
+    private LitmusTestAdapter litmusTestAdapter;
     private static final int REQUEST_PERMISSION = 10;
     private static final String TAG = "MainActivity";
     private static final String TEST_NAME[] = {"corr", "corr4", "corw1", "iriw",
@@ -154,13 +155,43 @@ public class MainActivity extends AppCompatActivity {
         String litmusTestName[] = getResources().getStringArray(R.array.litmusTests);
         litmusTestRV = findViewById(R.id.litmusTestRecyclerView);
 
-        LitmusTestAdapter litmusTestAdapter = new LitmusTestAdapter(this, litmusTestName, MainActivity.this);
+        litmusTestAdapter = new LitmusTestAdapter(this, litmusTestName, MainActivity.this);
         litmusTestRV.setAdapter(litmusTestAdapter);
         litmusTestRV.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    public void litmusTestStart(String testName, Button startButton, Button resultButton) {
+    public void enableNonRunningTests(int position, boolean enabled){
+        int childCount = litmusTestRV.getChildCount();
+        for(int i = 0; i < childCount; i++) {
+            final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) litmusTestRV.getChildViewHolder(litmusTestRV.getChildAt(i));
+            if(i != position && litmusTestAdapter.testExists[i] == 1) {
+                Log.i(TAG, litmusTestAdapter.testExists[position].toString());
+                viewHolder.startButton.setEnabled(enabled);
+                viewHolder.resultButton.setEnabled(enabled);
+
+                if(enabled) {
+                    viewHolder.startButton.setBackgroundColor(Color.GREEN);
+                    if(viewHolder.newTest) { // If Test is still new, stay GRAY
+                        viewHolder.resultButton.setEnabled(false);
+                        viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+                    }
+                    else { // If this Test has result existing, turn RED
+                        viewHolder.resultButton.setBackgroundColor(Color.RED);
+                    }
+                }
+                else {
+                    viewHolder.startButton.setBackgroundColor(Color.GRAY);
+                    viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+                }
+            }
+        }
+    }
+
+    public void litmusTestStart(String testName, int position) {
         Log.i("TEST", testName + " PRESSED");
+        enableNonRunningTests(position, false);
+
+        final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) litmusTestRV.getChildViewHolder(litmusTestRV.getChildAt(position));
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -169,11 +200,15 @@ public class MainActivity extends AppCompatActivity {
                 main(testName);
 
                 // Update Start and Result Button
-                startButton.setEnabled(true);
-                startButton.setBackgroundColor(Color.GREEN);
+                viewHolder.startButton.setEnabled(true);
+                viewHolder.startButton.setBackgroundColor(Color.GREEN);
 
-                resultButton.setEnabled(true);
-                resultButton.setBackgroundColor(Color.RED);
+                viewHolder.resultButton.setEnabled(true);
+                viewHolder.resultButton.setBackgroundColor(Color.RED);
+
+                viewHolder.newTest = false;
+
+                enableNonRunningTests(position, true);
 
                 Toast.makeText(MainActivity.this, "Test " + testName + " finished!", Toast.LENGTH_LONG).show();
             }

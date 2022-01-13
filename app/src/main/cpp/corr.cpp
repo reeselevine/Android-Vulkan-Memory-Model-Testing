@@ -58,7 +58,7 @@ namespace corr {
     public:
         void run(ofstream& outputFile, string testFile) {
             outputFile << "Starting " << testName << " litmus test run \n";
-            auto instance = easyvk::Instance(false);
+            auto instance = easyvk::Instance(true);
             auto device = getDevice(&instance, outputFile);
             outputFile << "Weak behavior to watch for: " << weakBehaviorStr << "\n";
             outputFile << "Sampling output approximately every " << sampleInterval << " iterations\n";

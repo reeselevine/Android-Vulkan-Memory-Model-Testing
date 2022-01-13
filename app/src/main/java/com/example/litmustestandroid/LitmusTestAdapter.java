@@ -41,7 +41,7 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
 
         holder.testName.setText(currentTestName);
 
-        if(testExists[position] == 0) {
+        if(testExists[position] == 0) { // If test doesn't exist, disable
             holder.startButton.setEnabled(false);
             holder.startButton.setBackgroundColor(Color.GRAY);
         }
@@ -53,8 +53,7 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
 
                 holder.resultButton.setEnabled(false);
                 holder.resultButton.setBackgroundColor(Color.GRAY);
-                mainActivity.litmusTestStart(currentTestName, holder.startButton, holder.resultButton);
-
+                mainActivity.litmusTestStart(currentTestName, position);
 
             }
         });
@@ -75,6 +74,7 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
         TextView testName;
         public Button startButton;
         public Button resultButton;
+        Boolean newTest = true;
 
         public LitmusTestViewHolder(@NonNull @org.jetbrains.annotations.NotNull View itemView) {
             super(itemView);

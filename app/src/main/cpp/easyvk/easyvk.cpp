@@ -29,10 +29,10 @@ namespace easyvk {
 			, const char*                pLayerPrefix
 			, const char*                pMessage
 			, void*                      pUserData)-> VkBool32 {
-		/*std::ofstream debugFile("/data/data/com.example.litmustestandroid/files/debug.txt");
+		std::ofstream debugFile("/data/data/com.example.litmustestandroid/files/debug.txt");
 		debugFile << "[Vulkan]:" << pLayerPrefix << ": " << pMessage << "\n";
 		debugFile.close();
-		LOGD("[Vulkan]: %s: %s\n", pLayerPrefix, pMessage);*/
+		LOGD("[Vulkan]: %s: %s\n", pLayerPrefix, pMessage);
 
 	return VK_FALSE;
 }

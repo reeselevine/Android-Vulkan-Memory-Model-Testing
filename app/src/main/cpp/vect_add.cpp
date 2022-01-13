@@ -22,7 +22,7 @@ namespace vect_add {
 
     jint runTest(std::string filePath) {
 
-        auto instance = easyvk::Instance(false);
+        auto instance = easyvk::Instance(true);
         auto device = instance.devices().at(0);
         auto a = easyvk::Buffer(device, size);
         auto b = easyvk::Buffer(device, size);
