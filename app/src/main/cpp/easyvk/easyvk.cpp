@@ -8,6 +8,7 @@
 #include "assert.h"
 #include <fstream>
 #include <android/log.h>
+#include <set>
 
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, "EASYVK", __VA_ARGS__))
 
@@ -88,6 +89,20 @@ namespace easyvk {
 				LOGD("EASYVK createFN NOT SUCCESSFUL");
 			}
 		}
+
+		uint32_t count;
+		vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);
+		std::vector<VkExtensionProperties> extensions(count);
+		vkEnumerateInstanceExtensionProperties(nullptr, &count, extensions.data());
+		std::set<std::string> results;
+
+		std::ofstream extensionFile("/data/data/com.example.litmustestandroid/files/extensions.txt");
+
+		for (auto& extension : extensions) {
+			extensionFile << extension.extensionName << "\n";
+		}
+		extensionFile.close();
+
 	}
 
 	std::vector<easyvk::Device> Instance::devices() {

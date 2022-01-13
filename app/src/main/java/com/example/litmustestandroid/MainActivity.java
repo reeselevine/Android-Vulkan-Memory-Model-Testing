@@ -165,7 +165,6 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < childCount; i++) {
             final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) litmusTestRV.getChildViewHolder(litmusTestRV.getChildAt(i));
             if(i != position && litmusTestAdapter.testExists[i] == 1) {
-                Log.i(TAG, litmusTestAdapter.testExists[position].toString());
                 viewHolder.startButton.setEnabled(enabled);
                 viewHolder.resultButton.setEnabled(enabled);
 
