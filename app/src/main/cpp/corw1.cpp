@@ -25,7 +25,7 @@ namespace corw1 {
     const int minWorkgroups = 4;
     const int maxWorkgroups = 36;
     const int minWorkgroupSize = 1;
-    const int maxWorkgroupSize = 1024;
+    const int maxWorkgroupSize = 64; // Q - 1024 or 64, A - 384
     const int shufflePct = 100;
     const int barrierPct = 85;
     const int numMemLocations = 1;
@@ -44,7 +44,7 @@ namespace corw1 {
     const int gpuDeviceId = 7857;
     const char* testName = "corw1";
     const char* weakBehaviorStr = "r0: 1";
-    const int testIterations = 1000;
+    const int testIterations = 100; // 1000
     int weakBehavior = 0;
     int nonWeakBehavior = 0;
     const int sampleInterval = 1000;
@@ -58,7 +58,7 @@ namespace corw1 {
     public:
         void run(ofstream &outputFile, string testFile) {
             outputFile << "Starting " << testName << " litmus test run \n";
-            auto instance = easyvk::Instance(true);
+            auto instance = easyvk::Instance(false);
             auto device = getDevice(&instance, outputFile);
             outputFile << "Weak behavior to watch for: " << weakBehaviorStr << "\n";
             outputFile << "Sampling output approximately every " << sampleInterval
@@ -92,7 +92,7 @@ namespace corw1 {
                 program.setWorkgroupSize(workgroupSize);
                 program.prepare();
                 program.run();
-                checkResult(testData, results, memLocations, outputFile);
+                checkResult(testData, results, memLocations, outputFile, numWorkgroups, workgroupSize);
                 program.teardown();
             }
             end = std::chrono::system_clock::now();
@@ -117,6 +117,7 @@ namespace corw1 {
                         break;
                     }
                     j++;
+                    _device.teardown();
                 }
             }
             easyvk::Device device = instance->devices().at(idx);
@@ -124,14 +125,16 @@ namespace corw1 {
             return device;
         }
 
-        void checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations, ofstream &outputFile) {
+        void checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations, ofstream &outputFile, int numWorkgroups, int workgroupSize) {
             if (rand() % sampleInterval == 1) {
                 outputFile << "r0: " << results.load(0) << "\n";
             }
             if (results.load(0) == 1) {
                 weakBehavior++;
+                //outputFile << "weak numWorkgroups: " << numWorkgroups << " workgroupSize: " << workgroupSize << "\n";
             } else {
                 nonWeakBehavior++;
+                //outputFile << "nonWeak numWorkgroups: " << numWorkgroups << " workgroupSize: " << workgroupSize << "\n";
             }
         }
 

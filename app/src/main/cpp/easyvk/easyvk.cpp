@@ -10,6 +10,8 @@
 #include <android/log.h>
 #include <set>
 
+bool printMaxPushconstantsSize = false;
+
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, "EASYVK", __VA_ARGS__))
 
 #define vulkanCheck(result) { vulkanAssert((result), __FILE__, __LINE__); }
@@ -18,7 +20,7 @@ inline void vulkanAssert(VkResult result, const char *file, int line, bool abort
 		std::ofstream outputFile("/data/data/com.example.litmustestandroid/files/output.txt");
 		outputFile << "vulkanAssert: ERROR " << result << "\n" << file << "\nline: " << line;
 		outputFile.close();
-		//LOGD("vulkanAssert: ERROR %d \n %s \n %d", result, file, line);
+		LOGD("vulkanAssert: ERROR %d \n File: %s \n Line: %d", result, file, line);
 		assert(0);
 	}
 }
@@ -42,6 +44,8 @@ namespace easyvk {
 		enableValidationLayers = _enableValidationLayers;
 		std::vector<const char *> enabledLayers;
 		std::vector<const char *> enabledExtensions;
+		//enabledExtensions.push_back(VK_KHR_STORAGE_BUFFER_STORAGE_CLASS_EXTENSION_NAME);
+
 		if (enableValidationLayers) {
 			enabledLayers.push_back("VK_LAYER_KHRONOS_validation");
 			enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
@@ -55,8 +59,9 @@ namespace easyvk {
 		    0,
 		    "LSD Lab",
 		    0,
-		    VK_API_VERSION_1_0
+		    VK_API_VERSION_1_1
 		};
+
 
 		VkInstanceCreateInfo createInfo {
             VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
@@ -70,6 +75,7 @@ namespace easyvk {
         };
 
 		vulkanCheck(vkCreateInstance(&createInfo, nullptr, &instance));
+
 
 		if (enableValidationLayers) {
 			VkDebugReportCallbackCreateInfoEXT debugCreateInfo {
@@ -103,6 +109,16 @@ namespace easyvk {
 		}
 		extensionFile.close();
 
+		uint32_t version;
+		PFN_vkEnumerateInstanceVersion my_EnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion)vkGetInstanceProcAddr(
+				VK_NULL_HANDLE, "vkEnumerateInstanceVersion");
+		if (nullptr != my_EnumerateInstanceVersion) {
+			my_EnumerateInstanceVersion(&version);
+			LOGD("Vulkan Version: %d.%d.%d\n", VK_VERSION_MAJOR(version), VK_VERSION_MINOR(version), VK_VERSION_PATCH(version));
+		}
+		else {
+			LOGD("Vulkan Version: vkEnumerateInstanceVersion not present");
+		}
 	}
 
 	std::vector<easyvk::Device> Instance::devices() {
@@ -223,6 +239,7 @@ namespace easyvk {
 	}
 
 	void Device::teardown() {
+		vulkanCheck(vkDeviceWaitIdle(device));
 		vkDestroyCommandPool(device, computePool, nullptr);
 		vkDestroyDevice(device, nullptr);
 	}
@@ -367,21 +384,26 @@ namespace easyvk {
 			pipelineLayout
 		};
 
-		/*
-		* Error: vkCreatecomputePipelines is returning VK_ERROR_INITIALIZATION_FAILED (12/6/21)
-		*/
-
 		vulkanCheck(vkCreateComputePipelines(device.device, {}, 1, &pipelineCI, nullptr,  &pipeline));
 
 		vulkanCheck(vkBeginCommandBuffer(device.computeCommandBuffer, new VkCommandBufferBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO}));
+
 		vkCmdBindPipeline(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
 						  pipelineLayout, 0, 1, &descriptorSet, 0, 0);
+
+		uint32_t *pValues;
+		vkCmdPushConstants(device.computeCommandBuffer, pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, device.properties().limits.maxPushConstantsSize, &pValues);
+
+		//LOGD("Test numWorkgroups: %d", numWorkgroups);
+        //LOGD("Test workgroupSize: %d", workgroupSize);
 		vkCmdDispatch(device.computeCommandBuffer, numWorkgroups, 1, 1);
 		vulkanCheck(vkEndCommandBuffer(device.computeCommandBuffer));
 	}
 
 	void Program::run() {
+        //vulkanCheck(vkCreateSemaphore(device.device, new VkSemaphoreCreateInfo {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO}, nullptr, &semaphore));
+
 		VkSubmitInfo submitInfo {
 			VK_STRUCTURE_TYPE_SUBMIT_INFO,
 			nullptr,
@@ -389,12 +411,16 @@ namespace easyvk {
 			nullptr,
 			nullptr,
 			1,
-			&device.computeCommandBuffer
+			&device.computeCommandBuffer,
+			0,
+			nullptr
 		};
 
 		auto queue = device.computeQueue();
 		vulkanCheck(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
+		//vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
 		vulkanCheck(vkQueueWaitIdle(queue));
+		//vkQueueWaitIdle(queue);
 	}
 
 	void Program::setWorkgroups(uint32_t _numWorkgroups) {
@@ -410,13 +436,28 @@ namespace easyvk {
 		shaderModule(initShaderModule(_device, filepath)),
 		buffers(_buffers) {
 			descriptorSetLayout = createDescriptorSetLayout(device, buffers.size());
+
 			VkPipelineLayoutCreateInfo createInfo {
 				VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 				nullptr,
 				VkPipelineLayoutCreateFlags {},
 				1,
-				&descriptorSetLayout
+				&descriptorSetLayout,
+				1,
+				new VkPushConstantRange {VK_SHADER_STAGE_COMPUTE_BIT, 0, device.properties().limits.maxPushConstantsSize}
 			};
+
+			if(!printMaxPushconstantsSize) {
+				printMaxPushconstantsSize = true;
+				LOGD("Device maxPushConstantsSize: %d", device.properties().limits.maxPushConstantsSize);
+				LOGD("Device maxComputeWorkGroupSize: %d, %d, %d", device.properties().limits.maxComputeWorkGroupSize[0],
+                                                                   device.properties().limits.maxComputeWorkGroupSize[1],
+                                                                   device.properties().limits.maxComputeWorkGroupSize[2]);
+                LOGD("Device maxComputeWorkGroupCount: %d, %d, %d", device.properties().limits.maxComputeWorkGroupCount[0],
+                                                                    device.properties().limits.maxComputeWorkGroupCount[1],
+                                                                    device.properties().limits.maxComputeWorkGroupCount[2]);
+			}
+
 			vulkanCheck(vkCreatePipelineLayout(device.device, &createInfo, nullptr, &pipelineLayout));
 			VkDescriptorPoolSize poolSize {
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
