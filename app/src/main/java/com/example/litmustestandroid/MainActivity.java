@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             displayLitmusTests();
+            clvkMain();
         }
 
     }
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 displayLitmusTests();
+                clvkMain();
             } else {
                 // User refused to grant permission.
             }
@@ -251,4 +253,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public native int main(String testName);
+
+    public native int clvkMain();
 }

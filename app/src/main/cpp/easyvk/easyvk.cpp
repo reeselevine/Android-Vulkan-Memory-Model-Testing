@@ -300,6 +300,7 @@ namespace easyvk {
 
 	VkShaderModule initShaderModule(easyvk::Device& device, const char* filepath) {
 		std::vector<uint32_t> code = read_spirv(filepath);
+
 		VkShaderModule shaderModule;
 		vulkanCheck(vkCreateShaderModule(device.device, new VkShaderModuleCreateInfo {
 			VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,

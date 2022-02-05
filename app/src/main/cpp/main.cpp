@@ -13,6 +13,8 @@
 #include "message_passing.cpp"
 #include "store_buffer.cpp"
 #include "vect_add.cpp"
+#include "clvk/sample.cpp"
+#include "clvk/platform.cpp"
 
 void runLitmusTest(JNIEnv* env, jobject obj, std::string testName) {
     if (testName == "kernel_test") {
@@ -67,6 +69,17 @@ void runLitmusTest(JNIEnv* env, jobject obj, std::string testName) {
 
     }
 }
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_example_litmustestandroid_MainActivity_clvkMain(
+        JNIEnv* env,
+        jobject obj) {
+
+    clvkMainFunction();
+    //clvkPlatformFunction();
+    return 0;
+}
+
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_example_litmustestandroid_MainActivity_main(
