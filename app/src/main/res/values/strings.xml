@@ -3,21 +3,16 @@
 
     <string-array name="litmusTests">
         <item>kernel_test</item>
+        <item>kernel_test_non</item>
         <item>vect_add</item>
-        <item>2+2-write</item>
-        <item>atom</item>
+        <item>vect_add_non</item>
         <item>corr</item>
         <item>corr4</item>
         <item>corw1</item>
-        <item>corw2</item>
-        <item>cowr</item>
-        <item>env</item>
         <item>iriw</item>
         <item>isa2</item>
         <item>load_buffer</item>
         <item>message_passing</item>
-        <item>read</item>
         <item>store_buffer</item>
-        <item>store</item>
     </string-array>
 </resources>

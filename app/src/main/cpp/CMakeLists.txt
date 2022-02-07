@@ -25,9 +25,9 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
              main.cpp easyvk/easyvk.cpp)
 
-add_library(OpenCL SHARED IMPORTED)
-set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/opencl/lib/${ANDROID_ABI}/libOpenCL.so)
+#add_library(OpenCL SHARED IMPORTED)
+#set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION
+       # ${CMAKE_SOURCE_DIR}/opencl/lib/${ANDROID_ABI}/libOpenCL.so)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -40,7 +40,8 @@ find_library( # Sets the name of the path variable.
 
               # Specifies the name of the NDK library that
               # you want CMake to locate.
-              log OpenCL)
+              log #OpenCL)
+        )
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
@@ -51,5 +52,5 @@ target_link_libraries( # Specifies the target library.
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} vulkan OpenCL)
-
+                       ${log-lib} vulkan #OpenCL)
+        )

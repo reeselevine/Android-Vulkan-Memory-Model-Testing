@@ -19,7 +19,6 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
     String litmusTestName[];
     Context context;
     MainActivity mainActivity;
-    Integer testExists[] = {1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0};
 
     public LitmusTestAdapter(Context ct, String testNames[], MainActivity mainAct) {
         litmusTestName = testNames;
@@ -40,11 +39,6 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
         String currentTestName = litmusTestName[position];
 
         holder.testName.setText(currentTestName);
-
-        if(testExists[position] == 0) { // If test doesn't exist, disable
-            holder.startButton.setEnabled(false);
-            holder.startButton.setBackgroundColor(Color.GRAY);
-        }
 
         holder.startButton.setOnClickListener(new View.OnClickListener() { // Start Test
             public void onClick (View v) {
