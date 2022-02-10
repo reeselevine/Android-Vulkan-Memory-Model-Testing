@@ -17,7 +17,7 @@ namespace vect_add {
     const int size = 4;
 
     constexpr char *TAG = "MainActivityVectAdd";
-    constexpr char *FILE_NAME = "vect_add.spv";
+    constexpr char *SHADER_NAME = "vect_add.spv";
     constexpr char *OUTPUT_NAME = "vect_add_output.txt";
 
     jint runTest(std::string filePath) {
@@ -48,7 +48,7 @@ namespace vect_add {
         }
 
         std::vector<easyvk::Buffer> bufs = {a, b, c};
-        std::string testFilePath = filePath + "/" + FILE_NAME;
+        std::string testFilePath = filePath + "/" + SHADER_NAME;
         const char *testFile = testFilePath.c_str();
 
         auto program = easyvk::Program(device, testFile, bufs);

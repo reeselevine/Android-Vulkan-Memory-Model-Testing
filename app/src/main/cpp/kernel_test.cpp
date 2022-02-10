@@ -16,7 +16,7 @@ namespace kernel_test {
     const int size = 4;
 
     constexpr char *TAG = "MainActivityKernelTest";
-    constexpr char *FILE_NAME = "kernel_test.spv";
+    constexpr char *SHADER_NAME = "kernel_test.spv";
     constexpr char *OUTPUT_NAME = "kernel_test_output.txt";
 
     jint runTest(std::string filePath) {
@@ -36,7 +36,7 @@ namespace kernel_test {
         }
 
         std::vector<easyvk::Buffer> bufs = {a};
-        std::string testFilePath = filePath + "/" + FILE_NAME;
+        std::string testFilePath = filePath + "/" + SHADER_NAME;
         const char *testFile = testFilePath.c_str();
 
         auto program = easyvk::Program(device, testFile, bufs);

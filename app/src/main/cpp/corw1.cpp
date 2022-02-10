@@ -12,20 +12,24 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
+// Printing log tool for Android Studio's Logcat
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__))
+
+// The corw1 litmus test checks SC-per-location by ensuring a read and a write to the same address
+// cannot be re-ordered on one thread.
 
 namespace corw1 {
 
     using namespace std;
 
     constexpr char *TAG = "MainActivityCorw1";
-    constexpr char *FILE_NAME = "corw1.spv";
+    constexpr char *SHADER_NAME = "corw1.spv";
     constexpr char *OUTPUT_NAME = "corw1_output.txt";
 
     const int minWorkgroups = 4;
     const int maxWorkgroups = 36;
     const int minWorkgroupSize = 1;
-    const int maxWorkgroupSize = 64; // Q - 1024 or 64, A - 384
+    const int maxWorkgroupSize = 64;
     const int shufflePct = 100;
     const int barrierPct = 85;
     const int numMemLocations = 1;
@@ -44,7 +48,7 @@ namespace corw1 {
     const int gpuDeviceId = 7857;
     const char* testName = "corw1";
     const char* weakBehaviorStr = "r0: 1";
-    const int testIterations = 100; // 1000
+    const int testIterations = 100;
     int weakBehavior = 0;
     int nonWeakBehavior = 0;
     const int sampleInterval = 1000;
@@ -58,11 +62,15 @@ namespace corw1 {
     public:
         void run(ofstream &outputFile, string testFile) {
             outputFile << "Starting " << testName << " litmus test run \n";
-            auto instance = easyvk::Instance(false);
+
+            // Get instance and device
+            auto instance = easyvk::Instance(true);
             auto device = getDevice(&instance, outputFile);
+
             outputFile << "Weak behavior to watch for: " << weakBehaviorStr << "\n";
             outputFile << "Sampling output approximately every " << sampleInterval
                        << " iterations\n";
+
             // setup devices, memory, and parameters
             auto testData = easyvk::Buffer(device, testMemorySize);
             auto memLocations = easyvk::Buffer(device, numMemLocations);
@@ -74,12 +82,19 @@ namespace corw1 {
             auto stressParams = easyvk::Buffer(device, 7);
             std::vector<easyvk::Buffer> testBuffers = {testData, memLocations, results, shuffleIds, barrier, scratchpad, scratchLocations, stressParams};
 
+            // Start timer
             std::chrono::time_point<std::chrono::system_clock> start, end;
             start = std::chrono::system_clock::now();
+
+            // Run tests
             for (int i = 0; i < testIterations; i++) {
+                // Set up program with shader file
                 auto program = easyvk::Program(device, testFile.c_str(), testBuffers);
+
+                // Get number and size of work group
                 int numWorkgroups = setNumWorkgroups();
                 int workgroupSize = setWorkgroupSize();
+
                 clearMemory(testData, testMemorySize);
                 setMemLocations(memLocations);
                 clearMemory(results, numOutputs);
@@ -88,18 +103,28 @@ namespace corw1 {
                 clearMemory(scratchpad, scratchMemorySize);
                 setScratchLocations(scratchLocations, numWorkgroups);
                 setStressParams(stressParams);
+
                 program.setWorkgroups(numWorkgroups);
                 program.setWorkgroupSize(workgroupSize);
                 program.prepare();
                 program.run();
-                checkResult(testData, results, memLocations, outputFile, numWorkgroups, workgroupSize);
+
+                // Checking result
+                checkResult(testData, results, memLocations, outputFile);
+
+                // Destroy program
                 program.teardown();
             }
+            // End timer
             end = std::chrono::system_clock::now();
             std::chrono::duration<double> elapsed_seconds = end - start;
+
+            // Output time duration
             outputFile << "elapsed time: " << elapsed_seconds.count() << "s\n";
             outputFile << "iterations per second: " << testIterations / elapsed_seconds.count()
                        << " \n";
+
+            // Destroy buffer, device, and instance
             for (easyvk::Buffer buffer : testBuffers) {
                 buffer.teardown();
             }
@@ -107,6 +132,7 @@ namespace corw1 {
             instance.teardown();
         }
 
+        // Go through instance's available devices and determine which device to use
         easyvk::Device getDevice(easyvk::Instance* instance, ofstream &outputFile) {
             int idx = 0;
             if (gpuDeviceId != -1) {
@@ -125,16 +151,15 @@ namespace corw1 {
             return device;
         }
 
-        void checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations, ofstream &outputFile, int numWorkgroups, int workgroupSize) {
+        // Checks how many weak and non weak behaviors produced from test
+        void checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations, ofstream &outputFile) {
             if (rand() % sampleInterval == 1) {
                 outputFile << "r0: " << results.load(0) << "\n";
             }
-            if (results.load(0) == 1) {
+            if (results.load(0) == 1) { // instruction re-ordered, weak behavior
                 weakBehavior++;
-                //outputFile << "weak numWorkgroups: " << numWorkgroups << " workgroupSize: " << workgroupSize << "\n";
             } else {
                 nonWeakBehavior++;
-                //outputFile << "nonWeak numWorkgroups: " << numWorkgroups << " workgroupSize: " << workgroupSize << "\n";
             }
         }
 
@@ -220,6 +245,7 @@ namespace corw1 {
             }
         }
 
+        // Set random number of work group size
         int setWorkgroupSize() {
             if (minWorkgroupSize == maxWorkgroupSize) {
                 return minWorkgroupSize;
@@ -229,6 +255,7 @@ namespace corw1 {
             }
         }
 
+        // Set random number of work group
         int setNumWorkgroups() {
             if (minWorkgroups == maxWorkgroups) {
                 return minWorkgroups;
@@ -274,13 +301,20 @@ namespace corw1 {
         }
     };
 
+    /*
+     * Functions below this point are used for running litmus test on Android App
+     */
     jint runTest(std::string filePath) {
         srand (time(NULL));
         LitmusTester app;
+        // Get output file and shader file.
         std::ofstream outputFile(filePath + "/" + OUTPUT_NAME);
-        std::string testFile = filePath + "/" + FILE_NAME;
+        std::string testFile = filePath + "/" + SHADER_NAME;
+
+        // Run test
         try {
             app.run(outputFile, testFile);
+            // Get weak behavior and non weak behavior
             outputFile << "weak behavior: " << weakBehavior << "\n";
             outputFile << "non weak behavior: " << nonWeakBehavior << "\n";
         }
@@ -301,7 +335,6 @@ namespace corw1 {
         std::string filePath = getFileDirFromJava(env, obj);
 
         runTest(filePath);
-
         LOGD(
                 "%s/%s:\n%s",
                 filePath.c_str(),

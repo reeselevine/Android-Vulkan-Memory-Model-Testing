@@ -19,7 +19,7 @@ namespace corr {
     using namespace std;
 
     constexpr char *TAG = "MainActivityCorr";
-    constexpr char *FILE_NAME = "corr.spv";
+    constexpr char *SHADER_NAME = "corr.spv";
     constexpr char *OUTPUT_NAME = "corr_output.txt";
 
     const int minWorkgroups = 4;
@@ -273,7 +273,7 @@ namespace corr {
         srand (time(NULL));
         LitmusTester app;
         std::ofstream outputFile(filePath + "/" + OUTPUT_NAME);
-        std::string testFile = filePath + "/" + FILE_NAME;
+        std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
             outputFile << "weak behavior: " << weakBehavior << "\n";

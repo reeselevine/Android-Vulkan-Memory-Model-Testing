@@ -19,7 +19,7 @@ namespace message_passing {
     using namespace std;
 
     constexpr char *TAG = "MainActivityMessagePassing";
-    constexpr char *FILE_NAME = "message_passing.spv";
+    constexpr char *SHADER_NAME = "message_passing.spv";
     constexpr char *OUTPUT_NAME = "message_passing_output.txt";
 
     const int minWorkgroups = 4;
@@ -275,7 +275,7 @@ namespace message_passing {
         srand (time(NULL));
         LitmusTester app;
         std::ofstream outputFile(filePath + "/" + OUTPUT_NAME);
-        std::string testFile = filePath + "/" + FILE_NAME;
+        std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
             outputFile << "weak behavior: " << weakBehavior << "\n";

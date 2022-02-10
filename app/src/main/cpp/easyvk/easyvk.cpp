@@ -12,8 +12,10 @@
 
 bool printDeviceInfo = false;
 
+// Printing log tool for Android Studio's Logcat
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, "EASYVK", __VA_ARGS__))
 
+// Macro for checking Vulkan callbacks
 #define vulkanCheck(result) { vulkanAssert((result), __FILE__, __LINE__); }
 inline void vulkanAssert(VkResult result, const char *file, int line, bool abort = true){
 	if (result != VK_SUCCESS) {
@@ -36,9 +38,8 @@ namespace easyvk {
 		debugFile << "[Vulkan]:" << pLayerPrefix << ": " << pMessage << "\n";
 		debugFile.close();
 		LOGD("[Vulkan]: %s: %s\n", pLayerPrefix, pMessage);
-
-	return VK_FALSE;
-}
+	    return VK_FALSE;
+    }
 
 	Instance::Instance(bool _enableValidationLayers) {
 		enableValidationLayers = _enableValidationLayers;
@@ -51,6 +52,7 @@ namespace easyvk {
 			//enabledExtensions.push_back("VK_KHR_shader_non_semantic_info");
 		}
 
+		// Define app information
 		VkApplicationInfo appInfo {
 		    VK_STRUCTURE_TYPE_APPLICATION_INFO,
 		    nullptr,
@@ -61,7 +63,7 @@ namespace easyvk {
 		    VK_API_VERSION_1_1
 		};
 
-
+		// Define instance create info
 		VkInstanceCreateInfo createInfo {
             VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
             nullptr,
@@ -73,8 +75,8 @@ namespace easyvk {
             enabledExtensions.data()
         };
 
+		// Create instance
 		vulkanCheck(vkCreateInstance(&createInfo, nullptr, &instance));
-
 
 		if (enableValidationLayers) {
 			VkDebugReportCallbackCreateInfoEXT debugCreateInfo {
@@ -84,6 +86,7 @@ namespace easyvk {
 				| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
 				debugReporter
 			};
+			// Load debug report callback extension
 			auto createFN = PFN_vkCreateDebugReportCallbackEXT(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
 			if(createFN) {
 				LOGD("EASYVK createFN SUCCESSFUL");
@@ -101,6 +104,7 @@ namespace easyvk {
 		vkEnumerateInstanceExtensionProperties(nullptr, &count, extensions.data());
 		std::set<std::string> results;
 
+		// Save the extension list to text file
 		std::ofstream extensionFile("/data/data/com.example.litmustestandroid/files/extensions.txt");
 
 		for (auto& extension : extensions) {
@@ -122,12 +126,15 @@ namespace easyvk {
 	}
 
 	std::vector<easyvk::Device> Instance::devices() {
+	    // Get physical device count
 		uint32_t deviceCount = 0;
 		vulkanCheck(vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr));
 
+		// Enumerate physical devices based on deviceCount
 		std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
 		vulkanCheck(vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data()));
 
+		// Store devices in vector
 		auto devices = std::vector<easyvk::Device>{};
 		for (auto device : physicalDevices) {
 			devices.push_back(easyvk::Device(*this, device));
@@ -136,16 +143,19 @@ namespace easyvk {
 	}
 
 	void Instance::teardown() {
-		if (enableValidationLayers) {
+		// Destroy debug report callback extension
+	    if (enableValidationLayers) {
 			auto destroyFn = PFN_vkDestroyDebugReportCallbackEXT(vkGetInstanceProcAddr(instance,"vkDestroyDebugReportCallbackEXT"));
 			if (destroyFn) {
 				destroyFn(instance, debugReportCallback, nullptr);
 			}
 		}
+	    // Destroy instance
 		vkDestroyInstance(instance, nullptr);
 	}
 
 	uint32_t getComputeFamilyId(VkPhysicalDevice physicalDevice) {
+		// Get queue family count
 		uint32_t queueFamilyPropertyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertyCount, nullptr);
 
@@ -154,6 +164,8 @@ namespace easyvk {
 
 		uint32_t i = 0;
 		uint32_t computeFamilyId = -1;
+
+		// Get compute family id based on size of family properties
 		for (auto queueFamily : familyProperties) {
 			if (queueFamily.queueCount > 0 && (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
 				computeFamilyId = i;;
@@ -172,6 +184,7 @@ namespace easyvk {
 			auto priority = float(1.0);
 			auto queues = std::array<VkDeviceQueueCreateInfo, 1>{};
 
+			// Define device queue info
 			queues[0] = VkDeviceQueueCreateInfo {
 				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
 				nullptr,
@@ -181,6 +194,7 @@ namespace easyvk {
 				&priority
 			};
 
+			// Define device info
 			VkDeviceCreateInfo deviceCreateInfo{
 				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 				nullptr,
@@ -188,16 +202,22 @@ namespace easyvk {
 				1,
 				queues.data()
 			};
+
+			// Create device
 			vulkanCheck(vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device));
 
+			// Define command pool info
 			VkCommandPoolCreateInfo commandPoolCreateInfo {
 				VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 				nullptr,
 				VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
 				computeFamilyId
 			};
+
+			// Create command pool
 			vulkanCheck(vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &computePool));
 
+			// Define command buffer info
 			VkCommandBufferAllocateInfo commandBufferAI {
 				VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 				nullptr,
@@ -206,9 +226,11 @@ namespace easyvk {
 				1
 			};
 
+			// Allocate command buffers
 			vulkanCheck(vkAllocateCommandBuffers(device, &commandBufferAI, &computeCommandBuffer));
 		}
 
+	// Retrieve device properties
 	VkPhysicalDeviceProperties Device::properties() {
 		VkPhysicalDeviceProperties physicalDeviceProperties;
 		vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
@@ -232,6 +254,7 @@ namespace easyvk {
 		return uint32_t(-1);
 	}
 
+	// Get device queue
 	VkQueue Device::computeQueue() {
 		VkQueue queue;
 		vkGetDeviceQueue(device, computeFamilyId, 0, &queue);
@@ -239,11 +262,11 @@ namespace easyvk {
 	}
 
 	void Device::teardown() {
-		vulkanCheck(vkDeviceWaitIdle(device));
 		vkDestroyCommandPool(device, computePool, nullptr);
 		vkDestroyDevice(device, nullptr);
 	}
 
+	// Create new buffer
 	VkBuffer getNewBuffer(easyvk::Device &_device, uint32_t size) {
 		VkBuffer newBuffer;
 		vulkanCheck(vkCreateBuffer(_device.device, new VkBufferCreateInfo {
@@ -258,24 +281,25 @@ namespace easyvk {
 	Buffer::Buffer(easyvk::Device &_device, uint32_t size) :
 		device(_device),
 		buffer(getNewBuffer(_device, size))
-			{
-	            auto memId = _device.selectMemory(buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+		{
+            // Allocate and map memory to new buffer
+	        auto memId = _device.selectMemory(buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
-				VkMemoryRequirements memReqs;
-				vkGetBufferMemoryRequirements(device.device, buffer, &memReqs);
+            VkMemoryRequirements memReqs;
+            vkGetBufferMemoryRequirements(device.device, buffer, &memReqs);
 
-				vulkanCheck(vkAllocateMemory(_device.device, new VkMemoryAllocateInfo {
-				    VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-				    nullptr,
-				    memReqs.size,
-				    memId}, nullptr, &memory));
+            vulkanCheck(vkAllocateMemory(_device.device, new VkMemoryAllocateInfo {
+                VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+                nullptr,
+                memReqs.size,
+                memId}, nullptr, &memory));
 
-				vulkanCheck(vkBindBufferMemory(_device.device, buffer, memory, 0));
+            vulkanCheck(vkBindBufferMemory(_device.device, buffer, memory, 0));
 
-                void* newData = new void*;
-				vulkanCheck(vkMapMemory(_device.device, memory, 0, VK_WHOLE_SIZE, VkMemoryMapFlags {}, &newData));
-				data = (uint32_t*)newData;
-			}
+            void* newData = new void*;
+            vulkanCheck(vkMapMemory(_device.device, memory, 0, VK_WHOLE_SIZE, VkMemoryMapFlags {}, &newData));
+            data = (uint32_t*)newData;
+		}
 
 
 	void Buffer::teardown() {
@@ -284,6 +308,7 @@ namespace easyvk {
 		vkDestroyBuffer(device.device, buffer, nullptr);
 	}
 
+	// Read spv shader files
 	std::vector<uint32_t> read_spirv(const char* filename) {
 		auto fin = std::ifstream(filename, std::ios::binary | std::ios::ate);
 		if(!fin.is_open()){
@@ -301,6 +326,7 @@ namespace easyvk {
 	VkShaderModule initShaderModule(easyvk::Device& device, const char* filepath) {
 		std::vector<uint32_t> code = read_spirv(filepath);
 
+		// Create shader module with spv code
 		VkShaderModule shaderModule;
 		vulkanCheck(vkCreateShaderModule(device.device, new VkShaderModuleCreateInfo {
 			VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
@@ -314,6 +340,7 @@ namespace easyvk {
 
 	VkDescriptorSetLayout createDescriptorSetLayout(easyvk::Device &device, uint32_t size) {
 		std::vector<VkDescriptorSetLayoutBinding> layouts;
+		// Create descriptor set with binding
 		for (uint32_t i = 0; i < size; i++) {
 			layouts.push_back(VkDescriptorSetLayoutBinding {
 				i,
@@ -322,6 +349,7 @@ namespace easyvk {
 				VK_SHADER_STAGE_COMPUTE_BIT
 			});
 		}
+		// Define descriptor set layout info
 		VkDescriptorSetLayoutCreateInfo createInfo {
 			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 			nullptr,
@@ -334,13 +362,16 @@ namespace easyvk {
 		return descriptorSetLayout;
 	}
 
+	// This function brings descriptorSet, buffers, and bufferInfo to create writeDescriptorSets,
+	// which describes a descriptor set write operation
 	void writeSets(
 			VkDescriptorSet& descriptorSet,
 			std::vector<easyvk::Buffer> &buffers,
 			std::vector<VkWriteDescriptorSet>& writeDescriptorSets,
 			std::vector<VkDescriptorBufferInfo>& bufferInfos) {
 
-		for (int i = 0; i < buffers.size(); i++) {
+		// Define descriptor buffer info
+	    for (int i = 0; i < buffers.size(); i++) {
 			bufferInfos.push_back(VkDescriptorBufferInfo{
 				buffers[i].buffer,
 				0,
@@ -369,6 +400,7 @@ namespace easyvk {
 		VkSpecializationMapEntry specMap[1] = {VkSpecializationMapEntry{0, 0, sizeof(uint32_t)}};
 		uint32_t specMapContent[1] = {workgroupSize};
 		VkSpecializationInfo specInfo {1, specMap, sizeof(uint32_t), specMapContent};
+		// Define shader stage create info
 		VkPipelineShaderStageCreateInfo stageCI{
 			VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
 			nullptr,
@@ -377,6 +409,7 @@ namespace easyvk {
 			shaderModule,
 			"litmus_test",
 			&specInfo};
+		// Define compute pipeline create info
 		VkComputePipelineCreateInfo pipelineCI{
 			VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
 			nullptr,
@@ -385,22 +418,30 @@ namespace easyvk {
 			pipelineLayout
 		};
 
+		// Create compute pipelines
 		vulkanCheck(vkCreateComputePipelines(device.device, {}, 1, &pipelineCI, nullptr,  &pipeline));
 
+		// Start recording command buffer
 		vulkanCheck(vkBeginCommandBuffer(device.computeCommandBuffer, new VkCommandBufferBeginInfo {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO}));
 
+		// Bind pipeline and descriptor sets
 		vkCmdBindPipeline(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(device.computeCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
 						  pipelineLayout, 0, 1, &descriptorSet, 0, 0);
 
+		// Bind push constants
 		uint32_t *pValues;
 		vkCmdPushConstants(device.computeCommandBuffer, pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, device.properties().limits.maxPushConstantsSize, &pValues);
 
+		// Dispatch compute work items
 		vkCmdDispatch(device.computeCommandBuffer, numWorkgroups, 1, 1);
+
+		// End recording command buffer
 		vulkanCheck(vkEndCommandBuffer(device.computeCommandBuffer));
 	}
 
 	void Program::run() {
+	    // Define submit info
 		VkSubmitInfo submitInfo {
 			VK_STRUCTURE_TYPE_SUBMIT_INFO,
 			nullptr,
@@ -414,6 +455,8 @@ namespace easyvk {
 		};
 
 		auto queue = device.computeQueue();
+
+		// Submit command buffer to queue, then wait until queue comes back to idle state
 		vulkanCheck(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
 		vulkanCheck(vkQueueWaitIdle(queue));
 	}
@@ -432,6 +475,7 @@ namespace easyvk {
 		buffers(_buffers) {
 			descriptorSetLayout = createDescriptorSetLayout(device, buffers.size());
 
+			// Define pipeline layout info
 			VkPipelineLayoutCreateInfo createInfo {
 				VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 				nullptr,
@@ -454,13 +498,17 @@ namespace easyvk {
                                                                     device.properties().limits.maxComputeWorkGroupCount[2]);
 			}
 
+			// Create a new pipeline layout object
 			vulkanCheck(vkCreatePipelineLayout(device.device, &createInfo, nullptr, &pipelineLayout));
+
+			// Define descriptor pool size
 			VkDescriptorPoolSize poolSize {
 				VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
 				(uint32_t)buffers.size()
 			};
 			auto descriptorSizes = std::array<VkDescriptorPoolSize, 1>({poolSize});
 
+			// Create a new descriptor pool object
 			vulkanCheck(vkCreateDescriptorPool(device.device, new VkDescriptorPoolCreateInfo {
 				VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 				nullptr,
@@ -469,6 +517,7 @@ namespace easyvk {
 				uint32_t(descriptorSizes.size()),
 				descriptorSizes.data()}, nullptr, &descriptorPool));
 
+			// Allocate descriptor set
 			vulkanCheck(vkAllocateDescriptorSets(device.device, new VkDescriptorSetAllocateInfo {
 				VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
 				nullptr,
@@ -478,6 +527,7 @@ namespace easyvk {
 
 			writeSets(descriptorSet, buffers, writeDescriptorSets, bufferInfos);
 
+			// Update contents of descriptor set object
 			vkUpdateDescriptorSets(device.device, writeDescriptorSets.size(), &writeDescriptorSets.front(), 0,{});
 		}
 

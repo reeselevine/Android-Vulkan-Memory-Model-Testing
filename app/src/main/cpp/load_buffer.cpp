@@ -19,7 +19,7 @@ namespace load_buffer {
     using namespace std;
 
     constexpr char *TAG = "MainActivityLoadBuffer";
-    constexpr char *FILE_NAME = "load_buffer.spv";
+    constexpr char *SHADER_NAME = "load_buffer.spv";
     constexpr char *OUTPUT_NAME = "load_buffer_output.txt";
 
     const int minWorkgroups = 4;
@@ -276,7 +276,7 @@ namespace load_buffer {
         srand (time(NULL));
         LitmusTester app;
         std::ofstream outputFile(filePath + "/" + OUTPUT_NAME);
-        std::string testFile = filePath + "/" + FILE_NAME;
+        std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
             outputFile << "weak behavior: " << weakBehavior << "\n";

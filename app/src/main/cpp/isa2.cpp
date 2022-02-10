@@ -19,7 +19,7 @@ namespace isa2 {
     using namespace std;
 
     constexpr char *TAG = "MainActivityIsa2";
-    constexpr char *FILE_NAME = "isa2.spv";
+    constexpr char *SHADER_NAME = "isa2.spv";
     constexpr char *OUTPUT_NAME = "isa2_output.txt";
 
     const int minWorkgroups = 4;
@@ -275,7 +275,7 @@ namespace isa2 {
         srand (time(NULL));
         LitmusTester app;
         std::ofstream outputFile(filePath + "/" + OUTPUT_NAME);
-        std::string testFile = filePath + "/" + FILE_NAME;
+        std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
             outputFile << "weak behavior: " << weakBehavior << "\n";

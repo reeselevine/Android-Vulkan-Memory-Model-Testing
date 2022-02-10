@@ -19,7 +19,7 @@ namespace iriw {
     using namespace std;
 
     constexpr char *TAG = "MainActivityIriw";
-    constexpr char *FILE_NAME = "iriw.spv";
+    constexpr char *SHADER_NAME = "iriw.spv";
     constexpr char *OUTPUT_NAME = "iriw_output.txt";
 
     const int minWorkgroups = 4;
@@ -275,7 +275,7 @@ namespace iriw {
         srand (time(NULL));
         LitmusTester app;
         std::ofstream outputFile(filePath + "/" + OUTPUT_NAME);
-        std::string testFile = filePath + "/" + FILE_NAME;
+        std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
             outputFile << "weak behavior: " << weakBehavior << "\n";
