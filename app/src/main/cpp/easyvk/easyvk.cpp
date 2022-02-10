@@ -10,7 +10,7 @@
 #include <android/log.h>
 #include <set>
 
-bool printMaxPushconstantsSize = false;
+bool printDeviceInfo = false;
 
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, "EASYVK", __VA_ARGS__))
 
@@ -21,7 +21,7 @@ inline void vulkanAssert(VkResult result, const char *file, int line, bool abort
 		outputFile << "vulkanAssert: ERROR " << result << "\n" << file << "\nline: " << line;
 		outputFile.close();
 		LOGD("vulkanAssert: ERROR %d \n File: %s \n Line: %d", result, file, line);
-		assert(0);
+		exit(1);
 	}
 }
 
@@ -44,7 +44,6 @@ namespace easyvk {
 		enableValidationLayers = _enableValidationLayers;
 		std::vector<const char *> enabledLayers;
 		std::vector<const char *> enabledExtensions;
-		//enabledExtensions.push_back(VK_KHR_STORAGE_BUFFER_STORAGE_CLASS_EXTENSION_NAME);
 
 		if (enableValidationLayers) {
 			enabledLayers.push_back("VK_LAYER_KHRONOS_validation");
@@ -85,7 +84,6 @@ namespace easyvk {
 				| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
 				debugReporter
 			};
-			//vkCreateDebugReportCallbackEXT(instance, &debugCreateInfo, nullptr, &debugReportCallback);
 			auto createFN = PFN_vkCreateDebugReportCallbackEXT(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
 			if(createFN) {
 				LOGD("EASYVK createFN SUCCESSFUL");
@@ -96,6 +94,7 @@ namespace easyvk {
 			}
 		}
 
+		// List out device's enabled extensions
 		uint32_t count;
 		vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);
 		std::vector<VkExtensionProperties> extensions(count);
@@ -109,6 +108,7 @@ namespace easyvk {
 		}
 		extensionFile.close();
 
+		// Print out vulkan's instance version
 		uint32_t version;
 		PFN_vkEnumerateInstanceVersion my_EnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion)vkGetInstanceProcAddr(
 				VK_NULL_HANDLE, "vkEnumerateInstanceVersion");
@@ -396,15 +396,11 @@ namespace easyvk {
 		uint32_t *pValues;
 		vkCmdPushConstants(device.computeCommandBuffer, pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, device.properties().limits.maxPushConstantsSize, &pValues);
 
-		//LOGD("Test numWorkgroups: %d", numWorkgroups);
-        //LOGD("Test workgroupSize: %d", workgroupSize);
 		vkCmdDispatch(device.computeCommandBuffer, numWorkgroups, 1, 1);
 		vulkanCheck(vkEndCommandBuffer(device.computeCommandBuffer));
 	}
 
 	void Program::run() {
-        //vulkanCheck(vkCreateSemaphore(device.device, new VkSemaphoreCreateInfo {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO}, nullptr, &semaphore));
-
 		VkSubmitInfo submitInfo {
 			VK_STRUCTURE_TYPE_SUBMIT_INFO,
 			nullptr,
@@ -419,9 +415,7 @@ namespace easyvk {
 
 		auto queue = device.computeQueue();
 		vulkanCheck(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
-		//vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
 		vulkanCheck(vkQueueWaitIdle(queue));
-		//vkQueueWaitIdle(queue);
 	}
 
 	void Program::setWorkgroups(uint32_t _numWorkgroups) {
@@ -448,8 +442,9 @@ namespace easyvk {
 				new VkPushConstantRange {VK_SHADER_STAGE_COMPUTE_BIT, 0, device.properties().limits.maxPushConstantsSize}
 			};
 
-			if(!printMaxPushconstantsSize) {
-				printMaxPushconstantsSize = true;
+			// Print out device's properties information
+			if(!printDeviceInfo) {
+                printDeviceInfo = true;
 				LOGD("Device maxPushConstantsSize: %d", device.properties().limits.maxPushConstantsSize);
 				LOGD("Device maxComputeWorkGroupSize: %d, %d, %d", device.properties().limits.maxComputeWorkGroupSize[0],
                                                                    device.properties().limits.maxComputeWorkGroupSize[1],

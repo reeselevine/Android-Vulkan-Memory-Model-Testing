@@ -1,1 +1,0 @@
-/shared/clspv/build/bin/clspv --cl-std=CL2.0 --inline-entry-points kernel-test.cl -o kernel-test.spv

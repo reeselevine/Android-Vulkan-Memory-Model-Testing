@@ -42,15 +42,15 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION = 10;
     private static final String TAG = "MainActivity";
     private static final String TEST_NAME[] = {"corr", "corr4", "corw1", "iriw",
-                                               "isa2", "kernel_test", "kernel_test_non", "load_buffer",
-                                               "message_passing", "store_buffer", "vect_add", "vect_add_non"};
+                                               "isa2", "kernel_test", "load_buffer",
+                                               "message_passing", "store_buffer", "vect_add"};
     private static final int TEST_ID[] = {R.raw.corr, R.raw.corr4, R.raw.corw1, R.raw.iriw, R.raw.isa2,
-                                          R.raw.kernel_test, R.raw.kernel_test_non, R.raw.load_buffer, R.raw.message_passing,
-                                          R.raw.store_buffer, R.raw.vect_add, R.raw.vect_add_non};
+                                          R.raw.kernel_test, R.raw.load_buffer, R.raw.message_passing,
+                                          R.raw.store_buffer, R.raw.vect_add};
     private static final int OUTPUT_ID[] = {R.raw.corr_output, R.raw.corr4_output, R.raw.corw1,
-                                            R.raw.iriw_output, R.raw.isa2_output, R.raw.kernel_test_output, R.raw.kernel_test_non_output,
+                                            R.raw.iriw_output, R.raw.isa2_output, R.raw.kernel_test_output,
                                             R.raw.load_buffer_output, R.raw.message_passing_output,
-                                            R.raw.store_buffer_output, R.raw.vect_add_output, R.raw.vect_add_non_output};
+                                            R.raw.store_buffer_output, R.raw.vect_add_output};
 
     private Handler handler = new Handler();
 
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             displayLitmusTests();
-            //clvkMain();
         }
 
     }
@@ -80,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 displayLitmusTests();
-                //clvkMain();
             } else {
                 // User refused to grant permission.
             }
@@ -252,6 +250,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public native int main(String testName);
-
-    //public native int clvkMain();
 }

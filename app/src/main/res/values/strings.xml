@@ -3,9 +3,7 @@
 
     <string-array name="litmusTests">
         <item>kernel_test</item>
-        <item>kernel_test_non</item>
         <item>vect_add</item>
-        <item>vect_add_non</item>
         <item>corr</item>
         <item>corr4</item>
         <item>corw1</item>
