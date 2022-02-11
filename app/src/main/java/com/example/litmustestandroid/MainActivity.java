@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -55,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
                                             R.raw.store_buffer_output, R.raw.vect_add_output};
 
     private Handler handler = new Handler();
-    private float x1, x2, y1, y2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,23 +74,14 @@ public class MainActivity extends AppCompatActivity {
             displayLitmusTests();
         }
 
-    }
+        binding.testRunnerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, TestRunner.class);
+                startActivity(i);
+            }
+        });
 
-    public boolean onTouchEvent(MotionEvent touchEvent) {
-        Log.d(TAG, "touch downed");
-        switch(touchEvent.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                x1 = touchEvent.getX();
-                break;
-            case MotionEvent.ACTION_UP:
-                x2 = touchEvent.getX();
-                if(x1 > x2) {
-                    Intent i = new Intent(MainActivity.this, TestRunner.class);
-                    startActivity(i);
-                }
-                break;
-        }
-        return false;
     }
 
     @Override
