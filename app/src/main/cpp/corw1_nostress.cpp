@@ -35,12 +35,12 @@ namespace corw1_nostress {
     const int numOutputs = 1;
     const int memStride = 64;
     const int gpuDeviceId = 7857;
-    const char* testName = "corw1_nostress";
+    const char* testName = "corw1";
     const char* weakBehaviorStr = "r0: 1";
-    const int testIterations = 100;
+    const int testIterations = 1000;
     int weakBehavior = 0;
     int nonWeakBehavior = 0;
-    const int sampleInterval = 100;
+    const int sampleInterval = 1000;
 
     class LitmusTester {
 
@@ -60,7 +60,8 @@ namespace corw1_nostress {
             auto testData = easyvk::Buffer(device, testMemorySize);
             auto memLocations = easyvk::Buffer(device, numMemLocations);
             auto results = easyvk::Buffer(device, numOutputs);
-            std::vector<easyvk::Buffer> testBuffers = {testData, memLocations, results};
+            auto shuffleIds = easyvk::Buffer(device, maxWorkgroups*maxWorkgroupSize);
+            std::vector<easyvk::Buffer> testBuffers = {testData, memLocations, results, shuffleIds};
 
             // Start timer
             std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -78,6 +79,7 @@ namespace corw1_nostress {
                 clearMemory(testData, testMemorySize);
                 setMemLocations(memLocations);
                 clearMemory(results, numOutputs);
+                setShuffleIds(shuffleIds, numWorkgroups, workgroupSize);
 
                 program.setWorkgroups(numWorkgroups);
                 program.setWorkgroupSize(workgroupSize);
@@ -144,6 +146,13 @@ namespace corw1_nostress {
             }
         }
 
+        void setShuffleIds(easyvk::Buffer &ids, int numWorkgroups, int workgroupSize) {
+            // initialize identity mapping
+            for (int i = 0; i < numWorkgroups*workgroupSize; i++) {
+                ids.store(i, i);
+            }
+        }
+
         void setMemLocations(easyvk::Buffer &locations) {
             std::set<int> usedRegions;
             int numRegions = testMemorySize / memStride;
@@ -176,7 +185,6 @@ namespace corw1_nostress {
                 return minWorkgroups + size;
             }
         }
-
     };
 
     /*
