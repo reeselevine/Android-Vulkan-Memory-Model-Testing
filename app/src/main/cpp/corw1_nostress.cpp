@@ -35,7 +35,7 @@ namespace corw1_nostress {
     const int numOutputs = 1;
     const int memStride = 64;
     const int gpuDeviceId = 7857;
-    const char* testName = "corw1";
+    const char* testName = "corw1_nostress";
     const char* weakBehaviorStr = "r0: 1";
     const int testIterations = 1000;
     int weakBehavior = 0;
