@@ -60,8 +60,7 @@ namespace corw1_nostress {
             auto testData = easyvk::Buffer(device, testMemorySize);
             auto memLocations = easyvk::Buffer(device, numMemLocations);
             auto results = easyvk::Buffer(device, numOutputs);
-            auto shuffleIds = easyvk::Buffer(device, maxWorkgroups*maxWorkgroupSize);
-            std::vector<easyvk::Buffer> testBuffers = {testData, memLocations, results, shuffleIds};
+            std::vector<easyvk::Buffer> testBuffers = {testData, memLocations, results};
 
             // Start timer
             std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -79,7 +78,6 @@ namespace corw1_nostress {
                 clearMemory(testData, testMemorySize);
                 setMemLocations(memLocations);
                 clearMemory(results, numOutputs);
-                setShuffleIds(shuffleIds, numWorkgroups, workgroupSize);
 
                 program.setWorkgroups(numWorkgroups);
                 program.setWorkgroupSize(workgroupSize);
@@ -143,13 +141,6 @@ namespace corw1_nostress {
         void clearMemory(easyvk::Buffer &gpuMem, int size) {
             for (int i = 0; i < size; i++) {
                 gpuMem.store(i, 0);
-            }
-        }
-
-        void setShuffleIds(easyvk::Buffer &ids, int numWorkgroups, int workgroupSize) {
-            // initialize identity mapping
-            for (int i = 0; i < numWorkgroups*workgroupSize; i++) {
-                ids.store(i, i);
             }
         }
 
