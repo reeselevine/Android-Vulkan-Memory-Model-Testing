@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -41,18 +43,19 @@ public class MainActivity extends AppCompatActivity {
     private LitmusTestAdapter litmusTestAdapter;
     private static final int REQUEST_PERMISSION = 10;
     private static final String TAG = "MainActivity";
-    private static final String TEST_NAME[] = {"corr", "corr4", "corw1", "iriw",
+    private static final String TEST_NAME[] = {"corr", "corr4", "corw1", "corw1_nostress", "iriw",
                                                "isa2", "kernel_test", "load_buffer",
                                                "message_passing", "store_buffer", "vect_add"};
-    private static final int TEST_ID[] = {R.raw.corr, R.raw.corr4, R.raw.corw1, R.raw.iriw, R.raw.isa2,
+    private static final int TEST_ID[] = {R.raw.corr, R.raw.corr4, R.raw.corw1, R.raw.corw1_nostress, R.raw.iriw, R.raw.isa2,
                                           R.raw.kernel_test, R.raw.load_buffer, R.raw.message_passing,
                                           R.raw.store_buffer, R.raw.vect_add};
-    private static final int OUTPUT_ID[] = {R.raw.corr_output, R.raw.corr4_output, R.raw.corw1,
+    private static final int OUTPUT_ID[] = {R.raw.corr_output, R.raw.corr4_output, R.raw.corw1_output, R.raw.corw1_nostress_output,
                                             R.raw.iriw_output, R.raw.isa2_output, R.raw.kernel_test_output,
                                             R.raw.load_buffer_output, R.raw.message_passing_output,
                                             R.raw.store_buffer_output, R.raw.vect_add_output};
 
     private Handler handler = new Handler();
+    private float x1, x2, y1, y2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,23 @@ public class MainActivity extends AppCompatActivity {
             displayLitmusTests();
         }
 
+    }
+
+    public boolean onTouchEvent(MotionEvent touchEvent) {
+        Log.d(TAG, "touch downed");
+        switch(touchEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                x1 = touchEvent.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                x2 = touchEvent.getX();
+                if(x1 > x2) {
+                    Intent i = new Intent(MainActivity.this, TestRunner.class);
+                    startActivity(i);
+                }
+                break;
+        }
+        return false;
     }
 
     @Override

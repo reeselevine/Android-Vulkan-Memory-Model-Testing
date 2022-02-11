@@ -6,6 +6,7 @@
 #include "corr.cpp"
 #include "corr4.cpp"
 #include "corw1.cpp"
+#include "corw1_nostress.cpp"
 #include "iriw.cpp"
 #include "isa2.cpp"
 #include "kernel_test.cpp"
@@ -29,6 +30,9 @@ void runLitmusTest(JNIEnv* env, jobject obj, std::string testName) {
     }
     else if (testName == "corw1") {
         corw1::readFileFromResRaw(env, obj);
+    }
+    else if (testName == "corw1_nostress") {
+        corw1_nostress::readFileFromResRaw(env, obj);
     }
     else if (testName == "iriw") {
         iriw::readFileFromResRaw(env, obj);

@@ -18,35 +18,24 @@
 // The corw1 litmus test checks SC-per-location by ensuring a read and a write to the same address
 // cannot be re-ordered on one thread.
 
-namespace corw1 {
+namespace corw1_nostress {
 
     using namespace std;
 
-    constexpr char *TAG = "MainActivityCorw1";
-    constexpr char *SHADER_NAME = "corw1.spv";
-    constexpr char *OUTPUT_NAME = "corw1_output.txt";
+    constexpr char *TAG = "MainActivityCorw1NoStress";
+    constexpr char *SHADER_NAME = "corw1_nostress.spv";
+    constexpr char *OUTPUT_NAME = "corw1_nostress_output.txt";
 
     const int minWorkgroups = 4;
     const int maxWorkgroups = 36;
     const int minWorkgroupSize = 1;
     const int maxWorkgroupSize = 64;
-    const int shufflePct = 100;
-    const int barrierPct = 85;
     const int numMemLocations = 1;
     const int testMemorySize = 1024;
     const int numOutputs = 1;
-    const int scratchMemorySize = 4096;
     const int memStride = 64;
-    const int memStressPct = 100;
-    const int memStressIterations = 1000;
-    const int memStressPattern = 1;
-    const int preStressPct = 100;
-    const int preStressIterations = 100;
-    const int preStressPattern = 3;
-    const int stressLineSize = 256;
-    const int stressTargetLines = 2;
     const int gpuDeviceId = 7857;
-    const char* testName = "corw1";
+    const char* testName = "corw1_nostress";
     const char* weakBehaviorStr = "r0: 1";
     const int testIterations = 100;
     int weakBehavior = 0;
@@ -54,10 +43,6 @@ namespace corw1 {
     const int sampleInterval = 100;
 
     class LitmusTester {
-
-    private:
-        typedef enum StressAssignmentStrategy {ROUND_ROBIN, CHUNKING} StressAssignmentStrategy;
-        StressAssignmentStrategy stressAssignmentStrategy = ROUND_ROBIN;
 
     public:
         void run(ofstream &outputFile, string testFile) {
@@ -75,12 +60,7 @@ namespace corw1 {
             auto testData = easyvk::Buffer(device, testMemorySize);
             auto memLocations = easyvk::Buffer(device, numMemLocations);
             auto results = easyvk::Buffer(device, numOutputs);
-            auto shuffleIds = easyvk::Buffer(device, maxWorkgroups*maxWorkgroupSize);
-            auto barrier = easyvk::Buffer(device, 1);
-            auto scratchpad = easyvk::Buffer(device, scratchMemorySize);
-            auto scratchLocations = easyvk::Buffer(device, maxWorkgroups);
-            auto stressParams = easyvk::Buffer(device, 7);
-            std::vector<easyvk::Buffer> testBuffers = {testData, memLocations, results, shuffleIds, barrier, scratchpad, scratchLocations, stressParams};
+            std::vector<easyvk::Buffer> testBuffers = {testData, memLocations, results};
 
             // Start timer
             std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -98,11 +78,6 @@ namespace corw1 {
                 clearMemory(testData, testMemorySize);
                 setMemLocations(memLocations);
                 clearMemory(results, numOutputs);
-                setShuffleIds(shuffleIds, numWorkgroups, workgroupSize);
-                clearMemory(barrier, 1);
-                clearMemory(scratchpad, scratchMemorySize);
-                setScratchLocations(scratchLocations, numWorkgroups);
-                setStressParams(stressParams);
 
                 program.setWorkgroups(numWorkgroups);
                 program.setWorkgroupSize(workgroupSize);
@@ -169,37 +144,6 @@ namespace corw1 {
             }
         }
 
-        void setShuffleIds(easyvk::Buffer &ids, int numWorkgroups, int workgroupSize) {
-            // initialize identity mapping
-            for (int i = 0; i < numWorkgroups*workgroupSize; i++) {
-                ids.store(i, i);
-            }
-            if (percentageCheck(shufflePct)) {
-                // shuffle workgroups
-                for (int i = numWorkgroups - 1; i >= 0; i--) {
-                    int x = rand() % (i + 1);
-                    if (workgroupSize > 1) {
-                        // swap and shuffle invocations within a workgroup
-                        for (int j = 0; j < workgroupSize; j++) {
-                            uint32_t temp = ids.load(i*workgroupSize + j);
-                            ids.store(i*workgroupSize + j, ids.load(x*workgroupSize + j));;
-                            ids.store(x*workgroupSize + j, temp);
-                        }
-                        for (int j = workgroupSize - 1; j > 0; j--) {
-                            int y = rand() % (j + 1);
-                            uint32_t temp = ids.load(i * workgroupSize + y);
-                            ids.store(i * workgroupSize + y, ids.load(i * workgroupSize + j));
-                            ids.store(i * workgroupSize + j, temp);
-                        }
-                    } else {
-                        uint32_t temp = ids.load(i);
-                        ids.store(i, ids.load(x));
-                        ids.store(x, temp);
-                    }
-                }
-            }
-        }
-
         void setMemLocations(easyvk::Buffer &locations) {
             std::set<int> usedRegions;
             int numRegions = testMemorySize / memStride;
@@ -210,38 +154,6 @@ namespace corw1 {
                 int locInRegion = rand() % (memStride);
                 locations.store(i, (region * memStride) + locInRegion);
                 usedRegions.insert(region);
-            }
-        }
-
-        /** Sets the stress regions and the location in each region to be stressed. Uses the stress assignment strategy to assign
-         * workgroups to specific stress locations.
-         */
-        void setScratchLocations(easyvk::Buffer &locations, int numWorkgroups) {
-            std::set <int> usedRegions;
-            int numRegions = scratchMemorySize / stressLineSize;
-            for (int i = 0; i < stressTargetLines; i++) {
-                int region = rand() % numRegions;
-                while(usedRegions.count(region))
-                    region = rand() % numRegions;
-                int locInRegion = rand() % (stressLineSize);
-                switch (stressAssignmentStrategy) {
-                    case ROUND_ROBIN:
-                        for (int j = i; j < numWorkgroups; j += stressTargetLines) {
-                            locations.store(j, (region * stressLineSize) + locInRegion);
-                        }
-                        break;
-                    case CHUNKING:
-                        int workgroupsPerLocation = numWorkgroups/stressTargetLines;
-                        for (int j = 0; j < workgroupsPerLocation; j++) {
-                            locations.store(i*workgroupsPerLocation + j, (region * stressLineSize) + locInRegion);
-                        }
-                        if (i == stressTargetLines - 1 && numWorkgroups % stressTargetLines != 0) {
-                            for (int j = 0; j < numWorkgroups % stressTargetLines; j++) {
-                                locations.store(numWorkgroups - j - 1, (region * stressLineSize) + locInRegion);
-                            }
-                        }
-                        break;
-                }
             }
         }
 
@@ -265,40 +177,6 @@ namespace corw1 {
             }
         }
 
-        /**
-         * 0: barrier
-         * 1: memory stress
-         * 2: memory stress iterations
-         * 3: memory stress pattern
-         * 4: pre-stress
-         * 5: pre-stress iterations
-         * 6: pre-stress pattern
-         */
-        void setStressParams(easyvk::Buffer &params) {
-            if (percentageCheck(barrierPct)) {
-                params.store(0, 1);
-            } else {
-                params.store(0, 0);
-            }
-            if (percentageCheck(memStressPct)) {
-                params.store(1, 1);
-            } else {
-                params.store(1, 0);
-            }
-            params.store(2, memStressIterations);
-            params.store(3, memStressPattern);
-            if (percentageCheck(preStressPct)) {
-                params.store(4, 1);
-            } else {
-                params.store(4, 0);
-            }
-            params.store(5, preStressIterations);
-            params.store(6, preStressPattern);
-        }
-
-        bool percentageCheck(int percentage) {
-            return rand() % 100 < percentage;
-        }
     };
 
     /*

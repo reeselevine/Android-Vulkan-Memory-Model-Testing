@@ -3,38 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".TestRunner">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <!--androidx.recyclerview.widget.RecyclerView
             android:id="@+id/litmusTestRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp" /-->
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="7"
-            android:layout_margin="10dp"
-            android:backgroundTint="@color/lightgray"
-            android:text="Test Runner"
-            android:textColor="@color/black"
-            android:textStyle="bold">
-
-        </Button>
-        <!--TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hello World!">
 
-        </TextView-->
-
-
+        </TextView>
     </LinearLayout>
+
 </RelativeLayout>
