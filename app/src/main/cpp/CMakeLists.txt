@@ -15,13 +15,15 @@ project("litmustestandroid")
 # Gradle automatically packages shared libraries with your APK.
 
 add_library( # Sets the name of the library.
-             main-lib
+             litmusTest-main-lib
 
              # Sets the library as a shared library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             main.cpp easyvk/easyvk.cpp)
+             litmusTest/main.cpp easyvk/easyvk.cpp)
+
+add_library(testRunner-main-lib SHARED parallelTest/test_runner.cpp easyvk/easyvk.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -41,8 +43,10 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-                       main-lib
+                        litmusTest-main-lib
 
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib} vulkan)
+
+target_link_libraries(testRunner-main-lib ${log-lib} vulkan)

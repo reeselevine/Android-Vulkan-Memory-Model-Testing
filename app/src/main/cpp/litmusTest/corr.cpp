@@ -1,26 +1,26 @@
-#include <jni.h>
-#include <string>
-#include <stdlib.h>
-#include <vector>
-#include <thread>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <set>
-#include <chrono>
-#include <android/log.h>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/jni.h"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/string"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/stdlib.h"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/vector"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/thread"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/iostream"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/fstream"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/sstream"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/set"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/chrono"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/asset_manager.h"
+#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/asset_manager_jni.h"
 
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__))
 
-namespace message_passing {
+namespace corr {
 
     using namespace std;
 
-    constexpr char *TAG = "MainActivityMessagePassing";
-    constexpr char *SHADER_NAME = "message_passing.spv";
-    constexpr char *OUTPUT_NAME = "message_passing_output.txt";
+    constexpr char *TAG = "MainActivityCorr";
+    constexpr char *SHADER_NAME = "corr.spv";
+    constexpr char *OUTPUT_NAME = "corr_output.txt";
 
     const int minWorkgroups = 4;
     const int maxWorkgroups = 36;
@@ -42,7 +42,7 @@ namespace message_passing {
     const int stressLineSize = 256;
     const int stressTargetLines = 2;
     const int gpuDeviceId = 7857;
-    const char* testName = "message-passing";
+    const char* testName = "corr";
     const char* weakBehaviorStr = "r0: 1, r1: 0";
     const int testIterations = 1000;
     int weakBehavior = 0;
@@ -56,13 +56,12 @@ namespace message_passing {
         StressAssignmentStrategy stressAssignmentStrategy = ROUND_ROBIN;
 
     public:
-        void run(ofstream &outputFile, string testFile) {
+        void run(ofstream& outputFile, string testFile) {
             outputFile << "Starting " << testName << " litmus test run \n";
             auto instance = easyvk::Instance(true);
             auto device = getDevice(&instance, outputFile);
             outputFile << "Weak behavior to watch for: " << weakBehaviorStr << "\n";
-            outputFile << "Sampling output approximately every " << sampleInterval
-                       << " iterations\n";
+            outputFile << "Sampling output approximately every " << sampleInterval << " iterations\n";
             // setup devices, memory, and parameters
             auto testData = easyvk::Buffer(device, testMemorySize);
             auto memLocations = easyvk::Buffer(device, numMemLocations);
@@ -98,8 +97,7 @@ namespace message_passing {
             end = std::chrono::system_clock::now();
             std::chrono::duration<double> elapsed_seconds = end - start;
             outputFile << "elapsed time: " << elapsed_seconds.count() << "s\n";
-            outputFile << "iterations per second: " << testIterations / elapsed_seconds.count()
-                       << " \n";
+            outputFile << "iterations per second: " << testIterations / elapsed_seconds.count() << " \n";
             for (easyvk::Buffer buffer : testBuffers) {
                 buffer.teardown();
             }
@@ -107,7 +105,7 @@ namespace message_passing {
             instance.teardown();
         }
 
-        easyvk::Device getDevice(easyvk::Instance* instance, ofstream &outputFile) {
+        easyvk::Device getDevice(easyvk::Instance* instance, ofstream& outputFile) {
             int idx = 0;
             if (gpuDeviceId != -1) {
                 int j = 0;
@@ -124,7 +122,7 @@ namespace message_passing {
             return device;
         }
 
-        void checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations, ofstream &outputFile) {
+        void checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations, ofstream& outputFile) {
             if (rand() % sampleInterval == 1) {
                 outputFile << "r0: " << results.load(0) << ", r1: " << results.load(1) << "\n";
             }
@@ -324,4 +322,5 @@ namespace message_passing {
 
         return ss.str();
     }
+
 }

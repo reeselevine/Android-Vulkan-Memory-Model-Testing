@@ -2,7 +2,7 @@
 #include <string>
 #include <stdlib.h>
 #include <vector>
-#include "easyvk/easyvk.h"
+#include "../easyvk/easyvk.h"
 #include "corr.cpp"
 #include "corr4.cpp"
 #include "corw1.cpp"

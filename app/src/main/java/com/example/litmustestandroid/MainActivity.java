@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Used to load the 'native-lib' library on application startup.
     static {
-        System.loadLibrary("main-lib");
+        System.loadLibrary("litmusTest-main-lib");
     }
 
     private ActivityMainBinding binding;
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        initFileConfig(true);
+        initFileConfig();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -104,36 +104,18 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private void initFileConfig(boolean forceCopy) {
+    private void initFileConfig() {
         for(int i = 0; i < TEST_NAME.length; i++) {
             String fileName = TEST_NAME[i] + ".spv";
             String outputName = TEST_NAME[i] + "_output.txt";
 
-            if (existsInFilesDir(fileName) && !forceCopy) {
-                Log.d(TAG, "File: " + fileName + " already exists in " + getFilesDir().toString());
-            }
-            else {
-                copyFile(TEST_ID[i], fileName);
-                Log.d(TAG, "File: " + fileName + " copied to " + getFilesDir().toString());
-            }
-
-            if (existsInFilesDir(outputName) && !forceCopy) {
-                Log.d(TAG, "File: " + outputName + " already exists in " + getFilesDir().toString());
-            }
-            else {
-                copyFile(OUTPUT_ID[i], outputName);
-                Log.d(TAG, "File: " + outputName + " copied to " + getFilesDir().toString());
-            }
-
+            copyFile(TEST_ID[i], fileName);
+            Log.d(TAG, "File: " + fileName + " copied to " + getFilesDir().toString());
+            copyFile(OUTPUT_ID[i], outputName);
+            Log.d(TAG, "File: " + outputName + " copied to " + getFilesDir().toString());
         }
-
-        if (existsInFilesDir("debug.txt") && !forceCopy) {
-            Log.d(TAG, "File: debug.txt already exists in " + getFilesDir().toString());
-        }
-        else {
-            copyFile(R.raw.debug, "debug.txt");
-            Log.d(TAG, "File: debug.txt copied to " + getFilesDir().toString());
-        }
+        copyFile(R.raw.debug, "debug.txt");
+        Log.d(TAG, "File: debug.txt copied to " + getFilesDir().toString());
     }
 
     private void copyFile(int fromResId, String toFile) {
