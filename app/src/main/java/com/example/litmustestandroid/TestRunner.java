@@ -56,14 +56,6 @@ public class TestRunner extends AppCompatActivity {
         displayLitmusTests();
     }
 
-    private boolean existsInFilesDir(String fileName) {
-        File file = new File(getFilesDir(), fileName);
-
-        if(file.exists()) return true;
-
-        return false;
-    }
-
     private void copyFile(int fromResId, String toFile) {
         InputStream is =  getResources().openRawResource(fromResId);
         byte[] buffer = new byte[4096];
@@ -128,7 +120,7 @@ public class TestRunner extends AppCompatActivity {
         testRunnerRV.setLayoutManager(new LinearLayoutManager(this));
 
         String[] testArray = {"parallel_message_passing", "parallel_message_passing",
-                            "parallel_message_passing_results", "parallel_basic_parameters"};
+                            "parallel_message_passing_results", "parallel_stress_parameters"};
         main(testArray);
     }
 

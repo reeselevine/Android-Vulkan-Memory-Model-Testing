@@ -82,9 +82,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Intent i = new Intent(MainActivity.this, TestRunner.class);
-        startActivity(i);
-
     }
 
     @Override
@@ -97,14 +94,6 @@ public class MainActivity extends AppCompatActivity {
                 // User refused to grant permission.
             }
         }
-    }
-
-    private boolean existsInFilesDir(String fileName) {
-        File file = new File(getFilesDir(), fileName);
-
-        if(file.exists()) return true;
-
-        return false;
     }
 
     private void initFileConfig() {

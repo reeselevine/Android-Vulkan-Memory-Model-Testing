@@ -7,9 +7,6 @@ __kernel void litmus_test(
     if (get_global_id(0) == 0) {
       results[1] = 22;
     }
-    else {
-        results[1] = get_global_id(0);
-    }
   /*if (shuffled_ids[get_global_id(0)] == 0) {
     //uint r0 = atomic_load_explicit(&test_data[x], memory_order_relaxed);
     //atomic_store_explicit(&test_data[x], 1, memory_order_relaxed);

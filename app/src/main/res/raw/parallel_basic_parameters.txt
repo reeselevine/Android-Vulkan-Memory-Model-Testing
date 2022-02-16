@@ -1,7 +1,7 @@
-testIterations=100
+testIterations=10
 testingWorkgroups=2
-maxWorkgroups=4
-minWorkgroupSize=64
+maxWorkgroups=36
+minWorkgroupSize=1
 maxWorkgroupSize=64
 shufflePct=0
 barrierPct=0

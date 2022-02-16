@@ -41,7 +41,7 @@ namespace easyvk {
 		debugFile.close();
 		LOGD("[Vulkan]: %s: %s\n", pLayerPrefix, pMessage);
 	    return VK_FALSE;
-    }
+    	}
 
 	Instance::Instance(bool _enableValidationLayers) {
 		enableValidationLayers = _enableValidationLayers;
@@ -116,8 +116,7 @@ namespace easyvk {
 
 		// Print out vulkan's instance version
 		uint32_t version;
-		PFN_vkEnumerateInstanceVersion my_EnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion)vkGetInstanceProcAddr(
-				VK_NULL_HANDLE, "vkEnumerateInstanceVersion");
+		PFN_vkEnumerateInstanceVersion my_EnumerateInstanceVersion = (PFN_vkEnumerateInstanceVersion)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceVersion");
 		if (nullptr != my_EnumerateInstanceVersion) {
 			my_EnumerateInstanceVersion(&version);
 			LOGD("Vulkan Version: %d.%d.%d\n", VK_VERSION_MAJOR(version), VK_VERSION_MINOR(version), VK_VERSION_PATCH(version));
@@ -264,7 +263,7 @@ namespace easyvk {
 	}
 
 	void Device::teardown() {
-		vkDestroyCommandPool(device, computePool, nullptr);
+	    vkDestroyCommandPool(device, computePool, nullptr);
 		vkDestroyDevice(device, nullptr);
 	}
 
@@ -435,11 +434,14 @@ namespace easyvk {
 		uint32_t *pValues;
 		vkCmdPushConstants(device.computeCommandBuffer, pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, device.properties().limits.maxPushConstantsSize, &pValues);
 
+        vkCmdPipelineBarrier(device.computeCommandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0,
+                             1, new VkMemoryBarrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT}, 0, {}, 0, {});
+
 		// Dispatch compute work items
 		vkCmdDispatch(device.computeCommandBuffer, numWorkgroups, 1, 1);
 
-		//vkCmdPipelineBarrier(device.computeCommandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_NULL_HANDLE,
-							 //1, new VkMemoryBarrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT}, 0, {}, 0, {});
+		//vkCmdPipelineBarrier(device.computeCommandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0,
+							//1, new VkMemoryBarrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT}, 0, {}, 0, {});
 
 		// End recording command buffer
 		vulkanCheck(vkEndCommandBuffer(device.computeCommandBuffer));
@@ -456,7 +458,7 @@ namespace easyvk {
 			1,
 			&device.computeCommandBuffer,
 			0,
-			nullptr
+            nullptr
 		};
 
 		auto queue = device.computeQueue();

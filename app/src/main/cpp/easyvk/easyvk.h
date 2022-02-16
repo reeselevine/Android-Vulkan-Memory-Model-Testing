@@ -70,7 +70,6 @@ namespace easyvk {
 			VkDescriptorSetLayout descriptorSetLayout;
 			VkDescriptorPool descriptorPool;
 			VkDescriptorSet descriptorSet;
-			VkSemaphore semaphore;
 			std::vector<VkWriteDescriptorSet> writeDescriptorSets;
 			std::vector<VkDescriptorBufferInfo> bufferInfos;
 			VkPipelineLayout pipelineLayout;

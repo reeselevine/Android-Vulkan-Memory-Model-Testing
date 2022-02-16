@@ -137,9 +137,7 @@ namespace corw1_nostress {
                 //outputFile << "Memory: " << memLocations.load(0) << "\n";
                 weakBehavior++;
             } else {
-                if(results.load(0) == 0) {
-                    outputFile << results.load(0) << "," << results.load(1) << " ";
-                }
+                outputFile << results.load(0) << "," << results.load(1) << " ";
                 nonWeakBehavior++;
             }
         }
