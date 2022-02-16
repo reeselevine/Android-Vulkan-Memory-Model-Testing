@@ -438,6 +438,9 @@ namespace easyvk {
 		// Dispatch compute work items
 		vkCmdDispatch(device.computeCommandBuffer, numWorkgroups, 1, 1);
 
+		//vkCmdPipelineBarrier(device.computeCommandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_NULL_HANDLE,
+							 //1, new VkMemoryBarrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT}, 0, {}, 0, {});
+
 		// End recording command buffer
 		vulkanCheck(vkEndCommandBuffer(device.computeCommandBuffer));
 	}

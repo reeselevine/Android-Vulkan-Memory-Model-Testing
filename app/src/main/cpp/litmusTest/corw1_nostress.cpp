@@ -37,10 +37,10 @@ namespace corw1_nostress {
     const int gpuDeviceId = 7857;
     const char* testName = "corw1_nostress";
     const char* weakBehaviorStr = "r0: 1";
-    const int testIterations = 10;
+    const int testIterations = 100;
     int weakBehavior = 0;
     int nonWeakBehavior = 0;
-    const int sampleInterval = 10;
+    const int sampleInterval = 100;
 
     class LitmusTester {
 
