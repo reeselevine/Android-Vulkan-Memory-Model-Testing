@@ -1,6 +1,5 @@
 package com.example.litmustestandroid;
 
-import android.Manifest;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -30,7 +29,7 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
     @Override
     public LitmusTestViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.recylerview_layout, parent, false);
+        View view = inflater.inflate(R.layout.main_recylerview_layout, parent, false);
         return new LitmusTestViewHolder(view);
     }
 

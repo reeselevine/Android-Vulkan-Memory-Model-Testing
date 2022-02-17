@@ -5,6 +5,11 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19635416666666666" />
         <entry key="app/src/main/res/layout/activity_testrunner.xml" value="0.19635416666666666" />
+        <entry key="app/src/main/res/layout/parallel_test_option.xml" value="0.28072916666666664" />
+        <entry key="app/src/main/res/layout/recylerview_layout.xml" value="0.28072916666666664" />
+        <entry key="app/src/main/res/layout/result_dialog_layout.xml" value="0.28072916666666664" />
+        <entry key="app/src/main/res/layout/testrunner_recylerview_layout.xml" value="0.28072916666666664" />
+        <entry key="app/src/main/res/layout/toolbar.xml" value="0.28072916666666664" />
       </map>
     </option>
   </component>

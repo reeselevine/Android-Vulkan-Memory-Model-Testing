@@ -4,12 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.litmustestandroid.databinding.ActivityTestrunnerBinding;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,6 +32,15 @@ public class TestRunner extends AppCompatActivity {
     private ActivityTestrunnerBinding binding;
     private RecyclerView testRunnerRV;
     private TestRunnerAdapter testRunnerAdapter;
+
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog optionDialog;
+    private TextView optionTestName;
+    private EditText testIteration, testingWorkgroups, maxWorkgroups, minWorkgroupSize, maxWorkgroupSize,
+                     shufflePct, barrierPct, scratchMemorySize, memStride, memStressPct, memStressIterations, memStressPattern,
+                     preStressPct, preStressIterations, preStressPattern, stressLineSize, stressTargetLines, stressAssignmentStrategy,
+                     permuteFirst, permuteSecond;
+    private Button startButton, closeButton;
 
     private static final String TAG = "TestRunner";
     private static final String TEST_NAME[] = {"parallel_message_passing"};
@@ -118,10 +133,73 @@ public class TestRunner extends AppCompatActivity {
         testRunnerAdapter = new TestRunnerAdapter(this, litmusTestName, TestRunner.this);
         testRunnerRV.setAdapter(testRunnerAdapter);
         testRunnerRV.setLayoutManager(new LinearLayoutManager(this));
+    }
 
-        String[] testArray = {"parallel_message_passing", "parallel_message_passing",
-                            "parallel_message_passing_results", "parallel_stress_parameters"};
-        main(testArray);
+    // Automatically fill parameters with basic values
+    public void loadBasicParameters(){
+
+    }
+
+    public void openOptionMenu(String testName) {
+        Log.i("TEST", testName + " PRESSED, OPENING OPTION MENU");
+
+        dialogBuilder = new AlertDialog.Builder(this);
+        final View optionMenuView = getLayoutInflater().inflate(R.layout.parallel_test_option, null);
+
+        optionTestName = (TextView) optionMenuView.findViewById(R.id.parallelTestName);
+        optionTestName.setText(testName);
+
+        testIteration = (EditText) optionMenuView.findViewById(R.id.parallelTestIteration);
+        testingWorkgroups = (EditText) optionMenuView.findViewById(R.id.parallelTestingWorkgroups);
+        maxWorkgroups = (EditText) optionMenuView.findViewById(R.id.parallelMaxWorkgroups);
+        minWorkgroupSize = (EditText) optionMenuView.findViewById(R.id.parallelMinWorkgroupSize);
+        maxWorkgroupSize = (EditText) optionMenuView.findViewById(R.id.parallelMaxWorkgroupSize);
+        shufflePct = (EditText) optionMenuView.findViewById(R.id.parallelShufflePct);
+        barrierPct = (EditText) optionMenuView.findViewById(R.id.parallelBarrierPct);
+        scratchMemorySize = (EditText) optionMenuView.findViewById(R.id.parallelScratchMemorySize);
+        memStride = (EditText) optionMenuView.findViewById(R.id.parallelMemoryStride);
+        memStressPct = (EditText) optionMenuView.findViewById(R.id.parallelMemoryStressPct);
+        memStressIterations = (EditText) optionMenuView.findViewById(R.id.parallelMemoryStressIterations);
+        memStressPattern = (EditText) optionMenuView.findViewById(R.id.parallelMemOryStressPattern);
+        preStressPct = (EditText) optionMenuView.findViewById(R.id.parallelPreStressPct);
+        preStressIterations = (EditText) optionMenuView.findViewById(R.id.parallelPreStressIterations);
+        preStressPattern = (EditText) optionMenuView.findViewById(R.id.parallelPreStressPattern);
+        stressLineSize = (EditText) optionMenuView.findViewById(R.id.parallelStressLineSize);
+        stressTargetLines = (EditText) optionMenuView.findViewById(R.id.parallelStressTargetLines);
+        stressAssignmentStrategy = (EditText) optionMenuView.findViewById(R.id.parallelStressAssignmentStrategy);
+        permuteFirst = (EditText) optionMenuView.findViewById(R.id.parallelPermuteFirst);
+        permuteSecond = (EditText) optionMenuView.findViewById(R.id.parallelPermuteSecond);
+
+        loadBasicParameters();
+
+        startButton = (Button) optionMenuView.findViewById(R.id.parallelStartButton);
+        closeButton = (Button) optionMenuView.findViewById(R.id.parallelCloseButton);
+
+        dialogBuilder.setView(optionMenuView);
+        optionDialog = dialogBuilder.create();
+
+        // Prevent from dialog closing when touching outside
+        optionDialog.setCanceledOnTouchOutside(false);
+
+        optionDialog.show();
+
+        // Start test
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("TEST", testName + " STARTING");
+            }
+        });
+
+        // Close menu
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("TEST", testName + " MENU CLOSING");
+                optionDialog.dismiss();
+            }
+        });
+
     }
 
     public String getFileDir() {

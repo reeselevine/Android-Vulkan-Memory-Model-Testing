@@ -29,15 +29,20 @@ public class TestRunnerAdapter extends RecyclerView.Adapter<TestRunnerAdapter.Te
     @Override
     public TestRunnerViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.recylerview_layout, parent, false);
+        View view = inflater.inflate(R.layout.testrunner_recylerview_layout, parent, false);
         return new TestRunnerViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull TestRunnerAdapter.TestRunnerViewHolder holder, int position) {
         String currentTestName = litmusTestName[position];
-
         holder.testName.setText(currentTestName);
+
+        holder.optionButton.setOnClickListener(new View.OnClickListener() { // Open option menu
+            public void onClick (View v) {
+                testRunner.openOptionMenu(currentTestName);
+            }
+        });
     }
 
     @Override
@@ -48,14 +53,14 @@ public class TestRunnerAdapter extends RecyclerView.Adapter<TestRunnerAdapter.Te
     public class TestRunnerViewHolder extends RecyclerView.ViewHolder {
 
         TextView testName;
-        public Button startButton;
+        public Button optionButton;
         public Button resultButton;
         Boolean newTest = true;
 
         public TestRunnerViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             testName = itemView.findViewById(R.id.testName);
-            startButton = itemView.findViewById(R.id.startButton);
+            optionButton = itemView.findViewById(R.id.optionButton);
             resultButton = itemView.findViewById(R.id.resultButton);
 
             // Temporary
