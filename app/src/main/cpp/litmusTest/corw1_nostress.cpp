@@ -136,7 +136,6 @@ namespace corw1_nostress {
             } else {
                 nonWeakBehavior++;
             }
-            outputFile << results.load(1) << " ";
         }
 
         void clearMemory(easyvk::Buffer &gpuMem, int size) {
