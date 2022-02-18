@@ -41,7 +41,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Test Iteration:"
@@ -50,9 +50,9 @@
 
                     <EditText
                         android:id="@+id/parallelTestIteration"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -64,7 +64,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Testing Workgroups:"
@@ -73,9 +73,9 @@
 
                     <EditText
                         android:id="@+id/parallelTestingWorkgroups"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number" />
 
@@ -87,7 +87,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Max Workgroups:"
@@ -96,9 +96,9 @@
 
                     <EditText
                         android:id="@+id/parallelMaxWorkgroups"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -110,7 +110,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Minimum Workgroup Size:"
@@ -119,9 +119,9 @@
 
                     <EditText
                         android:id="@+id/parallelMinWorkgroupSize"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -133,7 +133,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Max Workgroup Size:"
@@ -142,9 +142,9 @@
 
                     <EditText
                         android:id="@+id/parallelMaxWorkgroupSize"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -156,7 +156,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Shuffle Percentage:"
@@ -165,9 +165,9 @@
 
                     <EditText
                         android:id="@+id/parallelShufflePct"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -179,7 +179,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Barrier Percentage:"
@@ -188,9 +188,9 @@
 
                     <EditText
                         android:id="@+id/parallelBarrierPct"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -202,7 +202,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Scratch Memory Size:"
@@ -211,9 +211,9 @@
 
                     <EditText
                         android:id="@+id/parallelScratchMemorySize"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -225,7 +225,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Memory Stride:"
@@ -234,9 +234,9 @@
 
                     <EditText
                         android:id="@+id/parallelMemoryStride"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -248,7 +248,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Memory Stress Percentage:"
@@ -257,9 +257,9 @@
 
                     <EditText
                         android:id="@+id/parallelMemoryStressPct"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -271,7 +271,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Memory Stress Iterations:"
@@ -280,9 +280,9 @@
 
                     <EditText
                         android:id="@+id/parallelMemoryStressIterations"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -294,7 +294,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Memory Stress Pattern:"
@@ -303,9 +303,9 @@
 
                     <EditText
                         android:id="@+id/parallelMemOryStressPattern"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -317,7 +317,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Pre Stress Percentage:"
@@ -326,9 +326,9 @@
 
                     <EditText
                         android:id="@+id/parallelPreStressPct"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -340,7 +340,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Pre Stress Iterations:"
@@ -349,9 +349,9 @@
 
                     <EditText
                         android:id="@+id/parallelPreStressIterations"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -363,7 +363,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Pre Stress Pattern:"
@@ -372,9 +372,9 @@
 
                     <EditText
                         android:id="@+id/parallelPreStressPattern"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -386,7 +386,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Stress Line Size:"
@@ -395,9 +395,9 @@
 
                     <EditText
                         android:id="@+id/parallelStressLineSize"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -409,7 +409,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Stress Target Lines:"
@@ -418,9 +418,9 @@
 
                     <EditText
                         android:id="@+id/parallelStressTargetLines"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -432,7 +432,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Stress Assignment Strategy:"
@@ -441,9 +441,9 @@
 
                     <EditText
                         android:id="@+id/parallelStressAssignmentStrategy"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -455,7 +455,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Permute First:"
@@ -464,9 +464,9 @@
 
                     <EditText
                         android:id="@+id/parallelPermuteFirst"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
@@ -478,7 +478,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Permute Second:"
@@ -487,9 +487,9 @@
 
                     <EditText
                         android:id="@+id/parallelPermuteSecond"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="5"
                         android:gravity="center_horizontal"
                         android:inputType="number"/>
 
