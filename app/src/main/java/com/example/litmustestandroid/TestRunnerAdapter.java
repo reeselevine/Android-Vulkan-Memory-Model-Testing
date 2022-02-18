@@ -40,7 +40,12 @@ public class TestRunnerAdapter extends RecyclerView.Adapter<TestRunnerAdapter.Te
 
         holder.optionButton.setOnClickListener(new View.OnClickListener() { // Open option menu
             public void onClick (View v) {
-                testRunner.openOptionMenu(currentTestName);
+                testRunner.openOptionMenu(currentTestName, position);
+            }
+        });
+        holder.resultButton.setOnClickListener(new View.OnClickListener() { // Show Result
+            public void onClick (View v) {
+                testRunner.litmusTestResult(currentTestName);
             }
         });
     }
