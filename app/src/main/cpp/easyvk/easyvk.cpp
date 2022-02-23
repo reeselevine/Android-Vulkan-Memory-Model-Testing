@@ -235,6 +235,7 @@ namespace easyvk {
 	VkPhysicalDeviceProperties Device::properties() {
 		VkPhysicalDeviceProperties physicalDeviceProperties;
 		vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+
 		return physicalDeviceProperties;
 	}
 
@@ -431,8 +432,8 @@ namespace easyvk {
 						  pipelineLayout, 0, 1, &descriptorSet, 0, 0);
 
 		// Bind push constants
-		uint32_t *pValues;
-		vkCmdPushConstants(device.computeCommandBuffer, pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, device.properties().limits.maxPushConstantsSize, &pValues);
+		uint32_t pValues[3] = {0, 0, 0};
+		vkCmdPushConstants(device.computeCommandBuffer, pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, easyvk::push_constant_size_bytes, &pValues);
 
         vkCmdPipelineBarrier(device.computeCommandBuffer, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_HOST_BIT, 0,
                              1, new VkMemoryBarrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER, nullptr, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT}, 0, {}, 0, {});
@@ -490,7 +491,7 @@ namespace easyvk {
 				1,
 				&descriptorSetLayout,
 				1,
-				new VkPushConstantRange {VK_SHADER_STAGE_COMPUTE_BIT, 0, device.properties().limits.maxPushConstantsSize}
+				new VkPushConstantRange {VK_SHADER_STAGE_COMPUTE_BIT, 0, easyvk::push_constant_size_bytes}
 			};
 
 			// Print out device's properties information

@@ -131,6 +131,7 @@ namespace corw1_nostress {
             if (rand() % sampleInterval == 1) {
                 outputFile << "r0: " << results.load(0) << "\n";
             }
+            outputFile << results.load(0) << "," << results.load(1) << " ";
             if (results.load(0) == 1) { // instruction re-ordered, weak behavior
                 weakBehavior++;
             } else {
