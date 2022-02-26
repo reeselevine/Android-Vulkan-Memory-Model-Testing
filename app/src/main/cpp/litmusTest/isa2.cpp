@@ -25,7 +25,7 @@ namespace isa2 {
     const int minWorkgroups = 4;
     const int maxWorkgroups = 36;
     const int minWorkgroupSize = 1;
-    const int maxWorkgroupSize = 1024;
+    const int maxWorkgroupSize = 64;
     const int shufflePct = 100;
     const int barrierPct = 85;
     const int numMemLocations = 3;
