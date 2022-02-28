@@ -45,8 +45,9 @@ namespace message_passing {
     const char* testName = "message-passing";
     const char* weakBehaviorStr = "r0: 1, r1: 0";
     const int testIterations = 1000;
+    int seqBehavior = 0;
+    int interBehavior = 0;
     int weakBehavior = 0;
-    int nonWeakBehavior = 0;
     const int sampleInterval = 1000;
 
     class LitmusTester {
@@ -133,7 +134,13 @@ namespace message_passing {
             if (results.load(0) == 1 && results.load(1) == 0) {
                 weakBehavior++;
             } else {
-                nonWeakBehavior++;
+                if (results.load(0) == 0 && results.load(1) == 1) {
+                    interBehavior++;
+                }
+                else {
+                    seqBehavior++;
+                }
+
             }
         }
 
@@ -280,8 +287,9 @@ namespace message_passing {
         std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
+            outputFile << "seq behavior: " << seqBehavior << "\n";
+            outputFile << "interleaved behavior: " << interBehavior << "\n";
             outputFile << "weak behavior: " << weakBehavior << "\n";
-            outputFile << "non weak behavior: " << nonWeakBehavior << "\n";
         }
         catch (const std::runtime_error& e) {
             outputFile << e.what() << "\n";
