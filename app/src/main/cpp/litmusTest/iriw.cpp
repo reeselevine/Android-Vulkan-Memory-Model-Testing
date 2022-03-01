@@ -114,9 +114,11 @@ namespace iriw {
                 for (easyvk::Device _device : instance->devices()) {
                     if (_device.properties().deviceID == gpuDeviceId) {
                         idx = j;
+                        _device.teardown();
                         break;
                     }
                     j++;
+                    _device.teardown();
                 }
             }
             easyvk::Device device = instance->devices().at(idx);

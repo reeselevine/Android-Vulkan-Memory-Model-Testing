@@ -44,16 +44,21 @@ public class MainActivity extends AppCompatActivity {
     private LitmusTestAdapter litmusTestAdapter;
     private static final int REQUEST_PERMISSION = 10;
     private static final String TAG = "MainActivity";
-    private static final String TEST_NAME[] = {"corr", "corr4", "corw1", "corw1_nostress", "iriw",
+    private static final String TEST_NAME[] = {"atomicity", "corr", "corr4", "corw1", "corw1_nostress",
+                                               "corw2", "cowr", "coww", "iriw",
                                                "isa2", "kernel_test", "load_buffer",
-                                               "message_passing", "store_buffer", "vect_add"};
-    private static final int TEST_ID[] = {R.raw.corr, R.raw.corr4, R.raw.corw1, R.raw.corw1_nostress, R.raw.iriw, R.raw.isa2,
+                                               "message_passing", "read", "store",
+                                               "store_buffer", "vect_add", "write_22"};
+    private static final int TEST_ID[] = {R.raw.atomicity, R.raw.corr, R.raw.corr4, R.raw.corw1, R.raw.corw1_nostress,
+                                          R.raw.corw2, R.raw.cowr, R.raw.coww, R.raw.iriw, R.raw.isa2,
                                           R.raw.kernel_test, R.raw.load_buffer, R.raw.message_passing,
-                                          R.raw.store_buffer, R.raw.vect_add};
-    private static final int OUTPUT_ID[] = {R.raw.corr_output, R.raw.corr4_output, R.raw.corw1_output, R.raw.corw1_nostress_output,
-                                            R.raw.iriw_output, R.raw.isa2_output, R.raw.kernel_test_output,
-                                            R.raw.load_buffer_output, R.raw.message_passing_output,
-                                            R.raw.store_buffer_output, R.raw.vect_add_output};
+                                          R.raw.read, R.raw.store, R.raw.store_buffer, R.raw.vect_add, R.raw.write_22};
+    private static final int OUTPUT_ID[] = {R.raw.atomicity_output, R.raw.corr_output, R.raw.corr4_output,
+                                            R.raw.corw1_output, R.raw.corw1_nostress_output, R.raw.corw2_output,
+                                            R.raw.cowr_output, R.raw.coww_output, R.raw.iriw_output, R.raw.isa2_output,
+                                            R.raw.kernel_test_output, R.raw.load_buffer_output, R.raw.message_passing_output,
+                                            R.raw.read_output, R.raw.store_output, R.raw.store_buffer_output,
+                                            R.raw.vect_add_output, R.raw.write_22_output};
 
     private Handler handler = new Handler();
 

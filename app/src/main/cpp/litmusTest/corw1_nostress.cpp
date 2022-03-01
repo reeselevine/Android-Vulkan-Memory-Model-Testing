@@ -115,6 +115,7 @@ namespace corw1_nostress {
                 for (easyvk::Device _device : instance->devices()) {
                     if (_device.properties().deviceID == gpuDeviceId) {
                         idx = j;
+                        _device.teardown();
                         break;
                     }
                     j++;

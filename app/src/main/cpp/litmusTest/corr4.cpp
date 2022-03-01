@@ -118,9 +118,11 @@ namespace corr4 {
                 for (easyvk::Device _device : instance->devices()) {
                     if (_device.properties().deviceID == gpuDeviceId) {
                         idx = j;
+                        _device.teardown();
                         break;
                     }
                     j++;
+                    _device.teardown();
                 }
             }
             easyvk::Device device = instance->devices().at(idx);
@@ -128,8 +130,7 @@ namespace corr4 {
             return device;
         }
 
-        void
-        checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations,
+        void checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations,
                     ofstream &outputFile) {
             if (rand() % sampleInterval == 1) {
                 outputFile << "r0: " << results.load(0) << ", r1: " << results.load(1) << ", r2: " << results.load(2) << ", r3: " << results.load(3) << "\n";

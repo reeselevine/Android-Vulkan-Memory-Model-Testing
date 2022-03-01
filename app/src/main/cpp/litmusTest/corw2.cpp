@@ -1,8 +1,7 @@
-#include <jni.h>
-#include <string>
-#include <stdlib.h>
 #include <vector>
-#include <thread>
+#include <set>
+#include <string>
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -14,13 +13,13 @@
 
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__))
 
-namespace store_buffer {
+namespace corw2 {
 
     using namespace std;
 
-    constexpr char *TAG = "MainActivityStoreBuffer";
-    constexpr char *SHADER_NAME = "store_buffer.spv";
-    constexpr char *OUTPUT_NAME = "store_buffer_output.txt";
+    constexpr char *TAG = "MainActivityCorw2";
+    constexpr char *SHADER_NAME = "corw2.spv";
+    constexpr char *OUTPUT_NAME = "corw2_output.txt";
 
     const int minWorkgroups = 4;
     const int maxWorkgroups = 36;
@@ -28,9 +27,9 @@ namespace store_buffer {
     const int maxWorkgroupSize = 64;
     const int shufflePct = 100;
     const int barrierPct = 85;
-    const int numMemLocations = 2;
+    const int numMemLocations = 1;
     const int testMemorySize = 1024;
-    const int numOutputs = 2;
+    const int numOutputs = 1;
     const int scratchMemorySize = 4096;
     const int memStride = 64;
     const int memStressPct = 100;
@@ -42,12 +41,11 @@ namespace store_buffer {
     const int stressLineSize = 256;
     const int stressTargetLines = 2;
     const int gpuDeviceId = 7857;
-    const char* testName = "store-buffer";
-    const char* weakBehaviorStr = "r0: 0, r1: 0";
+    const char* testName = "corw2";
+    const char* weakBehaviorStr = "r0: 2, x: 2";
     const int testIterations = 1000;
-    int seqBehavior = 0;
-    int interBehavior = 0;
     int weakBehavior = 0;
+    int nonWeakBehavior = 0;
     const int sampleInterval = 1000;
 
     class LitmusTester {
@@ -57,13 +55,12 @@ namespace store_buffer {
         StressAssignmentStrategy stressAssignmentStrategy = ROUND_ROBIN;
 
     public:
-        void run(ofstream &outputFile, string testFile) {
+        void run(ofstream& outputFile, string testFile) {
             outputFile << "Starting " << testName << " litmus test run \n";
-            auto instance = easyvk::Instance(true);
+            auto instance = easyvk::Instance(false);
             auto device = getDevice(&instance, outputFile);
             outputFile << "Weak behavior to watch for: " << weakBehaviorStr << "\n";
-            outputFile << "Sampling output approximately every " << sampleInterval
-                       << " iterations\n";
+            outputFile << "Sampling output approximately every " << sampleInterval << " iterations\n";
             // setup devices, memory, and parameters
             auto testData = easyvk::Buffer(device, testMemorySize);
             auto memLocations = easyvk::Buffer(device, numMemLocations);
@@ -99,8 +96,7 @@ namespace store_buffer {
             end = std::chrono::system_clock::now();
             std::chrono::duration<double> elapsed_seconds = end - start;
             outputFile << "elapsed time: " << elapsed_seconds.count() << "s\n";
-            outputFile << "iterations per second: " << testIterations / elapsed_seconds.count()
-                       << " \n";
+            outputFile << "iterations per second: " << testIterations / elapsed_seconds.count() << " \n";
             for (easyvk::Buffer buffer : testBuffers) {
                 buffer.teardown();
             }
@@ -128,18 +124,13 @@ namespace store_buffer {
         }
 
         void checkResult(easyvk::Buffer &testData, easyvk::Buffer &results, easyvk::Buffer &memLocations, ofstream &outputFile) {
-            if (rand() % sampleInterval == 1) {
-                outputFile << "r0: " << results.load(0) << ", r1: " << results.load(1) << "\n";
-            }
-            if (results.load(0) == 0 && results.load(1) == 0) {
+        if (rand() % sampleInterval == 1) {
+            outputFile << "r0: " << results.load(0) << ", x: " << testData.load(memLocations.load(0)) << "\n";
+        }
+            if (results.load(0) == 2 && testData.load(memLocations.load(0)) == 2) {
                 weakBehavior++;
             } else {
-                if (results.load(0) == 1 && results.load(1) == 1) {
-                    interBehavior++;
-                }
-                else {
-                    seqBehavior++;
-                }
+                nonWeakBehavior++;
             }
         }
 
@@ -152,7 +143,7 @@ namespace store_buffer {
         void setShuffleIds(easyvk::Buffer &ids, int numWorkgroups, int workgroupSize) {
             // initialize identity mapping
             for (int i = 0; i < numWorkgroups*workgroupSize; i++) {
-                ids.store(i, i);
+            ids.store(i, i);
             }
             if (percentageCheck(shufflePct)) {
                 // shuffle workgroups
@@ -186,7 +177,7 @@ namespace store_buffer {
             for (int i = 0; i < numMemLocations; i++) {
                 int region = rand() % numRegions;
                 while(usedRegions.count(region))
-                    region = rand() % numRegions;
+                region = rand() % numRegions;
                 int locInRegion = rand() % (memStride);
                 locations.store(i, (region * memStride) + locInRegion);
                 usedRegions.insert(region);
@@ -202,7 +193,7 @@ namespace store_buffer {
             for (int i = 0; i < stressTargetLines; i++) {
                 int region = rand() % numRegions;
                 while(usedRegions.count(region))
-                    region = rand() % numRegions;
+                region = rand() % numRegions;
                 int locInRegion = rand() % (stressLineSize);
                 switch (stressAssignmentStrategy) {
                     case ROUND_ROBIN:
@@ -254,24 +245,24 @@ namespace store_buffer {
          */
         void setStressParams(easyvk::Buffer &params) {
             if (percentageCheck(barrierPct)) {
-                params.store(0, 1);
+            params.store(0, 1);
             } else {
-                params.store(0, 0);
-            }
+            params.store(0, 0);
+        }
             if (percentageCheck(memStressPct)) {
                 params.store(1, 1);
             } else {
-                params.store(1, 0);
+            params.store(1, 0);
             }
-            params.store(2, memStressIterations);
-            params.store(3, memStressPattern);
+        params.store(2, memStressIterations);
+        params.store(3, memStressPattern);
             if (percentageCheck(preStressPct)) {
-                params.store(4, 1);
+            params.store(4, 1);
             } else {
-                params.store(4, 0);
+            params.store(4, 0);
             }
-            params.store(5, preStressIterations);
-            params.store(6, preStressPattern);
+        params.store(5, preStressIterations);
+        params.store(6, preStressPattern);
         }
 
         bool percentageCheck(int percentage) {
@@ -286,9 +277,8 @@ namespace store_buffer {
         std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
-            outputFile << "seq behavior: " << seqBehavior << "\n";
-            outputFile << "interleaved behavior: " << interBehavior << "\n";
             outputFile << "weak behavior: " << weakBehavior << "\n";
+            outputFile << "non weak behavior: " << nonWeakBehavior << "\n";
         }
         catch (const std::runtime_error& e) {
             outputFile << e.what() << "\n";
