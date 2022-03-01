@@ -44,8 +44,9 @@ namespace write_22 {
     const char *testName = "2+2-write";
     const char *weakBehaviorStr = "x: 1, y: 1";
     const int testIterations = 1000;
+    int seqBehavior = 0;
+    int interBehavior = 0;
     int weakBehavior = 0;
-    int nonWeakBehavior = 0;
     const int sampleInterval = 1000;
 
     class LitmusTester {
@@ -132,11 +133,18 @@ namespace write_22 {
             if (rand() % sampleInterval == 1) {
                 outputFile << "x: " << testData.load(memLocations.load(0)) << ", y: " << testData.load(memLocations.load(1))<< "\n";
             }
-            if (testData.load(memLocations.load(0)) == 1 &&
-                testData.load(memLocations.load(1)) == 1) {
+            if (testData.load(memLocations.load(0)) == 2 &&
+                testData.load(memLocations.load(1)) == 2) {
                 weakBehavior++;
             } else {
-                nonWeakBehavior++;
+                if (testData.load(memLocations.load(0)) == 1 &&
+                    testData.load(memLocations.load(1)) == 1) {
+                    interBehavior++;
+                }
+                else {
+                    seqBehavior++;
+                }
+
             }
         }
 
@@ -285,8 +293,9 @@ namespace write_22 {
         std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
+            outputFile << "seq behavior: " << seqBehavior << "\n";
+            outputFile << "interleaved behavior: " << interBehavior << "\n";
             outputFile << "weak behavior: " << weakBehavior << "\n";
-            outputFile << "non weak behavior: " << nonWeakBehavior << "\n";
         }
         catch (const std::runtime_error& e) {
             outputFile << e.what() << "\n";

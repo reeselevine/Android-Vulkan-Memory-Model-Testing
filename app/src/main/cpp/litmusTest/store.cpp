@@ -44,8 +44,9 @@ namespace store {
     const char *testName = "store";
     const char *weakBehaviorStr = "x: 2, r0: 1";
     const int testIterations = 1000;
+    int seqBehavior = 0;
+    int interBehavior = 0;
     int weakBehavior = 0;
-    int nonWeakBehavior = 0;
     const int sampleInterval = 1000;
 
     class LitmusTester {
@@ -135,7 +136,12 @@ namespace store {
             if (testData.load(memLocations.load(0)) == 2 && results.load(0) == 1) {
                 weakBehavior++;
             } else {
-                nonWeakBehavior++;
+                if (testData.load(memLocations.load(0)) == 1 && results.load(0) == 0) {
+                    interBehavior++;
+                }
+                else {
+                    seqBehavior++;
+                }
             }
         }
 
@@ -284,8 +290,9 @@ namespace store {
         std::string testFile = filePath + "/" + SHADER_NAME;
         try {
             app.run(outputFile, testFile);
+            outputFile << "seq behavior: " << seqBehavior << "\n";
+            outputFile << "interleaved behavior: " << interBehavior << "\n";
             outputFile << "weak behavior: " << weakBehavior << "\n";
-            outputFile << "non weak behavior: " << nonWeakBehavior << "\n";
         }
         catch (const std::runtime_error& e) {
             outputFile << e.what() << "\n";
