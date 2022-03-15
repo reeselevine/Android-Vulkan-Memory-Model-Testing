@@ -1,17 +1,16 @@
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/jni.h"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/string"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/stdlib.h"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/vector"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/thread"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/iostream"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/fstream"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/sstream"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/set"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/chrono"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/log.h"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/asset_manager.h"
-#include "../../../../../../../Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/asset_manager_jni.h"
-
+#include <jni.h>
+#include <string>
+#include <stdlib.h>
+#include <vector>
+#include <thread>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <set>
+#include <chrono>
+#include <android/log.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__))
 
 namespace corr {
@@ -22,26 +21,48 @@ namespace corr {
     constexpr char *SHADER_NAME = "corr.spv";
     constexpr char *OUTPUT_NAME = "corr_output.txt";
 
-    const int minWorkgroups = 4;
-    const int maxWorkgroups = 36;
+    const int minWorkgroups = 512;
+    const int maxWorkgroups = 1024;
     const int minWorkgroupSize = 1;
-    const int maxWorkgroupSize = 64;
+    const int maxWorkgroupSize = 512;
     const int shufflePct = 100;
-    const int barrierPct = 85;
+    const int barrierPct = 100;
+    const int numMemLocations = 2;
+    const int testMemorySize = 4096;
+    const int numOutputs = 2;
+    const int scratchMemorySize = 2048;
+    const int memStride = 4;
+    const int memStressPct = 100;
+    const int memStressIterations = 1024;
+    const int memStressPattern = 1;
+    const int preStressPct = 100;
+    const int preStressIterations = 128;
+    const int preStressPattern = 3;
+    const int stressLineSize = 64;
+    const int stressTargetLines = 2;
+    const int gpuDeviceId = 7857;
+
+    /*const int minWorkgroups = 2;
+    const int maxWorkgroups = 4;
+    const int minWorkgroupSize = 1;
+    const int maxWorkgroupSize = 512;
+    const int shufflePct = 0;
+    const int barrierPct = 0;
     const int numMemLocations = 2;
     const int testMemorySize = 1024;
     const int numOutputs = 2;
-    const int scratchMemorySize = 4096;
-    const int memStride = 64;
-    const int memStressPct = 100;
-    const int memStressIterations = 1000;
+    const int scratchMemorySize = 2048;
+    const int memStride = 1;
+    const int memStressPct = 0;
+    const int memStressIterations = 1024;
     const int memStressPattern = 1;
-    const int preStressPct = 100;
-    const int preStressIterations = 100;
+    const int preStressPct = 0;
+    const int preStressIterations = 128;
     const int preStressPattern = 3;
-    const int stressLineSize = 256;
+    const int stressLineSize = 64;
     const int stressTargetLines = 2;
-    const int gpuDeviceId = 7857;
+    const int gpuDeviceId = 7857;*/
+
     const char* testName = "corr";
     const char* weakBehaviorStr = "r0: 1, r1: 0";
     const int testIterations = 1000;

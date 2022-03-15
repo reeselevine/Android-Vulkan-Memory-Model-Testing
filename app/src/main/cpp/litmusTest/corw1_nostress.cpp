@@ -26,14 +26,14 @@ namespace corw1_nostress {
     constexpr char *SHADER_NAME = "corw1_nostress.spv";
     constexpr char *OUTPUT_NAME = "corw1_nostress_output.txt";
 
-    const int minWorkgroups = 4;
-    const int maxWorkgroups = 36;
+    const int minWorkgroups = 2;
+    const int maxWorkgroups = 4;
     const int minWorkgroupSize = 1;
-    const int maxWorkgroupSize = 64;
+    const int maxWorkgroupSize = 512;
     const int numMemLocations = 1;
     const int testMemorySize = 1024;
     const int numOutputs = 2048;
-    const int memStride = 64;
+    const int memStride = 1;
     const int gpuDeviceId = 7857;
     const char* testName = "corw1_nostress";
     const char* weakBehaviorStr = "r0: 1";

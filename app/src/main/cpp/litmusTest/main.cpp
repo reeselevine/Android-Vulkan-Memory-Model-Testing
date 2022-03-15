@@ -22,60 +22,98 @@
 #include "vect_add.cpp"
 #include "write_22.cpp"
 
+#define testCount 1
+
 void runLitmusTest(JNIEnv* env, jobject obj, std::string testName) {
     if (testName == "message_passing") {
-        message_passing::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            message_passing::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "store") {
-        store::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            store::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "read") {
-        read::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            read::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "load_buffer") {
-        load_buffer::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            load_buffer::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "store_buffer") {
-        store_buffer::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            store_buffer::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "write_22") {
-        write_22::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            write_22::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "corr") {
-        corr::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            corr::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "coww") {
-        coww::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            coww::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "cowr") {
-        cowr::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            cowr::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "corw1") {
-        corw1::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            corw1::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "corw2") {
-        corw2::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            corw2::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "atomicity") {
-        atomicity::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            atomicity::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "kernel_test") {
-        kernel_test::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            kernel_test::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "vect_add") {
-        vect_add::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            vect_add::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "corr4") {
-        corr4::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            corr4::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "corw1_nostress") {
-        corw1_nostress::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            corw1_nostress::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "iriw") {
-        iriw::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            iriw::readFileFromResRaw(env, obj);
+        }
     }
     else if (testName == "isa2") {
-        isa2::readFileFromResRaw(env, obj);
+        for (int i = 0; i < testCount; i++) {
+            isa2::readFileFromResRaw(env, obj);
+        }
     }
 }
 
