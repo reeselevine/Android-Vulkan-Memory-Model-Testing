@@ -518,7 +518,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
                             android:layout_weight="1"
-                            android:backgroundTint="@color/lightgray"
+                            android:backgroundTint="@color/teal_200"
                             android:text="Default"
                             android:textColor="@color/black"/>
 
@@ -558,7 +558,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
                             android:layout_weight="1"
-                            android:backgroundTint="@color/lightgray"
+                            android:backgroundTint="@color/teal_200"
                             android:text="Default"
                             android:textColor="@color/black"/>
 

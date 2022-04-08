@@ -46,13 +46,13 @@ public class TestRunner extends AppCompatActivity {
     private Button startButton, closeButton, defaultParamButton, stressParamButton, defaultShaderButton, strongShaderButton;
 
     private static final String TAG = "TestRunner";
-    private static final String TEST_NAME[] = {"parallel_message_passing"};
-    private static final String SHADER_NAME[] = {"parallel_message_passing", "parallel_message_passing_strong"};
+    private static final String TEST_NAME[] = {"parallel_message_passing", "parallel_load_buffer"};
+    private static final String SHADER_NAME[] = {"parallel_message_passing", "parallel_message_passing_strong", "parallel_load_buffer"};
     private static final String PARAMETER_NAME[] = {"parallel_basic_parameters", "parallel_stress_parameters"};
-    private static final int SHADER_ID[] = {R.raw.parallel_message_passing, R.raw.parallel_message_passing_strong};
-    private static final int RESULT_ID[] = {R.raw.parallel_message_passing_results};
-    private static final int OUTPUT_ID[] = {R.raw.parallel_message_passing_output};
-    private static final int TEST_PARAM_ID[] = {R.raw.parallel_message_passing_parameters};
+    private static final int SHADER_ID[] = {R.raw.parallel_message_passing, R.raw.parallel_message_passing_strong, R.raw.parallel_load_buffer};
+    private static final int RESULT_ID[] = {R.raw.parallel_message_passing_results, R.raw.parallel_load_buffer_results};
+    private static final int OUTPUT_ID[] = {R.raw.parallel_message_passing_output, R.raw.parallel_load_buffer_output};
+    private static final int TEST_PARAM_ID[] = {R.raw.parallel_message_passing_parameters, R.raw.parallel_load_buffer_parameters};
     private static final int PARAMETER_ID[] = {R.raw.parallel_basic_parameters, R.raw.parallel_stress_parameters};
 
     private Handler handler = new Handler();
@@ -303,15 +303,9 @@ public class TestRunner extends AppCompatActivity {
         defaultParamButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                defaultParamButton.setBackgroundColor(Color.CYAN);
+                defaultParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                stressParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 loadParameters(R.raw.parallel_basic_parameters);
-
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                    }
-                }, 200);
             }
         });
 
@@ -319,15 +313,9 @@ public class TestRunner extends AppCompatActivity {
         stressParamButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stressParamButton.setBackgroundColor(Color.CYAN);
+                stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 loadParameters(R.raw.parallel_stress_parameters);
-
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        stressParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                    }
-                }, 200);
             }
         });
 
@@ -335,15 +323,9 @@ public class TestRunner extends AppCompatActivity {
         defaultShaderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                defaultShaderButton.setBackgroundColor(Color.CYAN);
+                defaultShaderButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                strongShaderButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 shaderType = "default";
-
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        defaultShaderButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                    }
-                }, 200);
             }
         });
 
@@ -351,15 +333,9 @@ public class TestRunner extends AppCompatActivity {
         strongShaderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                strongShaderButton.setBackgroundColor(Color.CYAN);
+                strongShaderButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                defaultShaderButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 shaderType = "strong";
-
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        strongShaderButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                    }
-                }, 200);
             }
         });
 

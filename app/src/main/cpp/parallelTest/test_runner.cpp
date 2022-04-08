@@ -160,8 +160,7 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
     int testingThreads = workgroupSize * params["testingWorkgroups"];
     int testLocSize = testingThreads * params["numMemLocations"] * params["memStride"];
 
-    int numSeq0 = 0;
-    int numSeq1 = 0;
+    int numSeq = 0;
     int numInter = 0;
     int numWeak = 0;
 
@@ -206,16 +205,14 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
         resultProgram.run();
 
         outputFile << "Iteration " << i << "\n";
-        outputFile << "r0 == 0 && r1 == 0: " << testResults.load(0) << "\n";
-        outputFile << "r0 == 1 && r1 == 1: " << testResults.load(1) << "\n";
-        outputFile << "r0 == 0 && r1 == 1: " << testResults.load(2) << "\n";
-        outputFile << "r0 == 1 && r1 == 0: " << testResults.load(3) << "\n";
+        outputFile << "seq: " << testResults.load(0) + testResults.load(1) << "\n";
+        outputFile << "interleaved: " << testResults.load(2) << "\n";
+        outputFile << "weak: " << testResults.load(3) << "\n";
 
         std::chrono::duration<double> itDuration = itEnd - itStart;
         outputFile << "durationSeconds: " << itDuration.count() << "s\n";
 
-        numSeq0 += testResults.load(0);
-        numSeq1 += testResults.load(1);
+        numSeq += testResults.load(0) + testResults.load(1);
         numInter += testResults.load(2);
         numWeak += testResults.load(3);
 
@@ -225,10 +222,9 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
     }
 
     outputFile << "Total Result:\n";
-    outputFile << "r0 == 0 && r1 == 0: " << numSeq0 << "\n";
-    outputFile << "r0 == 1 && r1 == 1: " << numSeq1 << "\n";
-    outputFile << "r0 == 0 && r1 == 1: " << numInter << "\n";
-    outputFile << "r0 == 1 && r1 == 0: " << numWeak << "\n";
+    outputFile << "seq: " << numSeq << "\n";
+    outputFile << "interleaved: " << numInter << "\n";
+    outputFile << "weak: " << numWeak << "\n";
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;

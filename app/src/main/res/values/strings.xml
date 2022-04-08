@@ -24,5 +24,6 @@
 
     <string-array name="testRunner">
         <item>message_passing</item>
+        <item>load_buffer</item>
     </string-array>
 </resources>

@@ -19,7 +19,7 @@ namespace load_buffer {
     using namespace std;
 
     constexpr char *TAG = "MainActivityLoadBuffer";
-    constexpr char *SHADER_NAME = "load_buffer.spv";
+    constexpr char *SHADER_NAME = "parallel_load_buffer.spv";
     constexpr char *OUTPUT_NAME = "load_buffer_output.txt";
 
     const int minWorkgroups = 512;
