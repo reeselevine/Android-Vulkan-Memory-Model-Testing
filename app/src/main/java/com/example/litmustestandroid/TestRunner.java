@@ -43,7 +43,7 @@ public class TestRunner extends AppCompatActivity {
     private AlertDialog optionDialog;
     private TextView optionTestName;
     private EditText[] parameters = new EditText[20];
-    private Button startButton, closeButton, defaultParamButton, stressParamButton;
+    private Button startButton, closeButton, defaultParamButton, stressParamButton, defaultShaderButton, strongShaderButton;
 
     private static final String TAG = "TestRunner";
     private static final String TEST_NAME[] = {"parallel_message_passing"};
@@ -56,6 +56,8 @@ public class TestRunner extends AppCompatActivity {
     private static final int PARAMETER_ID[] = {R.raw.parallel_basic_parameters, R.raw.parallel_stress_parameters};
 
     private Handler handler = new Handler();
+
+    private String shaderType = "default";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,6 +161,10 @@ public class TestRunner extends AppCompatActivity {
                     parameters[index].setText(words[1]);
                     index++;
                 }
+                /*if (index < parameters.length) {
+                    parameters[index].setText(words[1]);
+                    index++;
+                }*/
                 line = bufferedReader.readLine();
             }
             inputStream.close();
@@ -196,7 +202,8 @@ public class TestRunner extends AppCompatActivity {
                     outputNumber = parameters[index].getText().toString();
                     index++;
                 }
-
+                /*outputNumber = parameters[index].getText().toString();
+                index++;*/
 
                 String outputLine = words[0] + "=" + outputNumber + newLine;
                 fos.write(outputLine.getBytes());
@@ -278,6 +285,8 @@ public class TestRunner extends AppCompatActivity {
         closeButton = (Button) optionMenuView.findViewById(R.id.parallelCloseButton);
         defaultParamButton = (Button) optionMenuView.findViewById(R.id.parallelDefaultParamButton);
         stressParamButton = (Button) optionMenuView.findViewById(R.id.parallelStressParamButton);
+        defaultShaderButton = (Button) optionMenuView.findViewById(R.id.parallelDefaultShaderButton);
+        strongShaderButton = (Button) optionMenuView.findViewById(R.id.parallelStrongShaderButton);
 
         dialogBuilder.setView(optionMenuView);
         optionDialog = dialogBuilder.create();
@@ -286,6 +295,9 @@ public class TestRunner extends AppCompatActivity {
         optionDialog.setCanceledOnTouchOutside(false);
 
         optionDialog.show();
+
+        // Reset shader type
+        shaderType = "default";
 
         // Load default parameter
         defaultParamButton.setOnClickListener(new View.OnClickListener() {
@@ -319,6 +331,38 @@ public class TestRunner extends AppCompatActivity {
             }
         });
 
+        // Indicate to use default shader
+        defaultShaderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                defaultShaderButton.setBackgroundColor(Color.CYAN);
+                shaderType = "default";
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        defaultShaderButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                    }
+                }, 200);
+            }
+        });
+
+        // Indicate to use strong shader
+        strongShaderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                strongShaderButton.setBackgroundColor(Color.CYAN);
+                shaderType = "strong";
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        strongShaderButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                    }
+                }, 200);
+            }
+        });
+
         // Start test
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -340,10 +384,19 @@ public class TestRunner extends AppCompatActivity {
                     @Override
                     public void run() {
                         String[] testArgument = new String[4];
-                        testArgument[0] = "parallel_" + testName;
-                        testArgument[1] = "parallel_" + testName;
-                        testArgument[2] = "parallel_" + testName + "_results";
-                        testArgument[3] = "parallel_" + testName + "_parameters";
+                        testArgument[0] = "parallel_" + testName; // Test Name
+
+                        // Shader Name
+                        if (shaderType == "default") {
+                            testArgument[1] = "parallel_" + testName;
+                        }
+                        else {
+                            testArgument[1] = "parallel_" + testName + "_" + shaderType;
+                        }
+
+                        testArgument[2] = "parallel_" + testName + "_results"; // Result Shader Name
+                        testArgument[3] = "parallel_" + testName + "_parameters"; // Parameter Name
+
                         main(testArgument);
 
                         // Update Start and Result Button

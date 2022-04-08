@@ -276,6 +276,12 @@ std::string readOutput(std::string filePath) {
 int runTest(string testName, string shaderFile, string resultShaderFile, string configFile, string filePath)
 {
     std::ofstream outputFile(filePath + "/" + testName + "_output.txt");
+
+    outputFile << "Test Name: " << testName << "\n";
+    outputFile << "\n";
+    outputFile << "Shader Name: " << shaderFile << "\n";
+    outputFile << "\n";
+
     configFile = filePath + "/" + configFile + ".txt";
     shaderFile = filePath + "/" + shaderFile + ".spv";
     resultShaderFile = filePath + "/" + resultShaderFile + ".spv";
@@ -283,6 +289,8 @@ int runTest(string testName, string shaderFile, string resultShaderFile, string 
     LOGD("%s", configFile.c_str());
     LOGD("%s", shaderFile.c_str());
     LOGD("%s", resultShaderFile.c_str());
+
+    outputFile << "Parameter:\n";
 
     srand(time(NULL));
     map<string, int> params = read_config(configFile);

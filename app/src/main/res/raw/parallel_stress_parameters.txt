@@ -1,8 +1,8 @@
 testIterations=100
 testingWorkgroups=512
-maxWorkgroups=36
-minWorkgroupSize=1
-maxWorkgroupSize=64
+maxWorkgroups=1024
+minWorkgroupSize=256
+maxWorkgroupSize=256
 shufflePct=100
 barrierPct=100
 numMemLocations=2
