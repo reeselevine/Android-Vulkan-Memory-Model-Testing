@@ -331,6 +331,9 @@ public class TestRunner extends AppCompatActivity {
                 viewHolder.optionButton.setEnabled(false);
                 viewHolder.optionButton.setBackgroundColor(Color.BLUE);
 
+                viewHolder.resultButton.setEnabled(false);
+                viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+
                 enableNonRunningTests(position, false);
 
                 handler.postDelayed(new Runnable() {

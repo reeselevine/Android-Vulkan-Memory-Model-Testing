@@ -37,6 +37,7 @@ Device getDevice(Instance &instance, map<string, int> params, ofstream &outputFi
     }
     Device device = instance.devices().at(idx);
     outputFile << "Using device " << device.properties().deviceName << "\n";
+    outputFile << "\n";
     return device;
 }
 
@@ -159,6 +160,11 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
     int testingThreads = workgroupSize * params["testingWorkgroups"];
     int testLocSize = testingThreads * params["numMemLocations"] * params["memStride"];
 
+    int numSeq0 = 0;
+    int numSeq1 = 0;
+    int numInter = 0;
+    int numWeak = 0;
+
     // set up buffers
     auto testLocations = Buffer(device, testLocSize);
     auto readResults = Buffer(device, params["numOutputs"] * testingThreads);
@@ -173,7 +179,7 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
     vector<Buffer> resultBuffers = {testLocations, readResults, testResults, stressParams};
 
     // run iterations
-    chrono::time_point<std::chrono::system_clock> start, end;
+    chrono::time_point<std::chrono::system_clock> start, end, itStart, itEnd;
     start = chrono::system_clock::now();
     for (int i = 0; i < params["testIterations"]; i++) {
         auto program = Program(device, shader_file.c_str(), buffers);
@@ -191,18 +197,43 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
         program.setWorkgroupSize(workgroupSize);
         resultProgram.setWorkgroupSize(workgroupSize);
         program.prepare();
+
+        itStart = chrono::system_clock::now();
         program.run();
+        itEnd = chrono::system_clock::now();
+
         resultProgram.prepare();
         resultProgram.run();
+
         outputFile << "Iteration " << i << "\n";
         outputFile << "r0 == 0 && r1 == 0: " << testResults.load(0) << "\n";
         outputFile << "r0 == 1 && r1 == 1: " << testResults.load(1) << "\n";
         outputFile << "r0 == 0 && r1 == 1: " << testResults.load(2) << "\n";
         outputFile << "r0 == 1 && r1 == 0: " << testResults.load(3) << "\n";
+
+        std::chrono::duration<double> itDuration = itEnd - itStart;
+        outputFile << "durationSeconds: " << itDuration.count() << "s\n";
+
+        numSeq0 += testResults.load(0);
+        numSeq1 += testResults.load(1);
+        numInter += testResults.load(2);
+        numWeak += testResults.load(3);
+
         outputFile << "\n";
         program.teardown();
         resultProgram.teardown();
     }
+
+    outputFile << "Total Result:\n";
+    outputFile << "r0 == 0 && r1 == 0: " << numSeq0 << "\n";
+    outputFile << "r0 == 1 && r1 == 1: " << numSeq1 << "\n";
+    outputFile << "r0 == 0 && r1 == 1: " << numInter << "\n";
+    outputFile << "r0 == 1 && r1 == 0: " << numWeak << "\n";
+
+    end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    outputFile << "Total elapsed time: " << elapsed_seconds.count() << "s\n";
+
     for (Buffer buffer : buffers) {
         buffer.teardown();
     }
@@ -256,7 +287,7 @@ int runTest(string testName, string shaderFile, string resultShaderFile, string 
     srand(time(NULL));
     map<string, int> params = read_config(configFile);
     for (const auto& [key, value] : params) {
-        outputFile << key << " = " << value << "; ";
+        outputFile << key << " = " << value << ";\n";
     }
     outputFile << "\n";
 
