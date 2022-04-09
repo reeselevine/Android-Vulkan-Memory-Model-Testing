@@ -52,7 +52,7 @@ public class TestRunner extends AppCompatActivity {
 
     private String shaderType = "default";
 
-    private static final int NUMTESTS = 2;
+    private static final int NUMTESTS = 3;
     private TestCase[] testCases = new TestCase[NUMTESTS];
 
     public ArrayList<String> totalShaderNames = new ArrayList<String>();
@@ -112,7 +112,7 @@ public class TestRunner extends AppCompatActivity {
         TestCase loadBuffer = new TestCase();
         loadBuffer.testType = "weakMemory";
         loadBuffer.testName = "loadBuffer";
-        loadBuffer.setShaderNames(new String[]{"parallel_load_buffer"}, totalShaderNames);
+        loadBuffer.setShaderNames(new String[]{"parallel_load_buffer.spv"}, totalShaderNames);
         loadBuffer.setShaderIds(new int[]{R.raw.parallel_load_buffer}, totalShaderIds);
         loadBuffer.setResultNames(new String[]{"parallel_load_buffer_results.spv"}, totalResultNames);
         loadBuffer.setResultIds(new int[]{R.raw.parallel_load_buffer_results}, totalResultIds);
@@ -123,6 +123,22 @@ public class TestRunner extends AppCompatActivity {
         loadBuffer.setParamNames(new String[]{"parallel_basic_parameters.txt", "parallel_stress_parameters.txt"}, totalParamNames);
         loadBuffer.setParamIds(new int[]{R.raw.parallel_basic_parameters, R.raw.parallel_stress_parameters}, totalParamIds);
         testCases[1] = loadBuffer;
+
+        // Store Buffer
+        TestCase storeBuffer = new TestCase();
+        storeBuffer.testType = "weakMemory";
+        storeBuffer.testName = "storeBuffer";
+        storeBuffer.setShaderNames(new String[]{"parallel_store_buffer.spv"}, totalShaderNames);
+        storeBuffer.setShaderIds(new int[]{R.raw.parallel_store_buffer}, totalShaderIds);
+        storeBuffer.setResultNames(new String[]{"parallel_store_buffer_results.spv"}, totalResultNames);
+        storeBuffer.setResultIds(new int[]{R.raw.parallel_store_buffer_results}, totalResultIds);
+        storeBuffer.setOutputName("parallel_store_buffer_output.txt", totalOutputNames);
+        storeBuffer.setOutputId(R.raw.parallel_store_buffer_output, totalOutputIds);
+        storeBuffer.setTestParamName("parallel_store_buffer_parameters.txt", totalTestParamNames);
+        storeBuffer.setTestParamId(R.raw.parallel_store_buffer_parameters, totalTestParamIds);
+        storeBuffer.setParamNames(new String[]{"parallel_basic_parameters.txt", "parallel_stress_parameters.txt"}, totalParamNames);
+        storeBuffer.setParamIds(new int[]{R.raw.parallel_basic_parameters, R.raw.parallel_stress_parameters}, totalParamIds);
+        testCases[2] = storeBuffer;
     }
 
     private void copyFile(int fromResId, String toFile) {

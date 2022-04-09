@@ -1,0 +1,2 @@
+/shared/clspv/build/bin/clspv --cl-std=CL2.0 --inline-entry-points store_buffer_results.cl -o store_buffer_results.spv
+/usr/bin/spirv-opt --strip-reflect store_buffer_results.spv -o parallel_store_buffer_results.spv
