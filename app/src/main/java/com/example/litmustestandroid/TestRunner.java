@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class TestRunner extends AppCompatActivity {
 
@@ -46,18 +47,28 @@ public class TestRunner extends AppCompatActivity {
     private Button startButton, closeButton, defaultParamButton, stressParamButton, defaultShaderButton, strongShaderButton;
 
     private static final String TAG = "TestRunner";
-    private static final String TEST_NAME[] = {"parallel_message_passing", "parallel_load_buffer"};
-    private static final String SHADER_NAME[] = {"parallel_message_passing", "parallel_message_passing_strong", "parallel_load_buffer"};
-    private static final String PARAMETER_NAME[] = {"parallel_basic_parameters", "parallel_stress_parameters"};
-    private static final int SHADER_ID[] = {R.raw.parallel_message_passing, R.raw.parallel_message_passing_strong, R.raw.parallel_load_buffer};
-    private static final int RESULT_ID[] = {R.raw.parallel_message_passing_results, R.raw.parallel_load_buffer_results};
-    private static final int OUTPUT_ID[] = {R.raw.parallel_message_passing_output, R.raw.parallel_load_buffer_output};
-    private static final int TEST_PARAM_ID[] = {R.raw.parallel_message_passing_parameters, R.raw.parallel_load_buffer_parameters};
-    private static final int PARAMETER_ID[] = {R.raw.parallel_basic_parameters, R.raw.parallel_stress_parameters};
 
     private Handler handler = new Handler();
 
     private String shaderType = "default";
+
+    private static final int NUMTESTS = 2;
+    private TestCase[] testCases = new TestCase[NUMTESTS];
+
+    public ArrayList<String> totalShaderNames = new ArrayList<String>();
+    public ArrayList<Integer> totalShaderIds = new ArrayList<Integer>();
+
+    public ArrayList<String> totalResultNames = new ArrayList<String>();
+    public ArrayList<Integer> totalResultIds = new ArrayList<Integer>();
+
+    public ArrayList<String> totalOutputNames = new ArrayList<String>();
+    public ArrayList<Integer> totalOutputIds = new ArrayList<Integer>();
+
+    public ArrayList<String> totalTestParamNames = new ArrayList<String>();
+    public ArrayList<Integer> totalTestParamIds = new ArrayList<Integer>();
+
+    public ArrayList<String> totalParamNames = new ArrayList<String>();
+    public ArrayList<Integer> totalParamIds = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +77,7 @@ public class TestRunner extends AppCompatActivity {
         binding = ActivityTestrunnerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        registerTestCases();
         initFileConfig();
 
         binding.litmusTestButton.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +89,40 @@ public class TestRunner extends AppCompatActivity {
         });
 
         displayLitmusTests();
+    }
+
+    private void registerTestCases() {
+        // Message Passing
+        TestCase messagePassing = new TestCase();
+        messagePassing.testType = "weakMemory";
+        messagePassing.testName = "messagePassing";
+        messagePassing.setShaderNames(new String[]{"parallel_message_passing.spv", "parallel_message_passing_strong.spv"}, totalShaderNames);
+        messagePassing.setShaderIds(new int[]{R.raw.parallel_message_passing, R.raw.parallel_message_passing_strong}, totalShaderIds);
+        messagePassing.setResultNames(new String[]{"parallel_message_passing_results.spv"}, totalResultNames);
+        messagePassing.setResultIds(new int[]{R.raw.parallel_message_passing_results}, totalResultIds);
+        messagePassing.setOutputName("parallel_message_passing_output.txt", totalOutputNames);
+        messagePassing.setOutputId(R.raw.parallel_message_passing_output, totalOutputIds);
+        messagePassing.setTestParamName("parallel_message_passing_parameters.txt", totalTestParamNames);
+        messagePassing.setTestParamId(R.raw.parallel_message_passing_parameters, totalTestParamIds);
+        messagePassing.setParamNames(new String[]{"parallel_basic_parameters.txt", "parallel_stress_parameters.txt"}, totalParamNames);
+        messagePassing.setParamIds(new int[]{R.raw.parallel_basic_parameters, R.raw.parallel_stress_parameters}, totalParamIds);
+        testCases[0] = messagePassing;
+
+        // Load Buffer
+        TestCase loadBuffer = new TestCase();
+        loadBuffer.testType = "weakMemory";
+        loadBuffer.testName = "loadBuffer";
+        loadBuffer.setShaderNames(new String[]{"parallel_load_buffer"}, totalShaderNames);
+        loadBuffer.setShaderIds(new int[]{R.raw.parallel_load_buffer}, totalShaderIds);
+        loadBuffer.setResultNames(new String[]{"parallel_load_buffer_results.spv"}, totalResultNames);
+        loadBuffer.setResultIds(new int[]{R.raw.parallel_load_buffer_results}, totalResultIds);
+        loadBuffer.setOutputName("parallel_load_buffer_output.txt", totalOutputNames);
+        loadBuffer.setOutputId(R.raw.parallel_load_buffer_output, totalOutputIds);
+        loadBuffer.setTestParamName("parallel_load_buffer_parameters.txt", totalTestParamNames);
+        loadBuffer.setTestParamId(R.raw.parallel_load_buffer_parameters, totalTestParamIds);
+        loadBuffer.setParamNames(new String[]{"parallel_basic_parameters.txt", "parallel_stress_parameters.txt"}, totalParamNames);
+        loadBuffer.setParamIds(new int[]{R.raw.parallel_basic_parameters, R.raw.parallel_stress_parameters}, totalParamIds);
+        testCases[1] = loadBuffer;
     }
 
     private void copyFile(int fromResId, String toFile) {
@@ -105,36 +151,51 @@ public class TestRunner extends AppCompatActivity {
     }
 
     private void initFileConfig() {
+        // These variables must have same size since they depend on each other
+        if (totalShaderNames.size() != totalShaderIds.size()) {
+            Log.e(TAG, "initFileConfig: totalShaderNames.size do not match totalShaderIds.size");
+        }
+        if (totalResultNames.size() != totalResultIds.size()) {
+            Log.e(TAG, "initFileConfig: totalResultNames.size do not match totalResultIds.size");
+        }
+        if (totalOutputNames.size() != totalOutputIds.size()) {
+            Log.e(TAG, "initFileConfig: totalOutputNames.size do not match totalOutputIds.size");
+        }
+        if (totalTestParamNames.size() != totalTestParamIds.size()) {
+            Log.e(TAG, "initFileConfig: totalTestParamNames.size do not match totalTestParamIds.size");
+        }
+        if (totalParamNames.size() != totalParamIds.size()) {
+            Log.e(TAG, "initFileConfig: totalParamNames.size do not match totalParamIds.size");
+        }
+
         // Transfer shader files
-        for(int i = 0; i < SHADER_NAME.length; i++) {
-            String shaderName = SHADER_NAME[i] + ".spv";
-
-            copyFile(SHADER_ID[i], shaderName);
-            Log.d(TAG, "File: " + shaderName + " copied to " + getFilesDir().toString());
+        for(int i = 0; i < totalShaderNames.size(); i++) {
+            copyFile(totalShaderIds.get(i), totalShaderNames.get(i));
+            Log.d(TAG, "File: " + totalShaderNames.get(i) + " copied to " + getFilesDir().toString());
         }
 
-        // Transfer output, parameters, and result shader files
-        for(int i = 0; i < TEST_NAME.length; i++) {
-            String resultName  = TEST_NAME[i] + "_results.spv";
-            String outputName = TEST_NAME[i] + "_output.txt";
-            String testParamName = TEST_NAME[i] + "_parameters.txt";
-
-            copyFile(RESULT_ID[i], resultName);
-            Log.d(TAG, "File: " + resultName  + " copied to " + getFilesDir().toString());
-
-            copyFile(OUTPUT_ID[i], outputName);
-            Log.d(TAG, "File: " + outputName + " copied to " + getFilesDir().toString());
-
-            copyFile(TEST_PARAM_ID[i], testParamName);
-            Log.d(TAG, "File: " + testParamName + " copied to " + getFilesDir().toString());
+        // Transfer result files
+        for(int i = 0; i < totalResultNames.size(); i++) {
+            copyFile(totalResultIds.get(i), totalResultNames.get(i));
+            Log.d(TAG, "File: " + totalResultNames.get(i) + " copied to " + getFilesDir().toString());
         }
 
-        // Transfer parameter files
-        for(int i = 0; i < PARAMETER_NAME.length; i++) {
-            String parameterName = PARAMETER_NAME[i] + ".txt";
+        // Transfer output files
+        for(int i = 0; i < totalOutputNames.size(); i++) {
+            copyFile(totalOutputIds.get(i), totalOutputNames.get(i));
+            Log.d(TAG, "File: " + totalOutputNames.get(i) + " copied to " + getFilesDir().toString());
+        }
 
-            copyFile(PARAMETER_ID[i], parameterName);
-            Log.d(TAG, "File: " + parameterName  + " copied to " + getFilesDir().toString());
+        // Transfer test param files
+        for(int i = 0; i < totalTestParamNames.size(); i++) {
+            copyFile(totalTestParamIds.get(i), totalTestParamNames.get(i));
+            Log.d(TAG, "File: " + totalTestParamNames.get(i) + " copied to " + getFilesDir().toString());
+        }
+
+        // Transfer param files
+        for(int i = 0; i < totalParamNames.size(); i++) {
+            copyFile(totalParamIds.get(i), totalParamNames.get(i));
+            Log.d(TAG, "File: " + totalParamNames.get(i) + " copied to " + getFilesDir().toString());
         }
     }
 
@@ -161,10 +222,6 @@ public class TestRunner extends AppCompatActivity {
                     parameters[index].setText(words[1]);
                     index++;
                 }
-                /*if (index < parameters.length) {
-                    parameters[index].setText(words[1]);
-                    index++;
-                }*/
                 line = bufferedReader.readLine();
             }
             inputStream.close();
@@ -202,9 +259,6 @@ public class TestRunner extends AppCompatActivity {
                     outputNumber = parameters[index].getText().toString();
                     index++;
                 }
-                /*outputNumber = parameters[index].getText().toString();
-                index++;*/
-
                 String outputLine = words[0] + "=" + outputNumber + newLine;
                 fos.write(outputLine.getBytes());
 
