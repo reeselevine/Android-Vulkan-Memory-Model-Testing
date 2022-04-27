@@ -13,39 +13,46 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
-public class TestRunnerAdapter extends RecyclerView.Adapter<TestRunnerAdapter.TestRunnerViewHolder>{
+public class old_LitmusTestAdapter extends RecyclerView.Adapter<old_LitmusTestAdapter.old_LitmusTestViewHolder>{
 
     String litmusTestName[];
     Context context;
-    TestRunner testRunner;
+    old_MainActivity mainActivity;
 
-    public TestRunnerAdapter(Context ct, String testNames[], TestRunner testRun) {
+    public old_LitmusTestAdapter(Context ct, String testNames[], old_MainActivity mainAct) {
         litmusTestName = testNames;
         context = ct;
-        testRunner = testRun;
+        mainActivity = mainAct;
     }
 
     @NotNull
     @Override
-    public TestRunnerViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
+    public old_LitmusTestViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.testrunner_recylerview_layout, parent, false);
-        return new TestRunnerViewHolder(view);
+        View view = inflater.inflate(R.layout.old_main_recylerview_layout, parent, false);
+        return new old_LitmusTestViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull TestRunnerAdapter.TestRunnerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull @NotNull old_LitmusTestAdapter.old_LitmusTestViewHolder holder, int position) {
         String currentTestName = litmusTestName[position];
+
         holder.testName.setText(currentTestName);
 
-        holder.optionButton.setOnClickListener(new View.OnClickListener() { // Open option menu
+        holder.startButton.setOnClickListener(new View.OnClickListener() { // Start Test
             public void onClick (View v) {
-                testRunner.openOptionMenu(currentTestName, position);
+                holder.startButton.setEnabled(false);
+                holder.startButton.setBackgroundColor(Color.BLUE);
+
+                holder.resultButton.setEnabled(false);
+                holder.resultButton.setBackgroundColor(Color.GRAY);
+                mainActivity.litmusTestStart(currentTestName, position);
+
             }
         });
         holder.resultButton.setOnClickListener(new View.OnClickListener() { // Show Result
             public void onClick (View v) {
-                testRunner.litmusTestResult(currentTestName);
+                mainActivity.litmusTestResult(currentTestName);
             }
         });
     }
@@ -55,17 +62,17 @@ public class TestRunnerAdapter extends RecyclerView.Adapter<TestRunnerAdapter.Te
         return litmusTestName.length;
     }
 
-    public class TestRunnerViewHolder extends RecyclerView.ViewHolder {
+    public class old_LitmusTestViewHolder extends RecyclerView.ViewHolder {
 
         TextView testName;
-        public Button optionButton;
+        public Button startButton;
         public Button resultButton;
         Boolean newTest = true;
 
-        public TestRunnerViewHolder(@NonNull @NotNull View itemView) {
+        public old_LitmusTestViewHolder(@NonNull @org.jetbrains.annotations.NotNull View itemView) {
             super(itemView);
             testName = itemView.findViewById(R.id.testName);
-            optionButton = itemView.findViewById(R.id.optionButton);
+            startButton = itemView.findViewById(R.id.startButton);
             resultButton = itemView.findViewById(R.id.resultButton);
 
             // Temporary

@@ -17,12 +17,12 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
 
     String litmusTestName[];
     Context context;
-    MainActivity mainActivity;
+    MainActivity testRunner;
 
-    public LitmusTestAdapter(Context ct, String testNames[], MainActivity mainAct) {
+    public LitmusTestAdapter(Context ct, String testNames[], MainActivity testRun) {
         litmusTestName = testNames;
         context = ct;
-        mainActivity = mainAct;
+        testRunner = testRun;
     }
 
     @NotNull
@@ -36,23 +36,16 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
     @Override
     public void onBindViewHolder(@NonNull @NotNull LitmusTestAdapter.LitmusTestViewHolder holder, int position) {
         String currentTestName = litmusTestName[position];
-
         holder.testName.setText(currentTestName);
 
-        holder.startButton.setOnClickListener(new View.OnClickListener() { // Start Test
+        holder.optionButton.setOnClickListener(new View.OnClickListener() { // Open option menu
             public void onClick (View v) {
-                holder.startButton.setEnabled(false);
-                holder.startButton.setBackgroundColor(Color.BLUE);
-
-                holder.resultButton.setEnabled(false);
-                holder.resultButton.setBackgroundColor(Color.GRAY);
-                mainActivity.litmusTestStart(currentTestName, position);
-
+                testRunner.openOptionMenu(currentTestName, position);
             }
         });
         holder.resultButton.setOnClickListener(new View.OnClickListener() { // Show Result
             public void onClick (View v) {
-                mainActivity.litmusTestResult(currentTestName);
+                testRunner.litmusTestResult(currentTestName);
             }
         });
     }
@@ -65,14 +58,14 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
     public class LitmusTestViewHolder extends RecyclerView.ViewHolder {
 
         TextView testName;
-        public Button startButton;
+        public Button optionButton;
         public Button resultButton;
         Boolean newTest = true;
 
-        public LitmusTestViewHolder(@NonNull @org.jetbrains.annotations.NotNull View itemView) {
+        public LitmusTestViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             testName = itemView.findViewById(R.id.testName);
-            startButton = itemView.findViewById(R.id.startButton);
+            optionButton = itemView.findViewById(R.id.optionButton);
             resultButton = itemView.findViewById(R.id.resultButton);
 
             // Temporary

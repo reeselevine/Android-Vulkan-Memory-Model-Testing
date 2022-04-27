@@ -32,12 +32,12 @@
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/startButton"
+                    android:id="@+id/optionButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
                     android:backgroundTint="@color/green"
-                    android:text="Start" />
+                    android:text="Option" />
 
             </LinearLayout>
 

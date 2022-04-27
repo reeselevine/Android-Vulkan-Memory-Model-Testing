@@ -3,6 +3,12 @@
 
     <string-array name="litmusTests">
         <item>message_passing</item>
+        <item>load_buffer</item>
+        <item>store_buffer</item>
+    </string-array>
+
+    <string-array name="oldLitmusTests">
+        <item>message_passing</item>
         <item>store</item>
         <item>read</item>
         <item>load_buffer</item>
@@ -22,9 +28,4 @@
         <item>isa2</item>
     </string-array>
 
-    <string-array name="testRunner">
-        <item>message_passing</item>
-        <item>load_buffer</item>
-        <item>store_buffer</item>
-    </string-array>
 </resources>

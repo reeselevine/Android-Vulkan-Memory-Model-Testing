@@ -4,7 +4,7 @@
     android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/resultDialogLayout"
+        android:id="@+id/testOptionLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/parallelTestName"
+            android:id="@+id/testOptionTestName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -49,7 +49,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelTestIteration"
+                        android:id="@+id/testOptionTestIteration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -72,7 +72,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelTestingWorkgroups"
+                        android:id="@+id/testOptionTestingWorkgroups"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -95,7 +95,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelMaxWorkgroups"
+                        android:id="@+id/testOptionMaxWorkgroups"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -118,7 +118,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelMinWorkgroupSize"
+                        android:id="@+id/testOptionMinWorkgroupSize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -141,7 +141,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelMaxWorkgroupSize"
+                        android:id="@+id/testOptionMaxWorkgroupSize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -164,7 +164,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelShufflePct"
+                        android:id="@+id/testOptionShufflePct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -187,7 +187,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelBarrierPct"
+                        android:id="@+id/testOptionBarrierPct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -210,7 +210,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelScratchMemorySize"
+                        android:id="@+id/testOptionScratchMemorySize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -233,7 +233,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelMemoryStride"
+                        android:id="@+id/testOptionMemoryStride"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -256,7 +256,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelMemoryStressPct"
+                        android:id="@+id/testOptionMemoryStressPct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -279,7 +279,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelMemoryStressIterations"
+                        android:id="@+id/testOptionMemoryStressIterations"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -302,7 +302,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelMemOryStressPattern"
+                        android:id="@+id/testOptionMemOryStressPattern"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -325,7 +325,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelPreStressPct"
+                        android:id="@+id/testOptionPreStressPct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -348,7 +348,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelPreStressIterations"
+                        android:id="@+id/testOptionPreStressIterations"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -371,7 +371,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelPreStressPattern"
+                        android:id="@+id/testOptionPreStressPattern"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -394,7 +394,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelStressLineSize"
+                        android:id="@+id/testOptionStressLineSize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -417,7 +417,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelStressTargetLines"
+                        android:id="@+id/testOptionStressTargetLines"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -440,7 +440,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelStressAssignmentStrategy"
+                        android:id="@+id/testOptionStressAssignmentStrategy"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -463,7 +463,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelPermuteFirst"
+                        android:id="@+id/testOptionPermuteFirst"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -486,7 +486,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/parallelPermuteSecond"
+                        android:id="@+id/testOptionPermuteSecond"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -513,7 +513,7 @@
                         android:orientation="horizontal">
 
                         <Button
-                            android:id="@+id/parallelDefaultParamButton"
+                            android:id="@+id/testOptionDefaultParamButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
@@ -523,7 +523,7 @@
                             android:textColor="@color/black"/>
 
                         <Button
-                            android:id="@+id/parallelStressParamButton"
+                            android:id="@+id/testOptionStressParamButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
@@ -553,7 +553,7 @@
                         android:orientation="horizontal">
 
                         <Button
-                            android:id="@+id/parallelDefaultShaderButton"
+                            android:id="@+id/testOptionDefaultShaderButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
@@ -563,7 +563,7 @@
                             android:textColor="@color/black"/>
 
                         <Button
-                            android:id="@+id/parallelStrongShaderButton"
+                            android:id="@+id/testOptionStrongShaderButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
@@ -585,7 +585,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/parallelStartButton"
+                android:id="@+id/testOptionStartButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -594,7 +594,7 @@
                 android:text="START" />
 
             <Button
-                android:id="@+id/parallelCloseButton"
+                android:id="@+id/testOptionCloseButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
