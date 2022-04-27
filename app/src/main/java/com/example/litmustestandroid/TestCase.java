@@ -30,6 +30,10 @@ public class TestCase {
         }
     }
 
+    public String[] getShaderNames(){
+        return shaderNames;
+    }
+
     public void setShaderIds(int[] newShaderIds, ArrayList<Integer> totalShaderIds) {
         this.shaderIds = newShaderIds;
         for(int i = 0; i < newShaderIds.length; i++) {

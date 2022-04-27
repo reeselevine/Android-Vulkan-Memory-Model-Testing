@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -35,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private RecyclerView litmusTestRV;
     private LitmusTestAdapter litmusTestAdapter;
+
+    private AutoCompleteTextView autoCompleteTextView;
+    private ArrayAdapter<String> adapterItems;
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog optionDialog;
@@ -91,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
         // Message Passing
         TestCase messagePassing = new TestCase();
         messagePassing.testType = "weakMemory";
-        messagePassing.testName = "messagePassing";
-        messagePassing.setShaderNames(new String[]{"litmustest_message_passing.spv", "litmustest_message_passing_strong.spv"}, totalShaderNames);
-        messagePassing.setShaderIds(new int[]{R.raw.litmustest_message_passing, R.raw.litmustest_message_passing_strong}, totalShaderIds);
+        messagePassing.testName = "message_passing";
+        messagePassing.setShaderNames(new String[]{"litmustest_message_passing_default.spv", "litmustest_message_passing_strong.spv"}, totalShaderNames);
+        messagePassing.setShaderIds(new int[]{R.raw.litmustest_message_passing_default, R.raw.litmustest_message_passing_strong}, totalShaderIds);
         messagePassing.setResultNames(new String[]{"litmustest_message_passing_results.spv"}, totalResultNames);
         messagePassing.setResultIds(new int[]{R.raw.litmustest_message_passing_results}, totalResultIds);
         messagePassing.setOutputName("litmustest_message_passing_output.txt", totalOutputNames);
@@ -107,9 +114,9 @@ public class MainActivity extends AppCompatActivity {
         // Load Buffer
         TestCase loadBuffer = new TestCase();
         loadBuffer.testType = "weakMemory";
-        loadBuffer.testName = "loadBuffer";
-        loadBuffer.setShaderNames(new String[]{"litmustest_load_buffer.spv"}, totalShaderNames);
-        loadBuffer.setShaderIds(new int[]{R.raw.litmustest_load_buffer}, totalShaderIds);
+        loadBuffer.testName = "load_buffer";
+        loadBuffer.setShaderNames(new String[]{"litmustest_load_buffer_default.spv"}, totalShaderNames);
+        loadBuffer.setShaderIds(new int[]{R.raw.litmustest_load_buffer_default}, totalShaderIds);
         loadBuffer.setResultNames(new String[]{"litmustest_load_buffer_results.spv"}, totalResultNames);
         loadBuffer.setResultIds(new int[]{R.raw.litmustest_load_buffer_results}, totalResultIds);
         loadBuffer.setOutputName("litmustest_load_buffer_output.txt", totalOutputNames);
@@ -123,9 +130,9 @@ public class MainActivity extends AppCompatActivity {
         // Store Buffer
         TestCase storeBuffer = new TestCase();
         storeBuffer.testType = "weakMemory";
-        storeBuffer.testName = "storeBuffer";
-        storeBuffer.setShaderNames(new String[]{"litmustest_store_buffer.spv"}, totalShaderNames);
-        storeBuffer.setShaderIds(new int[]{R.raw.litmustest_store_buffer}, totalShaderIds);
+        storeBuffer.testName = "store_buffer";
+        storeBuffer.setShaderNames(new String[]{"litmustest_store_buffer_default.spv"}, totalShaderNames);
+        storeBuffer.setShaderIds(new int[]{R.raw.litmustest_store_buffer_default}, totalShaderIds);
         storeBuffer.setResultNames(new String[]{"litmustest_store_buffer_results.spv"}, totalResultNames);
         storeBuffer.setResultIds(new int[]{R.raw.litmustest_store_buffer_results}, totalResultIds);
         storeBuffer.setOutputName("litmustest_store_buffer_output.txt", totalOutputNames);
@@ -135,6 +142,15 @@ public class MainActivity extends AppCompatActivity {
         storeBuffer.setParamNames(new String[]{"parameters_basic_parameters.txt", "parameters_stress_parameters.txt"}, totalParamNames);
         storeBuffer.setParamIds(new int[]{R.raw.parameters_basic, R.raw.parameters_stress}, totalParamIds);
         testCases[2] = storeBuffer;
+    }
+
+    public TestCase findTestCase(String testName) {
+        for (int i = 0; i < testCases.length; i++) {
+            if(testCases[i].testName.equals(testName)) {
+                return testCases[i];
+            }
+        }
+        return null;
     }
 
     private void copyFile(int fromResId, String toFile) {
@@ -315,6 +331,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void initializeShaderMenu(String testName, View optionMenuView) {
+        autoCompleteTextView = optionMenuView.findViewById(R.id.shaderOptionAutoCompleteText);
+
+        TestCase currTestCase = findTestCase(testName);
+        if(currTestCase != null) {
+            adapterItems = new ArrayAdapter<String>(this, R.layout.shader_option_list_item, currTestCase.getShaderNames());
+            autoCompleteTextView.setAdapter(adapterItems);
+            autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    String item = adapterView.getItemAtPosition(i).toString();
+                    shaderType = item;
+                }
+            });
+        }
+        else {
+            Log.e(TAG, "initializeShaderMenu(), currTestCase is NULL");
+        }
+
+    }
+
     public void openOptionMenu(String testName, int position) {
         Log.i("TEST", testName + " PRESSED, OPENING OPTION MENU");
 
@@ -351,8 +388,6 @@ public class MainActivity extends AppCompatActivity {
         closeButton = (Button) optionMenuView.findViewById(R.id.testOptionCloseButton);
         defaultParamButton = (Button) optionMenuView.findViewById(R.id.testOptionDefaultParamButton);
         stressParamButton = (Button) optionMenuView.findViewById(R.id.testOptionStressParamButton);
-        defaultShaderButton = (Button) optionMenuView.findViewById(R.id.testOptionDefaultShaderButton);
-        strongShaderButton = (Button) optionMenuView.findViewById(R.id.testOptionStrongShaderButton);
 
         dialogBuilder.setView(optionMenuView);
         optionDialog = dialogBuilder.create();
@@ -364,6 +399,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Reset shader type
         shaderType = "default";
+
+        // Initialize shader drop down option menu
+        initializeShaderMenu(testName, optionMenuView);
 
         // Load default parameter
         defaultParamButton.setOnClickListener(new View.OnClickListener() {
@@ -382,26 +420,6 @@ public class MainActivity extends AppCompatActivity {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 loadParameters(R.raw.parameters_stress);
-            }
-        });
-
-        // Indicate to use default shader
-        defaultShaderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                defaultShaderButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
-                strongShaderButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                shaderType = "default";
-            }
-        });
-
-        // Indicate to use strong shader
-        strongShaderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                strongShaderButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
-                defaultShaderButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                shaderType = "strong";
             }
         });
 
@@ -429,12 +447,7 @@ public class MainActivity extends AppCompatActivity {
                         testArgument[0] = "litmustest_" + testName; // Test Name
 
                         // Shader Name
-                        if (shaderType == "default") {
-                            testArgument[1] = "litmustest_" + testName;
-                        }
-                        else {
-                            testArgument[1] = "litmustest_" + testName + "_" + shaderType;
-                        }
+                        testArgument[1] = "litmustest_" + testName + "_" + shaderType;
 
                         testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
                         testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name

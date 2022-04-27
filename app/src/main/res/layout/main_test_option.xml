@@ -547,32 +547,50 @@
                         android:textStyle="bold">
                     </TextView>
 
-                    <LinearLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/testOptionDefaultShaderButton"
-                            android:layout_width="0dp"
+                        android:layout_margin="10dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                        <AutoCompleteTextView
+                            android:id="@+id/shaderOptionAutoCompleteText"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/teal_200"
-                            android:text="Default"
-                            android:textColor="@color/black"/>
+                            android:inputType="none"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                        <Button
-                            android:id="@+id/testOptionStrongShaderButton"
-                            android:layout_width="0dp"
+                    <!--ScrollView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
-                            android:layout_weight="1"
-                            android:backgroundTint="@color/lightgray"
-                            android:text="Strong"
-                            android:textColor="@color/black"/>
+                            android:orientation="horizontal">
 
-                    </LinearLayout>
+                            <Button
+                                android:id="@+id/testOptionDefaultShaderButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/teal_200"
+                                android:text="Default"
+                                android:textColor="@color/black"/>
+
+                            <Button
+                                android:id="@+id/testOptionStrongShaderButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="@color/lightgray"
+                                android:text="Strong"
+                                android:textColor="@color/black"/>
+
+                        </LinearLayout>
+                    </ScrollView-->
+
                 </LinearLayout>
 
             </LinearLayout>
