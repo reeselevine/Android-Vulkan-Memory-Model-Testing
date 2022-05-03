@@ -74,7 +74,7 @@ __kernel void litmus_test (
     atomic_store_explicit(&test_locations[y_1], 1, memory_order_relaxed);
     uint r1 = atomic_load_explicit(&test_locations[x_1], memory_order_relaxed);
     atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_device);
-    atomic_store(&read_results[id_1*2], r0);
+    atomic_store(&read_results[id_0*2], r0);
     atomic_store(&read_results[id_1*2 + 1], r1);
   } else if (stress_params[1]) {
     do_stress(scratchpad, scratch_locations, stress_params[2], stress_params[3]);

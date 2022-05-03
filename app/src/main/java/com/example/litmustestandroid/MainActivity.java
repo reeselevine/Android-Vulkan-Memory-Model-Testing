@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -20,6 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.litmustestandroid.databinding.ActivityMainBinding;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -53,25 +56,15 @@ public class MainActivity extends AppCompatActivity {
 
     private Handler handler = new Handler();
 
-    private String shaderType = "default";
+    private String shaderType = "";
 
-    private static final int NUMTESTS = 3;
-    private TestCase[] testCases = new TestCase[NUMTESTS];
+    private ArrayList<TestCase> testCases = new ArrayList<>();
 
     public ArrayList<String> totalShaderNames = new ArrayList<String>();
-    public ArrayList<Integer> totalShaderIds = new ArrayList<Integer>();
-
     public ArrayList<String> totalResultNames = new ArrayList<String>();
-    public ArrayList<Integer> totalResultIds = new ArrayList<Integer>();
-
     public ArrayList<String> totalOutputNames = new ArrayList<String>();
-    public ArrayList<Integer> totalOutputIds = new ArrayList<Integer>();
-
     public ArrayList<String> totalTestParamNames = new ArrayList<String>();
-    public ArrayList<Integer> totalTestParamIds = new ArrayList<Integer>();
-
-    public ArrayList<String> totalParamNames = new ArrayList<String>();
-    public ArrayList<Integer> totalParamIds = new ArrayList<Integer>();
+    public ArrayList<String> totalParamPresetNames = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,72 +75,66 @@ public class MainActivity extends AppCompatActivity {
 
         registerTestCases();
         initFileConfig();
-
-        /*binding.litmusTestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(i);
-            }
-        });*/
-
         displayLitmusTests();
     }
 
+    private String JsonDataFromAsset() {
+        String json = null;
+        try {
+            InputStream inputStream = getAssets().open("test_list.json");
+            int sizeOfFile = inputStream.available();
+            byte[] bufferData = new byte[sizeOfFile];
+            inputStream.read(bufferData);
+            inputStream.close();
+            json = new String(bufferData, "UTF-8");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
     private void registerTestCases() {
-        // Message Passing
-        TestCase messagePassing = new TestCase();
-        messagePassing.testType = "weakMemory";
-        messagePassing.testName = "message_passing";
-        messagePassing.setShaderNames(new String[]{"litmustest_message_passing_default.spv", "litmustest_message_passing_strong.spv"}, totalShaderNames);
-        messagePassing.setShaderIds(new int[]{R.raw.litmustest_message_passing_default, R.raw.litmustest_message_passing_strong}, totalShaderIds);
-        messagePassing.setResultNames(new String[]{"litmustest_message_passing_results.spv"}, totalResultNames);
-        messagePassing.setResultIds(new int[]{R.raw.litmustest_message_passing_results}, totalResultIds);
-        messagePassing.setOutputName("litmustest_message_passing_output.txt", totalOutputNames);
-        messagePassing.setOutputId(R.raw.litmustest_message_passing_output, totalOutputIds);
-        messagePassing.setTestParamName("litmustest_message_passing_parameters.txt", totalTestParamNames);
-        messagePassing.setTestParamId(R.raw.litmustest_message_passing_parameters, totalTestParamIds);
-        messagePassing.setParamNames(new String[]{"parameters_basic_parameters.txt", "parameters_stress_parameters.txt"}, totalParamNames);
-        messagePassing.setParamIds(new int[]{R.raw.parameters_basic, R.raw.parameters_stress}, totalParamIds);
-        testCases[0] = messagePassing;
+        try {
+            JSONObject testJsonObject = new JSONObject(JsonDataFromAsset());
+            JSONArray testArray = testJsonObject.getJSONArray("tests");
+            for (int i = 0; i < testArray.length(); i++) {
+                JSONObject testData = testArray.getJSONObject(i);
 
-        // Load Buffer
-        TestCase loadBuffer = new TestCase();
-        loadBuffer.testType = "weakMemory";
-        loadBuffer.testName = "load_buffer";
-        loadBuffer.setShaderNames(new String[]{"litmustest_load_buffer_default.spv"}, totalShaderNames);
-        loadBuffer.setShaderIds(new int[]{R.raw.litmustest_load_buffer_default}, totalShaderIds);
-        loadBuffer.setResultNames(new String[]{"litmustest_load_buffer_results.spv"}, totalResultNames);
-        loadBuffer.setResultIds(new int[]{R.raw.litmustest_load_buffer_results}, totalResultIds);
-        loadBuffer.setOutputName("litmustest_load_buffer_output.txt", totalOutputNames);
-        loadBuffer.setOutputId(R.raw.litmustest_load_buffer_output, totalOutputIds);
-        loadBuffer.setTestParamName("litmustest_load_buffer_parameters.txt", totalTestParamNames);
-        loadBuffer.setTestParamId(R.raw.litmustest_load_buffer_parameters, totalTestParamIds);
-        loadBuffer.setParamNames(new String[]{"parameters_basic_parameters.txt", "parameters_stress_parameters.txt"}, totalParamNames);
-        loadBuffer.setParamIds(new int[]{R.raw.parameters_basic, R.raw.parameters_stress}, totalParamIds);
-        testCases[1] = loadBuffer;
+                TestCase newTest = new TestCase();
+                newTest.testName = testData.getString("name");
+                newTest.testType = testData.getString("type");
 
-        // Store Buffer
-        TestCase storeBuffer = new TestCase();
-        storeBuffer.testType = "weakMemory";
-        storeBuffer.testName = "store_buffer";
-        storeBuffer.setShaderNames(new String[]{"litmustest_store_buffer_default.spv"}, totalShaderNames);
-        storeBuffer.setShaderIds(new int[]{R.raw.litmustest_store_buffer_default}, totalShaderIds);
-        storeBuffer.setResultNames(new String[]{"litmustest_store_buffer_results.spv"}, totalResultNames);
-        storeBuffer.setResultIds(new int[]{R.raw.litmustest_store_buffer_results}, totalResultIds);
-        storeBuffer.setOutputName("litmustest_store_buffer_output.txt", totalOutputNames);
-        storeBuffer.setOutputId(R.raw.litmustest_store_buffer_output, totalOutputIds);
-        storeBuffer.setTestParamName("litmustest_store_buffer_parameters.txt", totalTestParamNames);
-        storeBuffer.setTestParamId(R.raw.litmustest_store_buffer_parameters, totalTestParamIds);
-        storeBuffer.setParamNames(new String[]{"parameters_basic_parameters.txt", "parameters_stress_parameters.txt"}, totalParamNames);
-        storeBuffer.setParamIds(new int[]{R.raw.parameters_basic, R.raw.parameters_stress}, totalParamIds);
-        testCases[2] = storeBuffer;
+                JSONArray shaderArray = testData.getJSONArray("shaders");
+                String[] shaderNames = new String[shaderArray.length()];
+                for(int j = 0; j < shaderArray.length(); j++) {
+                    shaderNames[j] = shaderArray.getString(j);
+                }
+                newTest.setShaderNames(shaderNames, totalShaderNames);
+
+                newTest.setResultName(testData.getString("result"), totalResultNames);
+                newTest.setOutputName(testData.getString("output"), totalOutputNames);
+                newTest.setTestParamName(testData.getString("parameter"), totalTestParamNames);
+
+                JSONArray paramPresetArray = testData.getJSONArray("parameter_presets");
+                String[] paramPresetNames = new String[paramPresetArray.length()];
+                for(int j = 0; j < paramPresetArray.length(); j++) {
+                    paramPresetNames[j] = paramPresetArray.getString(j);
+                }
+                newTest.setParamPresetNames(paramPresetNames, totalParamPresetNames);
+
+                testCases.add(newTest);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public TestCase findTestCase(String testName) {
-        for (int i = 0; i < testCases.length; i++) {
-            if(testCases[i].testName.equals(testName)) {
-                return testCases[i];
+        for (int i = 0; i < testCases.size(); i++) {
+            if(testCases.get(i).testName.equals(testName)) {
+                return testCases.get(i);
             }
         }
         return null;
@@ -179,51 +166,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initFileConfig() {
-        // These variables must have same size since they depend on each other
-        if (totalShaderNames.size() != totalShaderIds.size()) {
-            Log.e(TAG, "initFileConfig: totalShaderNames.size do not match totalShaderIds.size");
-        }
-        if (totalResultNames.size() != totalResultIds.size()) {
-            Log.e(TAG, "initFileConfig: totalResultNames.size do not match totalResultIds.size");
-        }
-        if (totalOutputNames.size() != totalOutputIds.size()) {
-            Log.e(TAG, "initFileConfig: totalOutputNames.size do not match totalOutputIds.size");
-        }
-        if (totalTestParamNames.size() != totalTestParamIds.size()) {
-            Log.e(TAG, "initFileConfig: totalTestParamNames.size do not match totalTestParamIds.size");
-        }
-        if (totalParamNames.size() != totalParamIds.size()) {
-            Log.e(TAG, "initFileConfig: totalParamNames.size do not match totalParamIds.size");
-        }
-
         // Transfer shader files
         for(int i = 0; i < totalShaderNames.size(); i++) {
-            copyFile(totalShaderIds.get(i), totalShaderNames.get(i));
-            Log.d(TAG, "File: " + totalShaderNames.get(i) + " copied to " + getFilesDir().toString());
+            int shaderId = this.getResources().getIdentifier(totalShaderNames.get(i), "raw", this.getPackageName());
+            copyFile(shaderId, totalShaderNames.get(i) + ".spv");
+            Log.d(TAG, "File: " + totalShaderNames.get(i) + ".spv copied to " + getFilesDir().toString());
         }
 
         // Transfer result files
         for(int i = 0; i < totalResultNames.size(); i++) {
-            copyFile(totalResultIds.get(i), totalResultNames.get(i));
-            Log.d(TAG, "File: " + totalResultNames.get(i) + " copied to " + getFilesDir().toString());
+            int resultId = this.getResources().getIdentifier(totalResultNames.get(i), "raw", this.getPackageName());
+            copyFile(resultId, totalResultNames.get(i) + ".spv");
+            Log.d(TAG, "File: " + totalResultNames.get(i) + ".spv copied to " + getFilesDir().toString());
         }
 
         // Transfer output files
         for(int i = 0; i < totalOutputNames.size(); i++) {
-            copyFile(totalOutputIds.get(i), totalOutputNames.get(i));
-            Log.d(TAG, "File: " + totalOutputNames.get(i) + " copied to " + getFilesDir().toString());
+            int outputId = this.getResources().getIdentifier(totalOutputNames.get(i), "raw", this.getPackageName());
+            copyFile(outputId, totalOutputNames.get(i) + ".txt");
+            Log.d(TAG, "File: " + totalOutputNames.get(i) + ".txt copied to " + getFilesDir().toString());
         }
 
         // Transfer test param files
         for(int i = 0; i < totalTestParamNames.size(); i++) {
-            copyFile(totalTestParamIds.get(i), totalTestParamNames.get(i));
-            Log.d(TAG, "File: " + totalTestParamNames.get(i) + " copied to " + getFilesDir().toString());
+            int testParamId = this.getResources().getIdentifier(totalTestParamNames.get(i), "raw", this.getPackageName());
+            copyFile(testParamId, totalTestParamNames.get(i) + ".txt");
+            Log.d(TAG, "File: " + totalTestParamNames.get(i) + ".txt copied to " + getFilesDir().toString());
         }
 
         // Transfer param files
-        for(int i = 0; i < totalParamNames.size(); i++) {
-            copyFile(totalParamIds.get(i), totalParamNames.get(i));
-            Log.d(TAG, "File: " + totalParamNames.get(i) + " copied to " + getFilesDir().toString());
+        for(int i = 0; i < totalParamPresetNames.size(); i++) {
+            int paramPresetId = this.getResources().getIdentifier(totalParamPresetNames.get(i), "raw", this.getPackageName());
+            copyFile(paramPresetId, totalParamPresetNames.get(i) + ".txt");
+            Log.d(TAG, "File: " + totalParamPresetNames.get(i) + ".txt copied to " + getFilesDir().toString());
         }
     }
 
@@ -398,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
         optionDialog.show();
 
         // Reset shader type
-        shaderType = "default";
+        shaderType = "litmustest_" + testName + "_default";
 
         // Initialize shader drop down option menu
         initializeShaderMenu(testName, optionMenuView);
@@ -447,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
                         testArgument[0] = "litmustest_" + testName; // Test Name
 
                         // Shader Name
-                        testArgument[1] = "litmustest_" + testName + "_" + shaderType;
+                        testArgument[1] = shaderType;
 
                         testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
                         testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name

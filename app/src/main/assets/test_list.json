@@ -1,0 +1,47 @@
+{
+  "tests": [
+    {
+      "name": "message_passing",
+      "type": "weakMemory",
+      "shaders": [
+        "litmustest_message_passing_default",
+        "litmustest_message_passing_strong"
+      ],
+      "result": "litmustest_message_passing_results",
+      "output": "litmustest_message_passing_output",
+      "parameter": "litmustest_message_passing_parameters",
+      "parameter_presets": [
+        "parameters_basic",
+        "parameters_stress"
+      ]
+    },
+    {
+      "name": "load_buffer",
+      "type": "weakMemory",
+      "shaders": [
+        "litmustest_load_buffer_default"
+      ],
+      "result": "litmustest_load_buffer_results",
+      "output": "litmustest_load_buffer_output",
+      "parameter": "litmustest_load_buffer_parameters",
+      "parameter_presets": [
+        "parameters_basic",
+        "parameters_stress"
+      ]
+    },
+    {
+      "name": "store_buffer",
+      "type": "weakMemory",
+      "shaders": [
+        "litmustest_store_buffer_default"
+      ],
+      "result": "litmustest_store_buffer_results",
+      "output": "litmustest_store_buffer_output",
+      "parameter": "litmustest_store_buffer_parameters",
+      "parameter_presets": [
+        "parameters_basic",
+        "parameters_stress"
+      ]
+    }
+  ]
+}
