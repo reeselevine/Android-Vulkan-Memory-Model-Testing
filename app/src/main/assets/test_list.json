@@ -5,11 +5,49 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_message_passing_default",
-        "litmustest_message_passing_strong"
+        "litmustest_message_passing_barrier",
+        "litmustest_message_passing_storage_workgroup",
+        "litmustest_message_passing_storage_workgroup_barrier",
+        "litmustest_message_passing_strong",
+        "litmustest_message_passing_workgroup",
+        "litmustest_message_passing_workgroup_barrier"
       ],
       "result": "litmustest_message_passing_results",
       "output": "litmustest_message_passing_output",
       "parameter": "litmustest_message_passing_parameters",
+      "parameter_presets": [
+        "parameters_basic",
+        "parameters_stress"
+      ]
+    },
+    {
+      "name": "store",
+      "type": "weakMemory",
+      "shaders": [
+        "litmustest_store_default",
+        "litmustest_store_barrier",
+        "litmustest_store_storage_workgroup",
+        "litmustest_store_storage_workgroup_barrier",
+        "litmustest_store_workgroup",
+        "litmustest_store_workgroup_barrier"
+      ],
+      "result": "litmustest_store_results",
+      "output": "litmustest_store_output",
+      "parameter": "litmustest_store_parameters",
+      "parameter_presets": [
+        "parameters_basic",
+        "parameters_stress"
+      ]
+    },
+    {
+      "name": "read",
+      "type": "weakMemory",
+      "shaders": [
+        "litmustest_read_default"
+      ],
+      "result": "litmustest_read_results",
+      "output": "litmustest_read_output",
+      "parameter": "litmustest_read_parameters",
       "parameter_presets": [
         "parameters_basic",
         "parameters_stress"
@@ -38,6 +76,20 @@
       "result": "litmustest_store_buffer_results",
       "output": "litmustest_store_buffer_output",
       "parameter": "litmustest_store_buffer_parameters",
+      "parameter_presets": [
+        "parameters_basic",
+        "parameters_stress"
+      ]
+    },
+    {
+      "name": "22_write",
+      "type": "weakMemory",
+      "shaders": [
+        "litmustest_22_write_default"
+      ],
+      "result": "litmustest_22_write_results",
+      "output": "litmustest_22_write_output",
+      "parameter": "litmustest_22_write_parameters",
       "parameter_presets": [
         "parameters_basic",
         "parameters_stress"
