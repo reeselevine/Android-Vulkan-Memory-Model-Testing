@@ -1,13 +1,31 @@
 <resources>
     <string name="app_name">LitmusTestAndroid</string>
 
-    <string-array name="litmusTests">
+    <string-array name="weakMemoryTests">
         <item>message_passing</item>
         <item>store</item>
         <item>read</item>
         <item>load_buffer</item>
         <item>store_buffer</item>
         <item>22_write</item>
+    </string-array>
+
+    <string-array name="coherenceTests">
+        <item>corr</item>
+        <item>coww</item>
+        <item>cowr</item>
+        <item>corw1</item>
+        <item>corw2</item>
+    </string-array>
+
+    <string-array name="atomicityTests">
+        <item>atomicity</item>
+    </string-array>
+
+    <string-array name="barrierTests">
+        <item>barrier_store_load</item>
+        <item>barrier_load_store</item>
+        <item>barrier_store_store</item>
     </string-array>
 
     <string-array name="oldLitmusTests">

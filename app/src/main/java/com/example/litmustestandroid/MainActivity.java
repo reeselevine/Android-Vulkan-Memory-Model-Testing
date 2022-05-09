@@ -40,8 +40,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ActivityMainBinding binding;
-    private RecyclerView litmusTestRV;
-    private LitmusTestAdapter litmusTestAdapter;
+
+    private RecyclerView weakMemoryTestsRV;
+    private LitmusTestAdapter weakMemoryTestsAdapter;
+    private RecyclerView coherenceTestsRV;
+    private LitmusTestAdapter coherenceTestsAdapter;
+    private RecyclerView atomicityTestsRV;
+    private LitmusTestAdapter atomicityTestsAdapter;
+    private RecyclerView barrierTestsRV;
+    private LitmusTestAdapter barrierTestsAdapter;
 
     private AutoCompleteTextView autoCompleteTextView;
     private ArrayAdapter<String> adapterItems;
@@ -203,12 +210,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayLitmusTests() {
-        String litmusTestName[] = getResources().getStringArray(R.array.litmusTests);
-        litmusTestRV = findViewById(R.id.LitmusTestRecyclerView);
+        // Weak Memory Tests
+        String weakMemoryTestNames[] = getResources().getStringArray(R.array.weakMemoryTests);
+        weakMemoryTestsRV = findViewById(R.id.weakMemoryTestsRecyclerView);
 
-        litmusTestAdapter = new LitmusTestAdapter(this, litmusTestName, MainActivity.this);
-        litmusTestRV.setAdapter(litmusTestAdapter);
-        litmusTestRV.setLayoutManager(new LinearLayoutManager(this));
+        weakMemoryTestsAdapter = new LitmusTestAdapter(this, weakMemoryTestNames, MainActivity.this);
+        weakMemoryTestsRV.setAdapter(weakMemoryTestsAdapter);
+        weakMemoryTestsRV.setLayoutManager(new LinearLayoutManager(this));
+
+        // Coherence Tests
+        String coherenceTestNames[] = getResources().getStringArray(R.array.coherenceTests);
+        coherenceTestsRV = findViewById(R.id.coherenceTestsRecyclerView);
+
+        coherenceTestsAdapter = new LitmusTestAdapter(this, coherenceTestNames, MainActivity.this);
+        coherenceTestsRV.setAdapter(coherenceTestsAdapter);
+        coherenceTestsRV.setLayoutManager(new LinearLayoutManager(this));
+
+        // Atomicity Tests
+        String atomicityTestNames[] = getResources().getStringArray(R.array.atomicityTests);
+        atomicityTestsRV = findViewById(R.id.atomicityTestsRecyclerView);
+
+        atomicityTestsAdapter = new LitmusTestAdapter(this, atomicityTestNames, MainActivity.this);
+        atomicityTestsRV.setAdapter(atomicityTestsAdapter);
+        atomicityTestsRV.setLayoutManager(new LinearLayoutManager(this));
+
+        // Barrier Tests
+        String barrierTestNames[] = getResources().getStringArray(R.array.barrierTests);
+        barrierTestsRV = findViewById(R.id.barrierTestsRecyclerView);
+
+        barrierTestsAdapter = new LitmusTestAdapter(this, barrierTestNames, MainActivity.this);
+        barrierTestsRV.setAdapter(barrierTestsAdapter);
+        barrierTestsRV.setLayoutManager(new LinearLayoutManager(this));
     }
 
     // Automatically fill parameters with basic values
@@ -280,30 +312,136 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void enableNonRunningTests(int position, boolean enabled){
-        int childCount = litmusTestRV.getChildCount();
+    public void enableNonRunningTests(int position, boolean enabled, RecyclerView testRV){
+        int childCount = weakMemoryTestsRV.getChildCount();
         for(int i = 0; i < childCount; i++) {
-            final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) litmusTestRV.getChildViewHolder(litmusTestRV.getChildAt(i));
-            if(i != position) {
-                viewHolder.optionButton.setEnabled(enabled);
-                viewHolder.resultButton.setEnabled(enabled);
+            final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) weakMemoryTestsRV.getChildViewHolder(weakMemoryTestsRV.getChildAt(i));
+            if (testRV == weakMemoryTestsRV && i == position) {
+                continue;
+            }
+            viewHolder.optionButton.setEnabled(enabled);
+            viewHolder.resultButton.setEnabled(enabled);
 
-                if(enabled) {
-                    viewHolder.optionButton.setBackgroundColor(Color.GREEN);
-                    if(viewHolder.newTest) { // If Test is still new, stay GRAY
-                        viewHolder.resultButton.setEnabled(false);
-                        viewHolder.resultButton.setBackgroundColor(Color.GRAY);
-                    }
-                    else { // If this Test has result existing, turn RED
-                        viewHolder.resultButton.setBackgroundColor(Color.RED);
-                    }
-                }
-                else {
-                    viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+            if(enabled) {
+                viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                if(viewHolder.newTest) { // If Test is still new, stay GRAY
+                    viewHolder.resultButton.setEnabled(false);
                     viewHolder.resultButton.setBackgroundColor(Color.GRAY);
                 }
+                else { // If this Test has result existing, turn RED
+                    viewHolder.resultButton.setBackgroundColor(Color.RED);
+                }
+            }
+            else {
+                viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+                viewHolder.resultButton.setBackgroundColor(Color.GRAY);
             }
         }
+        childCount = coherenceTestsRV.getChildCount();
+        for(int i = 0; i < childCount; i++) {
+            final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) coherenceTestsRV.getChildViewHolder(coherenceTestsRV.getChildAt(i));
+            if (testRV == coherenceTestsRV && i == position) {
+                continue;
+            }
+            viewHolder.optionButton.setEnabled(enabled);
+            viewHolder.resultButton.setEnabled(enabled);
+
+            if(enabled) {
+                viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                if(viewHolder.newTest) { // If Test is still new, stay GRAY
+                    viewHolder.resultButton.setEnabled(false);
+                    viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+                }
+                else { // If this Test has result existing, turn RED
+                    viewHolder.resultButton.setBackgroundColor(Color.RED);
+                }
+            }
+            else {
+                viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+                viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+            }
+        }
+        childCount = atomicityTestsRV.getChildCount();
+        for(int i = 0; i < childCount; i++) {
+            final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) atomicityTestsRV.getChildViewHolder(atomicityTestsRV.getChildAt(i));
+            if (testRV == atomicityTestsRV && i == position) {
+                continue;
+            }
+            viewHolder.optionButton.setEnabled(enabled);
+            viewHolder.resultButton.setEnabled(enabled);
+
+            if(enabled) {
+                viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                if(viewHolder.newTest) { // If Test is still new, stay GRAY
+                    viewHolder.resultButton.setEnabled(false);
+                    viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+                }
+                else { // If this Test has result existing, turn RED
+                    viewHolder.resultButton.setBackgroundColor(Color.RED);
+                }
+            }
+            else {
+                viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+                viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+            }
+        }
+        childCount = barrierTestsRV.getChildCount();
+        for(int i = 0; i < childCount; i++) {
+            final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) barrierTestsRV.getChildViewHolder(barrierTestsRV.getChildAt(i));
+            if (testRV == barrierTestsRV && i == position) {
+                continue;
+            }
+            viewHolder.optionButton.setEnabled(enabled);
+            viewHolder.resultButton.setEnabled(enabled);
+
+            if(enabled) {
+                viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                if(viewHolder.newTest) { // If Test is still new, stay GRAY
+                    viewHolder.resultButton.setEnabled(false);
+                    viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+                }
+                else { // If this Test has result existing, turn RED
+                    viewHolder.resultButton.setBackgroundColor(Color.RED);
+                }
+            }
+            else {
+                viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+                viewHolder.resultButton.setBackgroundColor(Color.GRAY);
+            }
+        }
+    }
+
+    public RecyclerView findRecyclerView(String testName) {
+        RecyclerView resultRV = null;
+        int childCount = weakMemoryTestsRV.getChildCount();
+        for(int i = 0; i < childCount; i++) {
+            final LitmusTestAdapter.LitmusTestViewHolder weakMemoryViewHolder = (LitmusTestAdapter.LitmusTestViewHolder) weakMemoryTestsRV.getChildViewHolder(weakMemoryTestsRV.getChildAt(i));
+            if (weakMemoryViewHolder.testName.getText().toString().equals(testName)) {
+                resultRV = weakMemoryTestsRV;
+            }
+        }
+        childCount = coherenceTestsRV.getChildCount();
+        for(int i = 0; i < childCount; i++) {
+            final LitmusTestAdapter.LitmusTestViewHolder coherenceViewHolder = (LitmusTestAdapter.LitmusTestViewHolder) coherenceTestsRV.getChildViewHolder(coherenceTestsRV.getChildAt(i));
+            if (coherenceViewHolder.testName.getText().toString().equals(testName)) {
+                resultRV = coherenceTestsRV;
+            }
+        }
+        childCount = atomicityTestsRV.getChildCount();
+        for(int i = 0; i < childCount; i++) {
+            final LitmusTestAdapter.LitmusTestViewHolder atomicityViewHolder = (LitmusTestAdapter.LitmusTestViewHolder) atomicityTestsRV.getChildViewHolder(atomicityTestsRV.getChildAt(i));
+            if (atomicityViewHolder.testName.getText().toString().equals(testName)) {
+                resultRV = atomicityTestsRV;
+            }
+        }
+        childCount = barrierTestsRV.getChildCount();
+        for(int i = 0; i < childCount; i++) {
+            final LitmusTestAdapter.LitmusTestViewHolder barrierViewHolder = (LitmusTestAdapter.LitmusTestViewHolder) barrierTestsRV.getChildViewHolder(barrierTestsRV.getChildAt(i));
+            if (barrierViewHolder.testName.getText().toString().equals(testName)) {
+                resultRV = barrierTestsRV;
+            }
+        }
+        return resultRV;
     }
 
     public void initializeShaderMenu(String testName, View optionMenuView) {
@@ -403,7 +541,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("TEST", testName + " STARTING");
-                final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) litmusTestRV.getChildViewHolder(litmusTestRV.getChildAt(position));
+                RecyclerView testRV = findRecyclerView(testName);
+
+                if(testRV == null) {
+                    Log.e(TAG, testName + " does not exist in any recyclerviews!");
+                }
+                final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) testRV.getChildViewHolder(testRV.getChildAt(position));
                 writeParameters(testName);
                 optionDialog.dismiss();
 
@@ -413,7 +556,7 @@ public class MainActivity extends AppCompatActivity {
                 viewHolder.resultButton.setEnabled(false);
                 viewHolder.resultButton.setBackgroundColor(Color.GRAY);
 
-                enableNonRunningTests(position, false);
+                enableNonRunningTests(position, false, testRV);
 
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -438,7 +581,7 @@ public class MainActivity extends AppCompatActivity {
 
                         viewHolder.newTest = false;
 
-                        enableNonRunningTests(position, true);
+                        enableNonRunningTests(position, true, testRV);
 
                         Toast.makeText(MainActivity.this, "Test " + testName + " finished!", Toast.LENGTH_LONG).show();
                     }

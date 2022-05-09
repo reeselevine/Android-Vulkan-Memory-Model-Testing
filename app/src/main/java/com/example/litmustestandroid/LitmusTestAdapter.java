@@ -17,12 +17,12 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
 
     String litmusTestName[];
     Context context;
-    MainActivity testRunner;
+    MainActivity mainActivity;
 
     public LitmusTestAdapter(Context ct, String testNames[], MainActivity testRun) {
         litmusTestName = testNames;
         context = ct;
-        testRunner = testRun;
+        mainActivity = testRun;
     }
 
     @NotNull
@@ -40,12 +40,12 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
 
         holder.optionButton.setOnClickListener(new View.OnClickListener() { // Open option menu
             public void onClick (View v) {
-                testRunner.openOptionMenu(currentTestName, position);
+                mainActivity.openOptionMenu(currentTestName, position);
             }
         });
         holder.resultButton.setOnClickListener(new View.OnClickListener() { // Show Result
             public void onClick (View v) {
-                testRunner.litmusTestResult(currentTestName);
+                mainActivity.litmusTestResult(currentTestName);
             }
         });
     }
