@@ -448,8 +448,13 @@ public class MainActivity extends AppCompatActivity {
         autoCompleteTextView = optionMenuView.findViewById(R.id.shaderOptionAutoCompleteText);
 
         TestCase currTestCase = findTestCase(testName);
+        String[] shortShaderNames = new String[currTestCase.shaderNames.length];
+        for (int i = 0; i < currTestCase.shaderNames.length; i++) {
+            shortShaderNames[i] = currTestCase.shaderNames[i].substring(testName.length() + 12);
+        }
+
         if(currTestCase != null) {
-            adapterItems = new ArrayAdapter<String>(this, R.layout.shader_option_list_item, currTestCase.getShaderNames());
+            adapterItems = new ArrayAdapter<String>(this, R.layout.shader_option_list_item, shortShaderNames);
             autoCompleteTextView.setAdapter(adapterItems);
             autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
