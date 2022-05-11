@@ -516,7 +516,7 @@ public class MainActivity extends AppCompatActivity {
         optionDialog.show();
 
         // Reset shader type
-        shaderType = "litmustest_" + testName + "_default";
+        shaderType = currTest.shaderNames[0];
 
         // Initialize shader drop down option menu
         initializeShaderMenu(testName, optionMenuView);

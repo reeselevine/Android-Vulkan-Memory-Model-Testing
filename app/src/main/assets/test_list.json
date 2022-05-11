@@ -209,6 +209,67 @@
         "parameters_basic_one",
         "parameters_stress_one"
       ]
+    },
+    {
+      "name": "atomicity",
+      "type": "atomicity",
+      "shaders": [
+        "litmustest_atomicity_default",
+        "litmustest_atomicity_storage_workgroup",
+        "litmustest_atomicity_workgroup"
+      ],
+      "result": "litmustest_atomicity_results",
+      "output": "litmustest_atomicity_output",
+      "parameter": "litmustest_atomicity_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
+    },
+    {
+      "name": "barrier_store_load",
+      "type": "barrier",
+      "shaders": [
+        "litmustest_barrier_store_load_storage_workgroup",
+        "litmustest_barrier_store_load_workgroup"
+      ],
+      "result": "litmustest_barrier_store_load_results",
+      "output": "litmustest_barrier_store_load_output",
+      "parameter": "litmustest_barrier_store_load_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
+    },
+    {
+      "name": "barrier_load_store",
+      "type": "barrier",
+      "shaders": [
+        "litmustest_barrier_load_store_storage_workgroup",
+        "litmustest_barrier_load_store_workgroup"
+      ],
+      "result": "litmustest_barrier_load_store_results",
+      "output": "litmustest_barrier_load_store_output",
+      "parameter": "litmustest_barrier_load_store_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
+    },
+    {
+      "name": "barrier_store_store",
+      "type": "barrier",
+      "shaders": [
+        "litmustest_barrier_store_store_storage_workgroup",
+        "litmustest_barrier_store_store_workgroup"
+      ],
+      "result": "litmustest_barrier_store_store_results",
+      "output": "litmustest_barrier_store_store_output",
+      "parameter": "litmustest_barrier_store_store_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
     }
   ]
 }
