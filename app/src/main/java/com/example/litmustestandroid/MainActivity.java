@@ -500,7 +500,11 @@ public class MainActivity extends AppCompatActivity {
         parameters[18] = (EditText) optionMenuView.findViewById(R.id.testOptionPermuteFirst); // permuteFirst
         parameters[19] = (EditText) optionMenuView.findViewById(R.id.testOptionPermuteSecond); // permuteSecond
 
-        loadParameters(R.raw.parameters_basic);
+        TestCase currTest = findTestCase(testName);
+        int basic_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[0], "raw", this.getPackageName());
+        int stress_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName());
+
+        loadParameters(basic_parameters);
 
         startButton = (Button) optionMenuView.findViewById(R.id.testOptionStartButton);
         closeButton = (Button) optionMenuView.findViewById(R.id.testOptionCloseButton);
@@ -527,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                loadParameters(R.raw.parameters_basic);
+                loadParameters(basic_parameters);
             }
         });
 
@@ -537,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                loadParameters(R.raw.parameters_stress);
+                loadParameters(stress_parameters);
             }
         });
 
