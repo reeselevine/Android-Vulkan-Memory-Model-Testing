@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Read and write current parameters value for testing
     public void writeParameters(String testName) {
-        InputStream inputStream = getResources().openRawResource(R.raw.parameters_basic);
+        InputStream inputStream = getResources().openRawResource(R.raw.parameters_basic_two);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
         String fileName = "litmustest_" + testName + "_parameters.txt";
@@ -460,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     String item = adapterView.getItemAtPosition(i).toString();
-                    shaderType = item;
+                    shaderType = "litmustest_" + testName + "_" + item;
                 }
             });
         }
@@ -513,10 +513,6 @@ public class MainActivity extends AppCompatActivity {
 
         dialogBuilder.setView(optionMenuView);
         optionDialog = dialogBuilder.create();
-
-        // Prevent from dialog closing when touching outside
-        optionDialog.setCanceledOnTouchOutside(false);
-
         optionDialog.show();
 
         // Reset shader type

@@ -16,8 +16,8 @@
       "output": "litmustest_message_passing_output",
       "parameter": "litmustest_message_passing_parameters",
       "parameter_presets": [
-        "parameters_basic",
-        "parameters_stress"
+        "parameters_basic_two",
+        "parameters_stress_two"
       ]
     },
     {
@@ -35,8 +35,8 @@
       "output": "litmustest_store_output",
       "parameter": "litmustest_store_parameters",
       "parameter_presets": [
-        "parameters_basic",
-        "parameters_stress"
+        "parameters_basic_two",
+        "parameters_stress_two"
       ]
     },
     {
@@ -54,8 +54,8 @@
       "output": "litmustest_read_output",
       "parameter": "litmustest_read_parameters",
       "parameter_presets": [
-        "parameters_basic",
-        "parameters_stress"
+        "parameters_basic_two",
+        "parameters_stress_two"
       ]
     },
     {
@@ -73,8 +73,8 @@
       "output": "litmustest_load_buffer_output",
       "parameter": "litmustest_load_buffer_parameters",
       "parameter_presets": [
-        "parameters_basic",
-        "parameters_stress"
+        "parameters_basic_two",
+        "parameters_stress_two"
       ]
     },
     {
@@ -92,8 +92,8 @@
       "output": "litmustest_store_buffer_output",
       "parameter": "litmustest_store_buffer_parameters",
       "parameter_presets": [
-        "parameters_basic",
-        "parameters_stress"
+        "parameters_basic_two",
+        "parameters_stress_two"
       ]
     },
     {
@@ -111,8 +111,8 @@
       "output": "litmustest_22_write_output",
       "parameter": "litmustest_22_write_parameters",
       "parameter_presets": [
-        "parameters_basic",
-        "parameters_stress"
+        "parameters_basic_two",
+        "parameters_stress_two"
       ]
     }
   ]
