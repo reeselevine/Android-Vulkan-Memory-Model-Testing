@@ -114,6 +114,101 @@
         "parameters_basic_two",
         "parameters_stress_two"
       ]
+    },
+    {
+      "name": "corr",
+      "type": "coherence",
+      "shaders": [
+        "litmustest_corr_default",
+        "litmustest_corr_mutation",
+        "litmustest_corr_rmw",
+        "litmustest_corr_rmw1",
+        "litmustest_corr_rmw1_mutation",
+        "litmustest_corr_rmw2",
+        "litmustest_corr_rmw2_mutation",
+        "litmustest_corr_rmw_mutation",
+        "litmustest_corr_storage_workgroup",
+        "litmustest_corr_workgroup"
+      ],
+      "result": "litmustest_corr_results",
+      "output": "litmustest_corr_output",
+      "parameter": "litmustest_corr_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
+    },
+    {
+      "name": "corw1",
+      "type": "coherence",
+      "shaders": [
+        "litmustest_corw1_default",
+        "litmustest_corw1_storage_workgroup",
+        "litmustest_corw1_workgroup"
+      ],
+      "result": "litmustest_corw1_results",
+      "output": "litmustest_corw1_output",
+      "parameter": "litmustest_corw1_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
+    },
+    {
+      "name": "corw2",
+      "type": "coherence",
+      "shaders": [
+        "litmustest_corw2_default",
+        "litmustest_corw2_mutation",
+        "litmustest_corw2_rmw",
+        "litmustest_corw2_rmw_mutation",
+        "litmustest_corw2_storage_workgroup",
+        "litmustest_corw2_workgroup"
+      ],
+      "result": "litmustest_corw2_results",
+      "output": "litmustest_corw2_output",
+      "parameter": "litmustest_corw2_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
+    },
+    {
+      "name": "cowr",
+      "type": "coherence",
+      "shaders": [
+        "litmustest_cowr_default",
+        "litmustest_cowr_mutation",
+        "litmustest_cowr_rmw",
+        "litmustest_cowr_rmw1",
+        "litmustest_cowr_rmw1_mutation",
+        "litmustest_cowr_storage_workgroup",
+        "litmustest_cowr_workgroup"
+      ],
+      "result": "litmustest_cowr_results",
+      "output": "litmustest_cowr_output",
+      "parameter": "litmustest_cowr_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
+    },
+    {
+      "name": "coww",
+      "type": "coherence",
+      "shaders": [
+        "litmustest_coww_default",
+        "litmustest_coww_rmw",
+        "litmustest_coww_storage_workgroup",
+        "litmustest_coww_workgroup"
+      ],
+      "result": "litmustest_coww_results",
+      "output": "litmustest_coww_output",
+      "parameter": "litmustest_coww_parameters",
+      "parameter_presets": [
+        "parameters_basic_one",
+        "parameters_stress_one"
+      ]
     }
   ]
 }
