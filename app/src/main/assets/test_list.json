@@ -43,7 +43,12 @@
       "name": "read",
       "type": "weakMemory",
       "shaders": [
-        "litmustest_read_default"
+        "litmustest_read_default",
+        "litmustest_read_rmw_barrier",
+        "litmustest_read_storage_workgroup",
+        "litmustest_read_storage_workgroup_rmw_barrier",
+        "litmustest_read_workgroup",
+        "litmustest_read_workgroup_rmw_barrier"
       ],
       "result": "litmustest_read_results",
       "output": "litmustest_read_output",
@@ -57,7 +62,12 @@
       "name": "load_buffer",
       "type": "weakMemory",
       "shaders": [
-        "litmustest_load_buffer_default"
+        "litmustest_load_buffer_default",
+        "litmustest_load_buffer_barrier",
+        "litmustest_load_buffer_storage_workgroup",
+        "litmustest_load_buffer_storage_workgroup_barrier",
+        "litmustest_load_buffer_workgroup",
+        "litmustest_load_buffer_workgroup_barrier"
       ],
       "result": "litmustest_load_buffer_results",
       "output": "litmustest_load_buffer_output",
@@ -71,7 +81,12 @@
       "name": "store_buffer",
       "type": "weakMemory",
       "shaders": [
-        "litmustest_store_buffer_default"
+        "litmustest_store_buffer_default",
+        "litmustest_store_buffer_rmw_barrier",
+        "litmustest_store_buffer_storage_workgroup",
+        "litmustest_store_buffer_storage_workgroup_rmw_barrier",
+        "litmustest_store_buffer_workgroup",
+        "litmustest_store_buffer_workgroup_rmw_barrier"
       ],
       "result": "litmustest_store_buffer_results",
       "output": "litmustest_store_buffer_output",
@@ -85,7 +100,12 @@
       "name": "22_write",
       "type": "weakMemory",
       "shaders": [
-        "litmustest_22_write_default"
+        "litmustest_22_write_default",
+        "litmustest_22_write_rmw_barrier",
+        "litmustest_22_write_storage_workgroup",
+        "litmustest_22_write_storage_workgroup_rmw_barrier",
+        "litmustest_22_write_workgroup",
+        "litmustest_22_write_workgroup_rmw_barrier"
       ],
       "result": "litmustest_22_write_results",
       "output": "litmustest_22_write_output",
