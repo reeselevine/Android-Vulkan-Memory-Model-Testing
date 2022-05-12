@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Read and write current parameters value for testing
     public void writeParameters(String testName) {
-        InputStream inputStream = getResources().openRawResource(R.raw.parameters_basic_two);
+        InputStream inputStream = getResources().openRawResource(R.raw.parameters_basic);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
         String fileName = "litmustest_" + testName + "_parameters.txt";

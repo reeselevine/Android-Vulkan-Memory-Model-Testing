@@ -16,8 +16,8 @@
       "output": "litmustest_message_passing_output",
       "parameter": "litmustest_message_passing_parameters",
       "parameter_presets": [
-        "parameters_basic_two",
-        "parameters_stress_two"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -35,8 +35,8 @@
       "output": "litmustest_store_output",
       "parameter": "litmustest_store_parameters",
       "parameter_presets": [
-        "parameters_basic_two",
-        "parameters_stress_two"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -54,8 +54,8 @@
       "output": "litmustest_read_output",
       "parameter": "litmustest_read_parameters",
       "parameter_presets": [
-        "parameters_basic_two",
-        "parameters_stress_two"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -73,8 +73,8 @@
       "output": "litmustest_load_buffer_output",
       "parameter": "litmustest_load_buffer_parameters",
       "parameter_presets": [
-        "parameters_basic_two",
-        "parameters_stress_two"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -92,8 +92,8 @@
       "output": "litmustest_store_buffer_output",
       "parameter": "litmustest_store_buffer_parameters",
       "parameter_presets": [
-        "parameters_basic_two",
-        "parameters_stress_two"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -111,8 +111,8 @@
       "output": "litmustest_22_write_output",
       "parameter": "litmustest_22_write_parameters",
       "parameter_presets": [
-        "parameters_basic_two",
-        "parameters_stress_two"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -134,8 +134,8 @@
       "output": "litmustest_corr_output",
       "parameter": "litmustest_corr_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic_corr",
+        "parameters_stress_corr"
       ]
     },
     {
@@ -150,8 +150,8 @@
       "output": "litmustest_corw1_output",
       "parameter": "litmustest_corw1_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic_coherence",
+        "parameters_stress_coherence"
       ]
     },
     {
@@ -169,8 +169,8 @@
       "output": "litmustest_corw2_output",
       "parameter": "litmustest_corw2_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic_coherence",
+        "parameters_stress_coherence"
       ]
     },
     {
@@ -189,8 +189,8 @@
       "output": "litmustest_cowr_output",
       "parameter": "litmustest_cowr_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic_coherence",
+        "parameters_stress_coherence"
       ]
     },
     {
@@ -206,8 +206,8 @@
       "output": "litmustest_coww_output",
       "parameter": "litmustest_coww_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic_coherence",
+        "parameters_stress_coherence"
       ]
     },
     {
@@ -222,8 +222,8 @@
       "output": "litmustest_atomicity_output",
       "parameter": "litmustest_atomicity_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -237,8 +237,8 @@
       "output": "litmustest_barrier_store_load_output",
       "parameter": "litmustest_barrier_store_load_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -252,8 +252,8 @@
       "output": "litmustest_barrier_load_store_output",
       "parameter": "litmustest_barrier_load_store_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic",
+        "parameters_stress"
       ]
     },
     {
@@ -267,8 +267,8 @@
       "output": "litmustest_barrier_store_store_output",
       "parameter": "litmustest_barrier_store_store_parameters",
       "parameter_presets": [
-        "parameters_basic_one",
-        "parameters_stress_one"
+        "parameters_basic",
+        "parameters_stress"
       ]
     }
   ]
