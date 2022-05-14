@@ -268,8 +268,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Read and write current parameters value for testing
-    public void writeParameters(String testName) {
-        InputStream inputStream = getResources().openRawResource(R.raw.parameters_basic);
+    public void writeParameters(String testName, int paramValue) {
+        InputStream inputStream = getResources().openRawResource(paramValue);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
         String fileName = "litmustest_" + testName + "_parameters.txt";
@@ -552,7 +552,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, testName + " does not exist in any recyclerviews!");
                 }
                 final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) testRV.getChildViewHolder(testRV.getChildAt(position));
-                writeParameters(testName);
+                writeParameters(testName, basic_parameters);
                 optionDialog.dismiss();
 
                 viewHolder.optionButton.setEnabled(false);
