@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
                     viewHolder.explorerButton.setBackgroundColor(Color.GRAY);
-                    viewHolder.explorerButton.setBackgroundColor(Color.GRAY);
+                    viewHolder.explorerResultButton.setBackgroundColor(Color.GRAY);
                     viewHolder.tuningButton.setBackgroundColor(Color.GRAY);
                     viewHolder.tuningResultButton.setBackgroundColor(Color.GRAY);
                 }
@@ -365,36 +365,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public RecyclerView findRecyclerView(String testName) {
-        RecyclerView resultRV = null;
-        int childCount = weakMemoryTestsRV.getChildCount();
-        for(int i = 0; i < childCount; i++) {
-            final LitmusTestAdapter.LitmusTestViewHolder weakMemoryViewHolder = (LitmusTestAdapter.LitmusTestViewHolder) weakMemoryTestsRV.getChildViewHolder(weakMemoryTestsRV.getChildAt(i));
-            if (weakMemoryViewHolder.testName.getText().toString().equals(testName)) {
-                resultRV = weakMemoryTestsRV;
+        for(int i = 0; i < RVLists.length; i++) {
+            for(int j = 0; j < RVLists[i].getChildCount(); j++) {
+                LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) RVLists[i].getChildViewHolder(RVLists[i].getChildAt(j));
+                if (viewHolder.testName.getText().toString().equals(testName)) {
+                    return RVLists[i];
+                }
             }
         }
-        childCount = coherenceTestsRV.getChildCount();
-        for(int i = 0; i < childCount; i++) {
-            final LitmusTestAdapter.LitmusTestViewHolder coherenceViewHolder = (LitmusTestAdapter.LitmusTestViewHolder) coherenceTestsRV.getChildViewHolder(coherenceTestsRV.getChildAt(i));
-            if (coherenceViewHolder.testName.getText().toString().equals(testName)) {
-                resultRV = coherenceTestsRV;
-            }
-        }
-        childCount = atomicityTestsRV.getChildCount();
-        for(int i = 0; i < childCount; i++) {
-            final LitmusTestAdapter.LitmusTestViewHolder atomicityViewHolder = (LitmusTestAdapter.LitmusTestViewHolder) atomicityTestsRV.getChildViewHolder(atomicityTestsRV.getChildAt(i));
-            if (atomicityViewHolder.testName.getText().toString().equals(testName)) {
-                resultRV = atomicityTestsRV;
-            }
-        }
-        childCount = barrierTestsRV.getChildCount();
-        for(int i = 0; i < childCount; i++) {
-            final LitmusTestAdapter.LitmusTestViewHolder barrierViewHolder = (LitmusTestAdapter.LitmusTestViewHolder) barrierTestsRV.getChildViewHolder(barrierTestsRV.getChildAt(i));
-            if (barrierViewHolder.testName.getText().toString().equals(testName)) {
-                resultRV = barrierTestsRV;
-            }
-        }
-        return resultRV;
+        return null;
     }
 
     public void initializeShaderMenu(String testName, View exploreMenuView) {
@@ -548,48 +527,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void openTuningMenu(String testName, int position) {
-        Log.i("TEST", testName + " PRESSED, OPENING Tuning MENU");
-
-        dialogBuilder = new AlertDialog.Builder(this);
-        final View tuningMenuView = getLayoutInflater().inflate(R.layout.main_test_tuning, null);
-
-        tuningTestName = (TextView) tuningMenuView.findViewById(R.id.testTuningTestName);
-        tuningTestName.setText(testName);
-
-        tuningParameters[0] = (EditText) tuningMenuView.findViewById(R.id.testTuningConfigNum); // testConfigNum
-        tuningParameters[1] = (EditText) tuningMenuView.findViewById(R.id.testTuningTestIteration); // testIteration
-
-        tuningStartButton = (Button) tuningMenuView.findViewById(R.id.testTuningStartButton);
-        tuningCloseButton = (Button) tuningMenuView.findViewById(R.id.testTuningCloseButton);
-
-        dialogBuilder.setView(tuningMenuView);
-        tuningDialog = dialogBuilder.create();
-        tuningDialog.show();
-
-        // Start tuning test
-        tuningStartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("TUNING TEST", testName + " STARTING");
-            }
-        });
-
-
-        // Close menu
-        tuningCloseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("TEST", testName + " MENU CLOSING");
-                tuningDialog.dismiss();
-            }
-        });
-
-
-    }
-
-    public void litmusTestResult(String testName) {
-        Log.i("RESULT", testName + " PRESSED");
+    public void explorerTestResult(String testName) {
+        Log.i("EXPLORER RESULT", testName + " PRESSED");
 
         ResultDialogFragment dialog = new ResultDialogFragment();
 
@@ -617,6 +556,122 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        dialog.show(getSupportFragmentManager(), "ResultDialog");
+    }
+
+    public void openTuningMenu(String testName, int position) {
+        Log.i("TUNING TEST", testName + " PRESSED, OPENING TUNING MENU");
+
+        dialogBuilder = new AlertDialog.Builder(this);
+        final View tuningMenuView = getLayoutInflater().inflate(R.layout.main_test_tuning, null);
+
+        tuningTestName = (TextView) tuningMenuView.findViewById(R.id.testTuningTestName);
+        tuningTestName.setText(testName);
+
+        tuningParameters[0] = (EditText) tuningMenuView.findViewById(R.id.testTuningConfigNum); // testConfigNum
+        tuningParameters[1] = (EditText) tuningMenuView.findViewById(R.id.testTuningTestIteration); // testIteration
+
+        tuningStartButton = (Button) tuningMenuView.findViewById(R.id.testTuningStartButton);
+        tuningCloseButton = (Button) tuningMenuView.findViewById(R.id.testTuningCloseButton);
+
+        dialogBuilder.setView(tuningMenuView);
+        tuningDialog = dialogBuilder.create();
+        tuningDialog.show();
+
+        TestCase currTest = findTestCase(testName);
+        shaderType = currTest.shaderNames[0];
+
+        // Start tuning test
+        tuningStartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("TUNING TEST", testName + " STARTING");
+                RecyclerView testRV = findRecyclerView(testName);
+
+                if(testRV == null) {
+                    Log.e(TAG, testName + " does not exist in any recyclerviews!");
+                }
+                final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) testRV.getChildViewHolder(testRV.getChildAt(position));
+
+                int tuningConfigNum = Integer.parseInt(tuningParameters[0].getText().toString());
+                int tuningTestIteration = Integer.parseInt(tuningParameters[1].getText().toString());
+
+                tuningDialog.dismiss();
+
+                enableAllTests(false);
+
+                // Turn this button's color to indicate which test is currently running
+                viewHolder.tuningButton.setBackgroundColor(Color.BLUE);
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        String[] testArgument = new String[4];
+                        testArgument[0] = "litmustest_" + testName; // Test Name
+
+                        // Shader Name
+                        testArgument[1] = shaderType;
+
+                        testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
+                        testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name
+                        for(int i = 0; i < tuningConfigNum; i++) {
+                            // TODO: Come up with a way to display progress
+                            //viewHolder.tuningButton.setText(Integer.toString(i));
+
+                            // TODO: Sample param function, need to change for tuning
+                            writeExploreParameters(testName, R.raw.parameters_basic);
+
+                            main(testArgument);
+                        }
+
+                        viewHolder.newTuningTest = false;
+                        viewHolder.tuningButton.setText("Tuning");
+                        enableAllTests(true);
+                        Toast.makeText(MainActivity.this, "Tuning Test " + testName + " finished!", Toast.LENGTH_LONG).show();
+                    }
+                }, 500);
+            }
+        });
+
+
+        // Close menu
+        tuningCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("TEST", testName + " MENU CLOSING");
+                tuningDialog.dismiss();
+            }
+        });
+    }
+
+    public void tuningTestResult(String testName) {
+        Log.i("TUNING RESULT", testName + " PRESSED");
+
+        ResultDialogFragment dialog = new ResultDialogFragment();
+
+        try
+        {
+            FileInputStream fis = openFileInput("litmustest_" + testName + "_output.txt");
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+
+            while ((text = br.readLine()) != null) {
+                sb.append(text).append("\n");
+            }
+            dialog.setText(sb);
+            Log.d(TAG, sb.toString());
+
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
         dialog.show(getSupportFragmentManager(), "ResultDialog");
     }
 

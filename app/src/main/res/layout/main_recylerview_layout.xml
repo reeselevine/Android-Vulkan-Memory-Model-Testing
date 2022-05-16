@@ -41,6 +41,7 @@
                     android:gravity="center"
                     android:backgroundTint="@color/green"
                     android:text="Explorer"
+                    android:textColor="@color/white"
                     android:maxLines="1"/>
 
                 <Button
@@ -53,6 +54,7 @@
                     android:gravity="center"
                     android:backgroundTint="@color/red"
                     android:text="Result"
+                    android:textColor="@color/white"
                     android:maxLines="1"/>
             </LinearLayout>
 
@@ -70,6 +72,7 @@
                     android:gravity="center"
                     android:backgroundTint="@color/green"
                     android:text="Tuning"
+                    android:textColor="@color/white"
                     android:maxLines="1"/>
 
                 <Button
@@ -82,7 +85,8 @@
                     android:gravity="center"
                     android:backgroundTint="@color/red"
                     android:text="Result"
-                    android:maxLines="1"/>
+                    android:textColor="@color/white"
+                android:maxLines="1"/>
             </LinearLayout>
 
         </LinearLayout>

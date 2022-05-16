@@ -204,19 +204,19 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
         resultProgram.prepare();
         resultProgram.run();
 
-        outputFile << "Iteration " << i << "\n";
+        /*outputFile << "Iteration " << i << "\n";
         outputFile << "seq: " << testResults.load(0) + testResults.load(1) << "\n";
         outputFile << "interleaved: " << testResults.load(2) << "\n";
         outputFile << "weak: " << testResults.load(3) << "\n";
 
         std::chrono::duration<double> itDuration = itEnd - itStart;
-        outputFile << "durationSeconds: " << itDuration.count() << "s\n";
+        outputFile << "durationSeconds: " << itDuration.count() << "s\n";*/
 
         numSeq += testResults.load(0) + testResults.load(1);
         numInter += testResults.load(2);
         numWeak += testResults.load(3);
 
-        outputFile << "\n";
+        //outputFile << "\n";
         program.teardown();
         resultProgram.teardown();
     }
