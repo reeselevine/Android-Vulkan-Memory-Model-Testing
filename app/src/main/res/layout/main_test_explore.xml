@@ -4,7 +4,7 @@
     android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/testOptionLayout"
+        android:id="@+id/testExploreLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/testOptionTestName"
+            android:id="@+id/testExploreTestName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -50,7 +50,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionTestIteration"
+                        android:id="@+id/testExploreTestIteration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -73,7 +73,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionTestingWorkgroups"
+                        android:id="@+id/testExploreTestingWorkgroups"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -96,7 +96,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionMaxWorkgroups"
+                        android:id="@+id/testExploreMaxWorkgroups"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -119,7 +119,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionMinWorkgroupSize"
+                        android:id="@+id/testExploreMinWorkgroupSize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -142,7 +142,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionMaxWorkgroupSize"
+                        android:id="@+id/testExploreMaxWorkgroupSize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -165,7 +165,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionShufflePct"
+                        android:id="@+id/testExploreShufflePct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -188,7 +188,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionBarrierPct"
+                        android:id="@+id/testExploreBarrierPct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -211,7 +211,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionScratchMemorySize"
+                        android:id="@+id/testExploreScratchMemorySize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -234,7 +234,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionMemoryStride"
+                        android:id="@+id/testExploreMemoryStride"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -257,7 +257,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionMemoryStressPct"
+                        android:id="@+id/testExploreMemoryStressPct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -280,7 +280,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionMemoryStressIterations"
+                        android:id="@+id/testExploreMemoryStressIterations"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -303,7 +303,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionMemOryStressPattern"
+                        android:id="@+id/testExploreMemOryStressPattern"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -326,7 +326,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionPreStressPct"
+                        android:id="@+id/testExplorePreStressPct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -349,7 +349,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionPreStressIterations"
+                        android:id="@+id/testExplorePreStressIterations"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -372,7 +372,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionPreStressPattern"
+                        android:id="@+id/testExplorePreStressPattern"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -395,7 +395,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionStressLineSize"
+                        android:id="@+id/testExploreStressLineSize"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -418,7 +418,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionStressTargetLines"
+                        android:id="@+id/testExploreStressTargetLines"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -441,7 +441,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionStressAssignmentStrategy"
+                        android:id="@+id/testExploreStressAssignmentStrategy"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -464,7 +464,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionPermuteFirst"
+                        android:id="@+id/testExplorePermuteFirst"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -487,7 +487,7 @@
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testOptionPermuteSecond"
+                        android:id="@+id/testExplorePermuteSecond"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -514,7 +514,7 @@
                         android:orientation="horizontal">
 
                         <Button
-                            android:id="@+id/testOptionDefaultParamButton"
+                            android:id="@+id/testExploreDefaultParamButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
@@ -524,7 +524,7 @@
                             android:textColor="@color/black"/>
 
                         <Button
-                            android:id="@+id/testOptionStressParamButton"
+                            android:id="@+id/testExploreStressParamButton"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="10dp"
@@ -554,43 +554,11 @@
                         android:layout_margin="10dp"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
                         <AutoCompleteTextView
-                            android:id="@+id/shaderOptionAutoCompleteText"
+                            android:id="@+id/shaderExploreAutoCompleteText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="none"/>
                     </com.google.android.material.textfield.TextInputLayout>
-
-                    <!--ScrollView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <Button
-                                android:id="@+id/testOptionDefaultShaderButton"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:layout_weight="1"
-                                android:backgroundTint="@color/teal_200"
-                                android:text="Default"
-                                android:textColor="@color/black"/>
-
-                            <Button
-                                android:id="@+id/testOptionStrongShaderButton"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="10dp"
-                                android:layout_weight="1"
-                                android:backgroundTint="@color/lightgray"
-                                android:text="Strong"
-                                android:textColor="@color/black"/>
-
-                        </LinearLayout>
-                    </ScrollView-->
 
                 </LinearLayout>
 
@@ -604,7 +572,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/testOptionStartButton"
+                android:id="@+id/testExploreStartButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -613,7 +581,7 @@
                 android:text="START" />
 
             <Button
-                android:id="@+id/testOptionCloseButton"
+                android:id="@+id/testExploreCloseButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"

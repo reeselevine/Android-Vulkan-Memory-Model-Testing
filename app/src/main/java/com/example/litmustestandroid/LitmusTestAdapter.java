@@ -38,9 +38,14 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
         String currentTestName = litmusTestName[position];
         holder.testName.setText(currentTestName);
 
-        holder.optionButton.setOnClickListener(new View.OnClickListener() { // Open option menu
+        holder.exploreButton.setOnClickListener(new View.OnClickListener() { // Open explore menu
             public void onClick (View v) {
-                mainActivity.openOptionMenu(currentTestName, position);
+                mainActivity.openExploreMenu(currentTestName, position);
+            }
+        });
+        holder.tuningButton.setOnClickListener(new View.OnClickListener() { // Open tuning menu
+            public void onClick (View v) {
+                //mainActivity.openExploreMenu(currentTestName, position);
             }
         });
         holder.resultButton.setOnClickListener(new View.OnClickListener() { // Show Result
@@ -58,14 +63,16 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
     public class LitmusTestViewHolder extends RecyclerView.ViewHolder {
 
         TextView testName;
-        public Button optionButton;
+        public Button exploreButton;
+        public Button tuningButton;
         public Button resultButton;
         Boolean newTest = true;
 
         public LitmusTestViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             testName = itemView.findViewById(R.id.testName);
-            optionButton = itemView.findViewById(R.id.optionButton);
+            exploreButton = itemView.findViewById(R.id.exploreButton);
+            tuningButton = itemView.findViewById(R.id.tuningButton);
             resultButton = itemView.findViewById(R.id.resultButton);
 
             // Temporary

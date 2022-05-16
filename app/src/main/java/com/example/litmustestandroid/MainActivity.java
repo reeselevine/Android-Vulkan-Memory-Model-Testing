@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapterItems;
 
     private AlertDialog.Builder dialogBuilder;
-    private AlertDialog optionDialog;
-    private TextView optionTestName;
+    private AlertDialog exploreDialog;
+    private TextView exploreTestName;
     private EditText[] parameters = new EditText[20];
     private Button startButton, closeButton, defaultParamButton, stressParamButton, defaultShaderButton, strongShaderButton;
 
@@ -319,11 +319,12 @@ public class MainActivity extends AppCompatActivity {
             if (testRV == weakMemoryTestsRV && i == position) {
                 continue;
             }
-            viewHolder.optionButton.setEnabled(enabled);
+            viewHolder.exploreButton.setEnabled(enabled);
+            viewHolder.tuningButton.setEnabled(enabled);
             viewHolder.resultButton.setEnabled(enabled);
 
             if(enabled) {
-                viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                viewHolder.exploreButton.setBackgroundColor(Color.GREEN);
                 if(viewHolder.newTest) { // If Test is still new, stay GRAY
                     viewHolder.resultButton.setEnabled(false);
                     viewHolder.resultButton.setBackgroundColor(Color.GRAY);
@@ -333,7 +334,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             else {
-                viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+                viewHolder.exploreButton.setBackgroundColor(Color.GRAY);
+                viewHolder.tuningButton.setBackgroundColor(Color.GRAY);
                 viewHolder.resultButton.setBackgroundColor(Color.GRAY);
             }
         }
@@ -343,11 +345,12 @@ public class MainActivity extends AppCompatActivity {
             if (testRV == coherenceTestsRV && i == position) {
                 continue;
             }
-            viewHolder.optionButton.setEnabled(enabled);
+            viewHolder.exploreButton.setEnabled(enabled);
+            viewHolder.tuningButton.setEnabled(enabled);
             viewHolder.resultButton.setEnabled(enabled);
 
             if(enabled) {
-                viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                viewHolder.exploreButton.setBackgroundColor(Color.GREEN);
                 if(viewHolder.newTest) { // If Test is still new, stay GRAY
                     viewHolder.resultButton.setEnabled(false);
                     viewHolder.resultButton.setBackgroundColor(Color.GRAY);
@@ -357,7 +360,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             else {
-                viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+                viewHolder.exploreButton.setBackgroundColor(Color.GRAY);
+                viewHolder.tuningButton.setBackgroundColor(Color.GRAY);
                 viewHolder.resultButton.setBackgroundColor(Color.GRAY);
             }
         }
@@ -367,11 +371,12 @@ public class MainActivity extends AppCompatActivity {
             if (testRV == atomicityTestsRV && i == position) {
                 continue;
             }
-            viewHolder.optionButton.setEnabled(enabled);
+            viewHolder.exploreButton.setEnabled(enabled);
+            viewHolder.tuningButton.setEnabled(enabled);
             viewHolder.resultButton.setEnabled(enabled);
 
             if(enabled) {
-                viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                viewHolder.exploreButton.setBackgroundColor(Color.GREEN);
                 if(viewHolder.newTest) { // If Test is still new, stay GRAY
                     viewHolder.resultButton.setEnabled(false);
                     viewHolder.resultButton.setBackgroundColor(Color.GRAY);
@@ -381,7 +386,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             else {
-                viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+                viewHolder.exploreButton.setBackgroundColor(Color.GRAY);
+                viewHolder.tuningButton.setBackgroundColor(Color.GRAY);
                 viewHolder.resultButton.setBackgroundColor(Color.GRAY);
             }
         }
@@ -391,11 +397,12 @@ public class MainActivity extends AppCompatActivity {
             if (testRV == barrierTestsRV && i == position) {
                 continue;
             }
-            viewHolder.optionButton.setEnabled(enabled);
+            viewHolder.exploreButton.setEnabled(enabled);
+            viewHolder.tuningButton.setEnabled(enabled);
             viewHolder.resultButton.setEnabled(enabled);
 
             if(enabled) {
-                viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                viewHolder.exploreButton.setBackgroundColor(Color.GREEN);
                 if(viewHolder.newTest) { // If Test is still new, stay GRAY
                     viewHolder.resultButton.setEnabled(false);
                     viewHolder.resultButton.setBackgroundColor(Color.GRAY);
@@ -405,7 +412,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             else {
-                viewHolder.optionButton.setBackgroundColor(Color.GRAY);
+                viewHolder.exploreButton.setBackgroundColor(Color.GRAY);
+                viewHolder.tuningButton.setBackgroundColor(Color.GRAY);
                 viewHolder.resultButton.setBackgroundColor(Color.GRAY);
             }
         }
@@ -444,8 +452,8 @@ public class MainActivity extends AppCompatActivity {
         return resultRV;
     }
 
-    public void initializeShaderMenu(String testName, View optionMenuView) {
-        autoCompleteTextView = optionMenuView.findViewById(R.id.shaderOptionAutoCompleteText);
+    public void initializeShaderMenu(String testName, View exploreMenuView) {
+        autoCompleteTextView = exploreMenuView.findViewById(R.id.shaderExploreAutoCompleteText);
 
         TestCase currTestCase = findTestCase(testName);
         String[] shortShaderNames = new String[currTestCase.shaderNames.length];
@@ -454,7 +462,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(currTestCase != null) {
-            adapterItems = new ArrayAdapter<String>(this, R.layout.shader_option_list_item, shortShaderNames);
+            adapterItems = new ArrayAdapter<String>(this, R.layout.shader_explore_list_item, shortShaderNames);
             autoCompleteTextView.setAdapter(adapterItems);
             autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -470,35 +478,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void openOptionMenu(String testName, int position) {
-        Log.i("TEST", testName + " PRESSED, OPENING OPTION MENU");
+    public void openExploreMenu(String testName, int position) {
+        Log.i("TEST", testName + " PRESSED, OPENING Explore MENU");
 
         dialogBuilder = new AlertDialog.Builder(this);
-        final View optionMenuView = getLayoutInflater().inflate(R.layout.main_test_option, null);
+        final View exploreMenuView = getLayoutInflater().inflate(R.layout.main_test_explore, null);
 
-        optionTestName = (TextView) optionMenuView.findViewById(R.id.testOptionTestName);
-        optionTestName.setText(testName);
+        exploreTestName = (TextView) exploreMenuView.findViewById(R.id.testExploreTestName);
+        exploreTestName.setText(testName);
 
-        parameters[0] = (EditText) optionMenuView.findViewById(R.id.testOptionTestIteration); // testIteration
-        parameters[1] = (EditText) optionMenuView.findViewById(R.id.testOptionTestingWorkgroups); // testingWorkgroups
-        parameters[2] = (EditText) optionMenuView.findViewById(R.id.testOptionMaxWorkgroups); // maxWorkgroups
-        parameters[3] = (EditText) optionMenuView.findViewById(R.id.testOptionMinWorkgroupSize); // minWorkgroupSize
-        parameters[4] = (EditText) optionMenuView.findViewById(R.id.testOptionMaxWorkgroupSize); // maxWorkgroupSize
-        parameters[5] = (EditText) optionMenuView.findViewById(R.id.testOptionShufflePct); // shufflePct
-        parameters[6] = (EditText) optionMenuView.findViewById(R.id.testOptionBarrierPct); // barrierPct
-        parameters[7] = (EditText) optionMenuView.findViewById(R.id.testOptionScratchMemorySize); // scratchMemorySize
-        parameters[8] = (EditText) optionMenuView.findViewById(R.id.testOptionMemoryStride); // memStride
-        parameters[9] = (EditText) optionMenuView.findViewById(R.id.testOptionMemoryStressPct); // memStressPct
-        parameters[10] = (EditText) optionMenuView.findViewById(R.id.testOptionMemoryStressIterations); // memStressIterations
-        parameters[11] = (EditText) optionMenuView.findViewById(R.id.testOptionMemOryStressPattern); // memStressPattern
-        parameters[12] = (EditText) optionMenuView.findViewById(R.id.testOptionPreStressPct); // preStressPct
-        parameters[13] = (EditText) optionMenuView.findViewById(R.id.testOptionPreStressIterations); // preStressIterations
-        parameters[14] = (EditText) optionMenuView.findViewById(R.id.testOptionPreStressPattern); // preStressPattern
-        parameters[15] = (EditText) optionMenuView.findViewById(R.id.testOptionStressLineSize); // stressLineSize
-        parameters[16] = (EditText) optionMenuView.findViewById(R.id.testOptionStressTargetLines); // stressTargetLines
-        parameters[17] = (EditText) optionMenuView.findViewById(R.id.testOptionStressAssignmentStrategy); // stressAssignmentStrategy
-        parameters[18] = (EditText) optionMenuView.findViewById(R.id.testOptionPermuteFirst); // permuteFirst
-        parameters[19] = (EditText) optionMenuView.findViewById(R.id.testOptionPermuteSecond); // permuteSecond
+        parameters[0] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestIteration); // testIteration
+        parameters[1] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestingWorkgroups); // testingWorkgroups
+        parameters[2] = (EditText) exploreMenuView.findViewById(R.id.testExploreMaxWorkgroups); // maxWorkgroups
+        parameters[3] = (EditText) exploreMenuView.findViewById(R.id.testExploreMinWorkgroupSize); // minWorkgroupSize
+        parameters[4] = (EditText) exploreMenuView.findViewById(R.id.testExploreMaxWorkgroupSize); // maxWorkgroupSize
+        parameters[5] = (EditText) exploreMenuView.findViewById(R.id.testExploreShufflePct); // shufflePct
+        parameters[6] = (EditText) exploreMenuView.findViewById(R.id.testExploreBarrierPct); // barrierPct
+        parameters[7] = (EditText) exploreMenuView.findViewById(R.id.testExploreScratchMemorySize); // scratchMemorySize
+        parameters[8] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStride); // memStride
+        parameters[9] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressPct); // memStressPct
+        parameters[10] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressIterations); // memStressIterations
+        parameters[11] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemOryStressPattern); // memStressPattern
+        parameters[12] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPct); // preStressPct
+        parameters[13] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressIterations); // preStressIterations
+        parameters[14] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPattern); // preStressPattern
+        parameters[15] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressLineSize); // stressLineSize
+        parameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
+        parameters[17] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressAssignmentStrategy); // stressAssignmentStrategy
+        parameters[18] = (EditText) exploreMenuView.findViewById(R.id.testExplorePermuteFirst); // permuteFirst
+        parameters[19] = (EditText) exploreMenuView.findViewById(R.id.testExplorePermuteSecond); // permuteSecond
 
         TestCase currTest = findTestCase(testName);
         int basic_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[0], "raw", this.getPackageName());
@@ -506,20 +514,20 @@ public class MainActivity extends AppCompatActivity {
 
         loadParameters(basic_parameters);
 
-        startButton = (Button) optionMenuView.findViewById(R.id.testOptionStartButton);
-        closeButton = (Button) optionMenuView.findViewById(R.id.testOptionCloseButton);
-        defaultParamButton = (Button) optionMenuView.findViewById(R.id.testOptionDefaultParamButton);
-        stressParamButton = (Button) optionMenuView.findViewById(R.id.testOptionStressParamButton);
+        startButton = (Button) exploreMenuView.findViewById(R.id.testExploreStartButton);
+        closeButton = (Button) exploreMenuView.findViewById(R.id.testExploreCloseButton);
+        defaultParamButton = (Button) exploreMenuView.findViewById(R.id.testExploreDefaultParamButton);
+        stressParamButton = (Button) exploreMenuView.findViewById(R.id.testExploreStressParamButton);
 
-        dialogBuilder.setView(optionMenuView);
-        optionDialog = dialogBuilder.create();
-        optionDialog.show();
+        dialogBuilder.setView(exploreMenuView);
+        exploreDialog = dialogBuilder.create();
+        exploreDialog.show();
 
         // Reset shader type
         shaderType = currTest.shaderNames[0];
 
-        // Initialize shader drop down option menu
-        initializeShaderMenu(testName, optionMenuView);
+        // Initialize shader drop down explore menu
+        initializeShaderMenu(testName, exploreMenuView);
 
         // Load default parameter
         defaultParamButton.setOnClickListener(new View.OnClickListener() {
@@ -553,10 +561,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) testRV.getChildViewHolder(testRV.getChildAt(position));
                 writeParameters(testName, basic_parameters);
-                optionDialog.dismiss();
+                exploreDialog.dismiss();
 
-                viewHolder.optionButton.setEnabled(false);
-                viewHolder.optionButton.setBackgroundColor(Color.BLUE);
+                viewHolder.exploreButton.setEnabled(false);
+                viewHolder.exploreButton.setBackgroundColor(Color.BLUE);
+
+                viewHolder.tuningButton.setEnabled(false);
+                viewHolder.tuningButton.setBackgroundColor(Color.GRAY);
 
                 viewHolder.resultButton.setEnabled(false);
                 viewHolder.resultButton.setBackgroundColor(Color.GRAY);
@@ -577,9 +588,12 @@ public class MainActivity extends AppCompatActivity {
 
                         main(testArgument);
 
-                        // Update Start and Result Button
-                        viewHolder.optionButton.setEnabled(true);
-                        viewHolder.optionButton.setBackgroundColor(Color.GREEN);
+                        // Update Buttons
+                        viewHolder.exploreButton.setEnabled(true);
+                        viewHolder.exploreButton.setBackgroundColor(Color.GREEN);
+
+                        viewHolder.tuningButton.setEnabled(true);
+                        viewHolder.tuningButton.setBackgroundColor(Color.CYAN);
 
                         viewHolder.resultButton.setEnabled(true);
                         viewHolder.resultButton.setBackgroundColor(Color.RED);
@@ -599,7 +613,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("TEST", testName + " MENU CLOSING");
-                optionDialog.dismiss();
+                exploreDialog.dismiss();
             }
         });
 
