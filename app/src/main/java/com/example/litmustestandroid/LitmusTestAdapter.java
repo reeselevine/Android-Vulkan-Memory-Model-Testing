@@ -38,19 +38,24 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
         String currentTestName = litmusTestName[position];
         holder.testName.setText(currentTestName);
 
-        holder.exploreButton.setOnClickListener(new View.OnClickListener() { // Open explore menu
+        holder.explorerButton.setOnClickListener(new View.OnClickListener() { // Open explorer menu
             public void onClick (View v) {
                 mainActivity.openExploreMenu(currentTestName, position);
             }
         });
-        holder.tuningButton.setOnClickListener(new View.OnClickListener() { // Open tuning menu
-            public void onClick (View v) {
-                //mainActivity.openExploreMenu(currentTestName, position);
-            }
-        });
-        holder.resultButton.setOnClickListener(new View.OnClickListener() { // Show Result
+        holder.explorerResultButton.setOnClickListener(new View.OnClickListener() { // Show Explorer Result
             public void onClick (View v) {
                 mainActivity.litmusTestResult(currentTestName);
+            }
+        });
+        holder.tuningButton.setOnClickListener(new View.OnClickListener() { // Open tuning menu
+            public void onClick (View v) {
+                mainActivity.openTuningMenu(currentTestName, position);
+            }
+        });
+        holder.tuningResultButton.setOnClickListener(new View.OnClickListener() { // Show tuning result
+            public void onClick (View v) {
+
             }
         });
     }
@@ -63,23 +68,26 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
     public class LitmusTestViewHolder extends RecyclerView.ViewHolder {
 
         TextView testName;
-        public Button exploreButton;
+        public Button explorerButton;
+        public Button explorerResultButton;
         public Button tuningButton;
-        public Button resultButton;
-        Boolean newTest = true;
+        public Button tuningResultButton;
+
+        Boolean newExplorerTest = true;
+        Boolean newTuningTest = true;
 
         public LitmusTestViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             testName = itemView.findViewById(R.id.testName);
-            exploreButton = itemView.findViewById(R.id.exploreButton);
+            explorerButton = itemView.findViewById(R.id.explorerButton);
+            explorerResultButton = itemView.findViewById(R.id.explorerResultButton);
             tuningButton = itemView.findViewById(R.id.tuningButton);
-            resultButton = itemView.findViewById(R.id.resultButton);
+            tuningResultButton = itemView.findViewById(R.id.tuningResultButton);
 
-            // Temporary
-            // Look for output file
-            // If exists, set it enabled.
-            resultButton.setEnabled(false);
-            resultButton.setBackgroundColor(Color.GRAY);
+            explorerResultButton.setEnabled(false);
+            explorerResultButton.setBackgroundColor(Color.GRAY);
+            tuningResultButton.setEnabled(false);
+            tuningResultButton.setBackgroundColor(Color.GRAY);
 
         }
     }
