@@ -1,6 +1,7 @@
 package com.example.litmustestandroid;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +13,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapter.TuningResultViewHolder>{
 
+    String testName;
     ArrayList<TuningResultCase> tuningResultCases;
     Context context;
+    MainActivity mainActivity;
 
-    public TuningResultAdapter(Context ct, ArrayList<TuningResultCase> tuningResultCases) {
+    public TuningResultAdapter(String testName, Context ct, ArrayList<TuningResultCase> tuningResultCases, MainActivity mainActivity) {
+        this.testName = testName;
         this.tuningResultCases = tuningResultCases;
         this.context = ct;
+        this.mainActivity = mainActivity;
     }
 
     @NotNull
@@ -38,12 +48,24 @@ public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapte
 
         holder.paramButton.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v) {
+                ExplorerResultDialogFragment paramDialog = new ExplorerResultDialogFragment();
 
+                StringBuilder sb = new StringBuilder();
+                sb.append("Test " + Integer.toString(position + 1) + ":\n");
+                sb.append(tuningResultCases.get(position).parameters);
+                paramDialog.setText(sb);
+                paramDialog.show(mainActivity.getSupportFragmentManager(), "TuningResultParamDialog");
             }
         });
         holder.resultButton.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v) {
+                ExplorerResultDialogFragment outputDialog = new ExplorerResultDialogFragment();
 
+                StringBuilder sb = new StringBuilder();
+                sb.append("Test " + Integer.toString(position + 1) + " ");
+                sb.append(tuningResultCases.get(position).results);
+                outputDialog.setText(sb);
+                outputDialog.show(mainActivity.getSupportFragmentManager(), "TuningResultOutputDialog");
             }
         });
     }
@@ -64,7 +86,7 @@ public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapte
 
             testNum = itemView.findViewById(R.id.tuningTestNum);
             paramButton = itemView.findViewById(R.id.tuningResultParamButton);
-            resultButton = itemView.findViewById(R.id.tuningResultResultButton);
+            resultButton = itemView.findViewById(R.id.tuningResultOutputButton);
 
         }
     }

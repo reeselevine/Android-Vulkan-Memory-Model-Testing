@@ -22,13 +22,18 @@ public class TuningResultDialogFragment extends DialogFragment {
 
     private static final String TAG = "TuningResultDialog";
 
+    private String testName;
+    private ArrayList<TuningResultCase> tuningResultCases = new ArrayList<TuningResultCase>();
+    private MainActivity mainActivity;
+
     private RecyclerView tuningResultRV;
     private TuningResultAdapter tuningResultAdapter;
     private Button closeButton;
-    private ArrayList<TuningResultCase> tuningResultCases = new ArrayList<TuningResultCase>();
 
-    public TuningResultDialogFragment(ArrayList<TuningResultCase> tuningResultCases) {
+    public TuningResultDialogFragment(String testName, ArrayList<TuningResultCase> tuningResultCases, MainActivity mainActivity) {
+        this.testName = testName;
         this.tuningResultCases = tuningResultCases;
+        this.mainActivity = mainActivity;
     }
 
     @Nullable
@@ -41,7 +46,7 @@ public class TuningResultDialogFragment extends DialogFragment {
         tuningResultRV = view.findViewById(R.id.tuningResultRecyclerView);
         closeButton = view.findViewById(R.id.tuningResultCloseButton);
 
-        tuningResultAdapter = new TuningResultAdapter(getActivity(), tuningResultCases);
+        tuningResultAdapter = new TuningResultAdapter(testName, getActivity(), tuningResultCases, mainActivity);
         tuningResultRV.setAdapter(tuningResultAdapter);
         tuningResultRV.setLayoutManager(new LinearLayoutManager(getActivity()));
         tuningResultRV.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));

@@ -18,7 +18,7 @@ public class ExplorerResultDialogFragment extends DialogFragment {
     private static final String TAG = "ExplorerResultDialog";
 
     private TextView resultText;
-    private String resultString;
+    private String resultString = "";
     private Button closeButton;
 
     @Nullable

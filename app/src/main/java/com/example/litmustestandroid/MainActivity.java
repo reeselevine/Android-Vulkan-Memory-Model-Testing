@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
             String line = bufferedReader.readLine();
             while (line != null) {
-                fos.write(line.getBytes());
+                fos.write((line + "\n").getBytes());
                 line = bufferedReader.readLine();
             }
             inputStream.close();
@@ -574,6 +574,9 @@ public class MainActivity extends AppCompatActivity {
             dialog.setText(sb);
             Log.d(TAG, sb.toString());
 
+            fis.close();
+            isr.close();
+            br.close();
         }
         catch (FileNotFoundException e)
         {
@@ -587,19 +590,26 @@ public class MainActivity extends AppCompatActivity {
         dialog.show(getSupportFragmentManager(), "ExplorerResultDialog");
     }
 
-    public String convertFileToString(int fileValue) {
+    public String convertFileToString(String fileName) {
+        Log.i("TUNING TEST", fileName);
         String result = "";
 
-        InputStream inputStream = getResources().openRawResource(fileValue);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
         try {
-            String line = bufferedReader.readLine();
-            while (line != null) {
-                result.concat(line + "\n");
-                line = bufferedReader.readLine();
+            FileInputStream fis = openFileInput(fileName);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+
+            String text;
+
+            while ((text = br.readLine()) != null) {
+                sb.append(text).append("\n");
             }
-            inputStream.close();
+            result = sb.toString();
+
+            fis.close();
+            isr.close();
+            br.close();
         }
         catch (FileNotFoundException e)
         {
@@ -633,9 +643,7 @@ public class MainActivity extends AppCompatActivity {
 
         TestCase currTest = findTestCase(testName);
         shaderType = currTest.shaderNames[0];
-        int basic_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[0], "raw", this.getPackageName());
-        int paramFile = this.getResources().getIdentifier(currTest.testParamName, "raw", this.getPackageName());
-        int outputFile = this.getResources().getIdentifier(currTest.outputName, "raw", this.getPackageName());
+        int testParameterValue = this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName());
 
         // Start tuning test
         tuningStartButton.setOnClickListener(new View.OnClickListener() {
@@ -672,19 +680,20 @@ public class MainActivity extends AppCompatActivity {
 
                         testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
                         testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name
+
                         for(int i = 0; i < tuningConfigNum; i++) {
                             // TODO: Come up with a way to display progress
                             //viewHolder.tuningButton.setText(Integer.toString(i));
 
-                            writeTuningParameters(testName, basic_parameters);
+                            writeTuningParameters(testName, testParameterValue);
 
                             main(testArgument, true);
 
                             // Save param value
-                            String currParamValue = convertFileToString(paramFile);
+                            String currParamValue = convertFileToString(currTest.testParamName + ".txt");
 
                             // Save result value
-                            String currResultValue = convertFileToString(outputFile);
+                            String currResultValue = convertFileToString(currTest.outputName + ".txt");
 
                             // Transfer over the tuning result case
                             TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue);
@@ -721,7 +730,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, testName + " cannot find result cases!");
         }
 
-        TuningResultDialogFragment dialog = new TuningResultDialogFragment(currTestList);
+        TuningResultDialogFragment dialog = new TuningResultDialogFragment(testName, currTestList, MainActivity.this);
         dialog.show(getSupportFragmentManager(), "TuningResultDialog");
     }
 
