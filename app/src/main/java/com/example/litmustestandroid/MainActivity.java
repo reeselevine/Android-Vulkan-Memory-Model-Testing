@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tuningTestName;
     private EditText[] tuningParameters = new EditText[2];
     private Button tuningStartButton, tuningCloseButton;
+    private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
 
     private static final String TAG = "MainActivity";
 
@@ -327,6 +329,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void writeTuningParameters(String testName, int paramPresetValue) {
+        // TODO: Set up random parameter here
+        InputStream inputStream = getResources().openRawResource(paramPresetValue);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+        String fileName = "litmustest_" + testName + "_parameters.txt";
+
+        try {
+            FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                fos.write(line.getBytes());
+                line = bufferedReader.readLine();
+            }
+            inputStream.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public void enableAllTests(boolean enabled){
         for(int i = 0; i < RVLists.length; i++) {
             for(int j = 0; j < RVLists[i].getChildCount(); j++) {
@@ -504,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
                         testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
                         testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name
 
-                        main(testArgument);
+                        main(testArgument, false);
 
                         viewHolder.newExplorerTest = false;
 
@@ -530,7 +558,7 @@ public class MainActivity extends AppCompatActivity {
     public void explorerTestResult(String testName) {
         Log.i("EXPLORER RESULT", testName + " PRESSED");
 
-        ResultDialogFragment dialog = new ResultDialogFragment();
+        ExplorerResultDialogFragment dialog = new ExplorerResultDialogFragment();
 
         try
         {
@@ -556,7 +584,32 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        dialog.show(getSupportFragmentManager(), "ResultDialog");
+        dialog.show(getSupportFragmentManager(), "ExplorerResultDialog");
+    }
+
+    public String convertFileToString(int fileValue) {
+        String result = "";
+
+        InputStream inputStream = getResources().openRawResource(fileValue);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+        try {
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                result.concat(line + "\n");
+                line = bufferedReader.readLine();
+            }
+            inputStream.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public void openTuningMenu(String testName, int position) {
@@ -580,6 +633,9 @@ public class MainActivity extends AppCompatActivity {
 
         TestCase currTest = findTestCase(testName);
         shaderType = currTest.shaderNames[0];
+        int basic_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[0], "raw", this.getPackageName());
+        int paramFile = this.getResources().getIdentifier(currTest.testParamName, "raw", this.getPackageName());
+        int outputFile = this.getResources().getIdentifier(currTest.outputName, "raw", this.getPackageName());
 
         // Start tuning test
         tuningStartButton.setOnClickListener(new View.OnClickListener() {
@@ -603,6 +659,8 @@ public class MainActivity extends AppCompatActivity {
                 // Turn this button's color to indicate which test is currently running
                 viewHolder.tuningButton.setBackgroundColor(Color.BLUE);
 
+                ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
+
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -618,21 +676,31 @@ public class MainActivity extends AppCompatActivity {
                             // TODO: Come up with a way to display progress
                             //viewHolder.tuningButton.setText(Integer.toString(i));
 
-                            // TODO: Sample param function, need to change for tuning
-                            writeExploreParameters(testName, R.raw.parameters_basic);
+                            writeTuningParameters(testName, basic_parameters);
 
-                            main(testArgument);
+                            main(testArgument, true);
+
+                            // Save param value
+                            String currParamValue = convertFileToString(paramFile);
+
+                            // Save result value
+                            String currResultValue = convertFileToString(outputFile);
+
+                            // Transfer over the tuning result case
+                            TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue);
+
+                            currTuningResults.add(currTuningResult);
+                            tuningResultCases.put(testName, currTuningResults);
                         }
 
                         viewHolder.newTuningTest = false;
-                        viewHolder.tuningButton.setText("Tuning");
+                        //viewHolder.tuningButton.setText("Tuning");
                         enableAllTests(true);
                         Toast.makeText(MainActivity.this, "Tuning Test " + testName + " finished!", Toast.LENGTH_LONG).show();
                     }
                 }, 500);
             }
         });
-
 
         // Close menu
         tuningCloseButton.setOnClickListener(new View.OnClickListener() {
@@ -647,37 +715,19 @@ public class MainActivity extends AppCompatActivity {
     public void tuningTestResult(String testName) {
         Log.i("TUNING RESULT", testName + " PRESSED");
 
-        ResultDialogFragment dialog = new ResultDialogFragment();
+        ArrayList<TuningResultCase> currTestList = tuningResultCases.get(testName);
 
-        try
-        {
-            FileInputStream fis = openFileInput("litmustest_" + testName + "_output.txt");
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String text;
+        if(currTestList == null) {
+            Log.e(TAG, testName + " cannot find result cases!");
+        }
 
-            while ((text = br.readLine()) != null) {
-                sb.append(text).append("\n");
-            }
-            dialog.setText(sb);
-            Log.d(TAG, sb.toString());
-
-        }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        dialog.show(getSupportFragmentManager(), "ResultDialog");
+        TuningResultDialogFragment dialog = new TuningResultDialogFragment(currTestList);
+        dialog.show(getSupportFragmentManager(), "TuningResultDialog");
     }
 
     public String getFileDir() {
         return getFilesDir().toString();
     }
 
-    public native int main(String[] testName);
+    public native int main(String[] testName, boolean tuningMode);
 }

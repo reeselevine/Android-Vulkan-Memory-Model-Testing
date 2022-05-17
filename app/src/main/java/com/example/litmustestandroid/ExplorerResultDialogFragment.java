@@ -1,8 +1,6 @@
 package com.example.litmustestandroid;
 
-import android.app.Dialog;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +13,9 @@ import androidx.fragment.app.DialogFragment;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ResultDialogFragment extends DialogFragment {
+public class ExplorerResultDialogFragment extends DialogFragment {
 
-    private static final String TAG = "ResultDialog";
+    private static final String TAG = "ExplorerResultDialog";
 
     private TextView resultText;
     private String resultString;
@@ -28,7 +26,7 @@ public class ResultDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.result_dialog_layout, container, false);
+        View view = inflater.inflate(R.layout.explorer_result_dialog_layout, container, false);
 
         resultText = view.findViewById(R.id.resultText);
         closeButton = view.findViewById(R.id.closeButton);

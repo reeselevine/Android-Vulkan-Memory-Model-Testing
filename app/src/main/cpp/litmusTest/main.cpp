@@ -15,7 +15,9 @@ using namespace std;
 using namespace easyvk;
 
 const int size = 4;
-constexpr char *TAG = "TestRunner";
+constexpr char *TAG = "Main";
+
+bool tuningMode = false;
 
 /** Returns the GPU to use for this test run. Users can specify the specific GPU to use
  *  with the 'gpuDeviceId' parameter. If gpuDeviceId is not included in the parameters or the specified
@@ -36,8 +38,10 @@ Device getDevice(Instance &instance, map<string, int> params, ofstream &outputFi
         }
     }
     Device device = instance.devices().at(idx);
-    outputFile << "Using device " << device.properties().deviceName << "\n";
-    outputFile << "\n";
+    if(!tuningMode) {
+        outputFile << "Using device " << device.properties().deviceName << "\n";
+        outputFile << "\n";
+    }
     return device;
 }
 
@@ -204,19 +208,21 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
         resultProgram.prepare();
         resultProgram.run();
 
-        /*outputFile << "Iteration " << i << "\n";
-        outputFile << "seq: " << testResults.load(0) + testResults.load(1) << "\n";
-        outputFile << "interleaved: " << testResults.load(2) << "\n";
-        outputFile << "weak: " << testResults.load(3) << "\n";
+        if(!tuningMode) {
+            outputFile << "Iteration " << i << "\n";
+            outputFile << "seq: " << testResults.load(0) + testResults.load(1) << "\n";
+            outputFile << "interleaved: " << testResults.load(2) << "\n";
+            outputFile << "weak: " << testResults.load(3) << "\n";
 
-        std::chrono::duration<double> itDuration = itEnd - itStart;
-        outputFile << "durationSeconds: " << itDuration.count() << "s\n";*/
+            std::chrono::duration<double> itDuration = itEnd - itStart;
+            outputFile << "durationSeconds: " << itDuration.count() << "s\n";
+            outputFile << "\n";
+        }
 
         numSeq += testResults.load(0) + testResults.load(1);
         numInter += testResults.load(2);
         numWeak += testResults.load(3);
 
-        //outputFile << "\n";
         program.teardown();
         resultProgram.teardown();
     }
@@ -273,10 +279,12 @@ int runTest(string testName, string shaderFile, string resultShaderFile, string 
 {
     std::ofstream outputFile(filePath + "/" + testName + "_output.txt");
 
-    outputFile << "Test Name: " << testName << "\n";
-    outputFile << "\n";
-    outputFile << "Shader Name: " << shaderFile << "\n";
-    outputFile << "\n";
+    if(!tuningMode) {
+        outputFile << "Test Name: " << testName << "\n";
+        outputFile << "\n";
+        outputFile << "Shader Name: " << shaderFile << "\n";
+        outputFile << "\n";
+    }
 
     configFile = filePath + "/" + configFile + ".txt";
     shaderFile = filePath + "/" + shaderFile + ".spv";
@@ -286,14 +294,17 @@ int runTest(string testName, string shaderFile, string resultShaderFile, string 
     LOGD("%s", shaderFile.c_str());
     LOGD("%s", resultShaderFile.c_str());
 
-    outputFile << "Parameter:\n";
-
     srand(time(NULL));
     map<string, int> params = read_config(configFile);
-    for (const auto& [key, value] : params) {
-        outputFile << key << " = " << value << ";\n";
+
+    if(!tuningMode) {
+        outputFile << "Parameter:\n";
+
+        for (const auto& [key, value] : params) {
+            outputFile << key << " = " << value << ";\n";
+        }
+        outputFile << "\n";
     }
-    outputFile << "\n";
 
     try{
         run(shaderFile, resultShaderFile, params, outputFile);
@@ -328,7 +339,8 @@ extern "C" JNIEXPORT jint JNICALL
 Java_com_example_litmustestandroid_MainActivity_main(
         JNIEnv* env,
         jobject obj,
-        jobjectArray testArray) {
+        jobjectArray testArray,
+        jboolean tuningModeEnabled) {
 
     // Convert string array to individual string
     jstring jTestName = (jstring) (env)->GetObjectArrayElement(testArray, 0);
@@ -350,6 +362,8 @@ Java_com_example_litmustestandroid_MainActivity_main(
 
     LOGD("Get file path via JNI");
     std::string filePath = getFileDirFromJava(env, obj);
+
+    tuningMode = tuningModeEnabled;
 
     runTest(testName, shaderFile, resultShaderFile, configFile, filePath);
     return 0;

@@ -21,7 +21,7 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             litmusTest/main.cpp easyvk/easyvk.cpp)
+        litmusTest/main.cpp easyvk/easyvk.cpp)
 
 #add_library(testRunner-main-lib SHARED litmusTest/test_runner.cpp easyvk/easyvk.cpp)
 

@@ -9,14 +9,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.litmustestandroid.databinding.ActivityOldMainBinding;
@@ -206,7 +204,7 @@ public class old_MainActivity extends AppCompatActivity {
     public void litmusTestResult(String testName) {
         Log.i("RESULT", testName + " PRESSED");
 
-        ResultDialogFragment dialog = new ResultDialogFragment();
+        ExplorerResultDialogFragment dialog = new ExplorerResultDialogFragment();
 
         try
         {
