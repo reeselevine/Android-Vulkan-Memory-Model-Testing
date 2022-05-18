@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private Handler handler = new Handler();
+    private Handler tuningHandler = new Handler();
 
     private String shaderType = "";
 
@@ -604,7 +605,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String convertFileToString(String fileName) {
-        Log.i("TUNING TEST", fileName);
         String result = "";
 
         try {
@@ -679,47 +679,18 @@ public class MainActivity extends AppCompatActivity {
                 // Turn this button's color to indicate which test is currently running
                 viewHolder.tuningButton.setBackgroundColor(Color.BLUE);
 
+                String[] testArgument = new String[4];
+                testArgument[0] = "litmustest_" + testName; // Test Name
+
+                // Shader Name
+                testArgument[1] = shaderType;
+
+                testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
+                testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name
+
                 ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
 
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        String[] testArgument = new String[4];
-                        testArgument[0] = "litmustest_" + testName; // Test Name
-
-                        // Shader Name
-                        testArgument[1] = shaderType;
-
-                        testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
-                        testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name
-
-                        for(int i = 0; i < tuningConfigNum; i++) {
-                            // TODO: Come up with a way to display progress
-                            //viewHolder.tuningButton.setText(Integer.toString(i));
-
-                            writeTuningParameters(testName, tuningTestIteration, testParameterValue);
-
-                            main(testArgument, true);
-
-                            // Save param value
-                            String currParamValue = convertFileToString(currTest.testParamName + ".txt");
-
-                            // Save result value
-                            String currResultValue = convertFileToString(currTest.outputName + ".txt");
-
-                            // Transfer over the tuning result case
-                            TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue);
-
-                            currTuningResults.add(currTuningResult);
-                            tuningResultCases.put(testName, currTuningResults);
-                        }
-
-                        viewHolder.newTuningTest = false;
-                        //viewHolder.tuningButton.setText("Tuning");
-                        enableAllTests(true);
-                        Toast.makeText(MainActivity.this, "Tuning Test " + testName + " finished!", Toast.LENGTH_LONG).show();
-                    }
-                }, 500);
+                tuningTestLoop(testName, testArgument, currTuningResults, 0, tuningConfigNum, viewHolder, tuningTestIteration, currTest);
             }
         });
 
@@ -731,6 +702,43 @@ public class MainActivity extends AppCompatActivity {
                 tuningDialog.dismiss();
             }
         });
+    }
+
+    public void tuningTestLoop(String testName, String[] testArgument, ArrayList<TuningResultCase> currTuningResults, int currConfig, int endConfig,
+                                LitmusTestAdapter.LitmusTestViewHolder viewHolder, int tuningTestIteration, TestCase currTest) {
+
+        viewHolder.tuningButton.setText(currConfig+1 + "/" + endConfig);
+
+        writeTuningParameters(testName, tuningTestIteration, this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName()));
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                main(testArgument, true);
+
+                // Save param value
+                String currParamValue = convertFileToString(currTest.testParamName + ".txt");
+
+                // Save result value
+                String currResultValue = convertFileToString(currTest.outputName + ".txt");
+
+                // Transfer over the tuning result case
+                TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue);
+
+                currTuningResults.add(currTuningResult);
+
+                if(currConfig == endConfig - 1) {
+                    tuningResultCases.put(testName, currTuningResults);
+                    viewHolder.newTuningTest = false;
+                    viewHolder.tuningButton.setText("Tuning");
+                    enableAllTests(true);
+                    Toast.makeText(MainActivity.this, "Tuning Test " + testName + " finished!", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    tuningTestLoop(testName, testArgument, currTuningResults, currConfig+1, endConfig, viewHolder, tuningTestIteration, currTest);
+                }
+            }
+        }, 500);
     }
 
     public void tuningTestResult(String testName) {

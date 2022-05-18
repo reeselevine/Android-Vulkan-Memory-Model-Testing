@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <chrono>
+#include <unistd.h>
 #include <jni.h>
 #include <android/log.h>
 #include "../easyvk/easyvk.h"
