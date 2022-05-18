@@ -221,12 +221,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*public void setMaxViewPoolSize(RecyclerView RV, int maxViewTypeId, int maxPoolSize) {
-        for (int i = 0; i < maxViewTypeId; i++) {
-            RV.getRecycledViewPool().setMaxRecycledViews(i, maxPoolSize);
-        }
-    }*/
-
     public void displayLitmusTests() {
         // Weak Memory Tests
         String weakMemoryTestNames[] = getResources().getStringArray(R.array.weakMemoryTests);
@@ -236,8 +230,6 @@ public class MainActivity extends AppCompatActivity {
         weakMemoryTestsRV.setAdapter(weakMemoryTestsAdapter);
         weakMemoryTestsRV.setLayoutManager(new LinearLayoutManager(this));
         weakMemoryTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-
-        //weakMemoryTestsRV.getRecycledViewPool().setMaxRecycledViews(TYPE_CAROUSEL, 0);
         RVLists[0] = weakMemoryTestsRV;
 
         // Coherence Tests
@@ -656,7 +648,6 @@ public class MainActivity extends AppCompatActivity {
 
         TestCase currTest = findTestCase(testName);
         shaderType = currTest.shaderNames[0];
-        int testParameterValue = this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName());
 
         // Start tuning test
         tuningStartButton.setOnClickListener(new View.OnClickListener() {
