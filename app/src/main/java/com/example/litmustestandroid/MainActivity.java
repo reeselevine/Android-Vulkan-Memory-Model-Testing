@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private LitmusTestAdapter barrierTestsAdapter;
     private RecyclerView[] RVLists = new RecyclerView[4];
 
+    private ArrayList<LitmusTestAdapter.LitmusTestViewHolder> litmusTestViewHolders = new ArrayList<LitmusTestAdapter.LitmusTestViewHolder>();
+
     private AutoCompleteTextView autoCompleteTextView;
     private ArrayAdapter<String> adapterItems;
 
@@ -218,22 +220,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /*public void setMaxViewPoolSize(RecyclerView RV, int maxViewTypeId, int maxPoolSize) {
+        for (int i = 0; i < maxViewTypeId; i++) {
+            RV.getRecycledViewPool().setMaxRecycledViews(i, maxPoolSize);
+        }
+    }*/
+
     public void displayLitmusTests() {
         // Weak Memory Tests
         String weakMemoryTestNames[] = getResources().getStringArray(R.array.weakMemoryTests);
         weakMemoryTestsRV = findViewById(R.id.weakMemoryTestsRecyclerView);
 
-        weakMemoryTestsAdapter = new LitmusTestAdapter(this, weakMemoryTestNames, MainActivity.this);
+        weakMemoryTestsAdapter = new LitmusTestAdapter(this, weakMemoryTestNames, MainActivity.this, litmusTestViewHolders);
         weakMemoryTestsRV.setAdapter(weakMemoryTestsAdapter);
         weakMemoryTestsRV.setLayoutManager(new LinearLayoutManager(this));
         weakMemoryTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+
+        //weakMemoryTestsRV.getRecycledViewPool().setMaxRecycledViews(TYPE_CAROUSEL, 0);
         RVLists[0] = weakMemoryTestsRV;
 
         // Coherence Tests
         String coherenceTestNames[] = getResources().getStringArray(R.array.coherenceTests);
         coherenceTestsRV = findViewById(R.id.coherenceTestsRecyclerView);
 
-        coherenceTestsAdapter = new LitmusTestAdapter(this, coherenceTestNames, MainActivity.this);
+        coherenceTestsAdapter = new LitmusTestAdapter(this, coherenceTestNames, MainActivity.this, litmusTestViewHolders);
         coherenceTestsRV.setAdapter(coherenceTestsAdapter);
         coherenceTestsRV.setLayoutManager(new LinearLayoutManager(this));
         coherenceTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -243,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
         String atomicityTestNames[] = getResources().getStringArray(R.array.atomicityTests);
         atomicityTestsRV = findViewById(R.id.atomicityTestsRecyclerView);
 
-        atomicityTestsAdapter = new LitmusTestAdapter(this, atomicityTestNames, MainActivity.this);
+        atomicityTestsAdapter = new LitmusTestAdapter(this, atomicityTestNames, MainActivity.this, litmusTestViewHolders);
         atomicityTestsRV.setAdapter(atomicityTestsAdapter);
         atomicityTestsRV.setLayoutManager(new LinearLayoutManager(this));
         atomicityTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -253,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
         String barrierTestNames[] = getResources().getStringArray(R.array.barrierTests);
         barrierTestsRV = findViewById(R.id.barrierTestsRecyclerView);
 
-        barrierTestsAdapter = new LitmusTestAdapter(this, barrierTestNames, MainActivity.this);
+        barrierTestsAdapter = new LitmusTestAdapter(this, barrierTestNames, MainActivity.this, litmusTestViewHolders);
         barrierTestsRV.setAdapter(barrierTestsAdapter);
         barrierTestsRV.setLayoutManager(new LinearLayoutManager(this));
         barrierTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -329,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void writeTuningParameters(String testName, int paramPresetValue) {
+    public void writeTuningParameters(String testName, int testIteration, int paramPresetValue) {
         // TODO: Set up random parameter here
         InputStream inputStream = getResources().openRawResource(paramPresetValue);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -340,6 +350,10 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
             String line = bufferedReader.readLine();
             while (line != null) {
+                String[] words = line.split("=");
+                if(words[0].equals("testIterations")) {
+                    line = words[0] + "=" + testIteration;
+                }
                 fos.write((line + "\n").getBytes());
                 line = bufferedReader.readLine();
             }
@@ -356,45 +370,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void enableAllTests(boolean enabled){
-        for(int i = 0; i < RVLists.length; i++) {
-            for(int j = 0; j < RVLists[i].getChildCount(); j++) {
-                LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) RVLists[i].getChildViewHolder(RVLists[i].getChildAt(j));
-                viewHolder.explorerButton.setEnabled(enabled);
-                viewHolder.explorerResultButton.setEnabled(enabled);
-                viewHolder.tuningButton.setEnabled(enabled);
-                viewHolder.tuningResultButton.setEnabled(enabled);
+        for(int i = 0; i < litmusTestViewHolders.size(); i++) {
+            LitmusTestAdapter.LitmusTestViewHolder viewHolder = litmusTestViewHolders.get(i);
 
-                if(enabled) {
-                    viewHolder.explorerButton.setBackgroundColor(Color.GREEN);
-                    viewHolder.tuningButton.setBackgroundColor(Color.GREEN);
-                    if(viewHolder.newExplorerTest) { // If explorer test is still new, stay gray
-                        viewHolder.explorerResultButton.setEnabled(false);
-                        viewHolder.explorerResultButton.setBackgroundColor(Color.GRAY);
-                    }
-                    else { // If explorer test has result existing, turn RED
-                        viewHolder.explorerResultButton.setBackgroundColor(Color.RED);
-                    }
-                    if(viewHolder.newTuningTest) { // If tuning test is still new, stay gray
-                        viewHolder.tuningResultButton.setEnabled(false);
-                        viewHolder.tuningResultButton.setBackgroundColor(Color.GRAY);
-                    }
-                    else { // If tuning test has result existing, turn RED
-                        viewHolder.tuningResultButton.setBackgroundColor(Color.RED);
-                    }
-                }
-                else {
-                    viewHolder.explorerButton.setBackgroundColor(Color.GRAY);
+            viewHolder.explorerButton.setEnabled(enabled);
+            viewHolder.explorerResultButton.setEnabled(enabled);
+            viewHolder.tuningButton.setEnabled(enabled);
+            viewHolder.tuningResultButton.setEnabled(enabled);
+
+            if(enabled) {
+                viewHolder.explorerButton.setBackgroundColor(Color.GREEN);
+                viewHolder.tuningButton.setBackgroundColor(Color.GREEN);
+                if(viewHolder.newExplorerTest) { // If explorer test is still new, stay gray
+                    viewHolder.explorerResultButton.setEnabled(false);
                     viewHolder.explorerResultButton.setBackgroundColor(Color.GRAY);
-                    viewHolder.tuningButton.setBackgroundColor(Color.GRAY);
+                }
+                else { // If explorer test has result existing, turn RED
+                    viewHolder.explorerResultButton.setBackgroundColor(Color.RED);
+                }
+                if(viewHolder.newTuningTest) { // If tuning test is still new, stay gray
+                    viewHolder.tuningResultButton.setEnabled(false);
                     viewHolder.tuningResultButton.setBackgroundColor(Color.GRAY);
                 }
+                else { // If tuning test has result existing, turn RED
+                    viewHolder.tuningResultButton.setBackgroundColor(Color.RED);
+                }
+            }
+            else {
+                viewHolder.explorerButton.setBackgroundColor(Color.GRAY);
+                viewHolder.explorerResultButton.setBackgroundColor(Color.GRAY);
+                viewHolder.tuningButton.setBackgroundColor(Color.GRAY);
+                viewHolder.tuningResultButton.setBackgroundColor(Color.GRAY);
             }
         }
     }
 
     public RecyclerView findRecyclerView(String testName) {
         for(int i = 0; i < RVLists.length; i++) {
-            for(int j = 0; j < RVLists[i].getChildCount(); j++) {
+            for(int j = 0; j < RVLists[i].getAdapter().getItemCount(); j++) {
                 LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) RVLists[i].getChildViewHolder(RVLists[i].getChildAt(j));
                 if (viewHolder.testName.getText().toString().equals(testName)) {
                     return RVLists[i];
@@ -656,7 +669,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, testName + " does not exist in any recyclerviews!");
                 }
                 final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) testRV.getChildViewHolder(testRV.getChildAt(position));
-
                 int tuningConfigNum = Integer.parseInt(tuningParameters[0].getText().toString());
                 int tuningTestIteration = Integer.parseInt(tuningParameters[1].getText().toString());
 
@@ -685,7 +697,7 @@ public class MainActivity extends AppCompatActivity {
                             // TODO: Come up with a way to display progress
                             //viewHolder.tuningButton.setText(Integer.toString(i));
 
-                            writeTuningParameters(testName, testParameterValue);
+                            writeTuningParameters(testName, tuningTestIteration, testParameterValue);
 
                             main(testArgument, true);
 

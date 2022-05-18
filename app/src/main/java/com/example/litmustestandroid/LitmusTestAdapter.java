@@ -1,5 +1,6 @@
 package com.example.litmustestandroid;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -13,16 +14,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.LitmusTestViewHolder>{
 
     String litmusTestName[];
     Context context;
     MainActivity mainActivity;
+    ArrayList<LitmusTestViewHolder> litmusTestViewHolders;
 
-    public LitmusTestAdapter(Context ct, String testNames[], MainActivity testRun) {
+    public LitmusTestAdapter(Context ct, String testNames[], MainActivity testRun, ArrayList<LitmusTestViewHolder> litmusTestViewHolders) {
         litmusTestName = testNames;
         context = ct;
         mainActivity = testRun;
+        this.litmusTestViewHolders = litmusTestViewHolders;
     }
 
     @NotNull
@@ -34,7 +39,7 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
     }
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull LitmusTestAdapter.LitmusTestViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull @NotNull LitmusTestAdapter.LitmusTestViewHolder holder, @SuppressLint("RecyclerView") int position) {
         String currentTestName = litmusTestName[position];
         holder.testName.setText(currentTestName);
 
@@ -58,6 +63,8 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
                 mainActivity.tuningTestResult(currentTestName);
             }
         });
+
+        litmusTestViewHolders.add(holder);
     }
 
     @Override
