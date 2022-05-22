@@ -34,6 +34,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AlertDialog tuningDialog;
     private TextView tuningTestName;
-    private EditText[] tuningParameters = new EditText[2];
+    private EditText[] tuningParameters = new EditText[3];
     private Button tuningStartButton, tuningCloseButton;
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
 
@@ -332,25 +336,77 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void writeTuningParameters(String testName, int testIteration, int paramPresetValue) {
-        // TODO: Set up random parameter here
+    public int randomGenerator(int min, int max, double generator) {
+        return (int) Math.floor(generator * (max - min + 1) + min);
+    }
+
+    public int roundedPercentage(double generator) {
+        return (int) Math.floor(randomGenerator(0, 100, generator) / 5) * 5;
+    }
+
+    public int getPercentage(double generator, boolean smoothedParameters) {
+        if (smoothedParameters) {
+            return roundedPercentage(generator);
+        }
+        else {
+            return randomGenerator(0, 1, generator) * 100;
+        }
+    }
+
+    public void writeTuningParameters(String testName, double generator, int testIteration, int paramPresetValue) {
+        boolean smoothedParameters = true;
+        int workgroupLimiter = 1024;
+        int testingWorkgroups = randomGenerator(2, workgroupLimiter, generator);
+        int maxWorkgroups = randomGenerator(testingWorkgroups, workgroupLimiter, generator);
+        int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10, generator));
+        int stressTargetLines = randomGenerator(1, 16, generator);
+        int memStride = randomGenerator(1, 7, generator);
+        Map<String, String> parameterFormat = new TreeMap<String, String>();
+
         InputStream inputStream = getResources().openRawResource(paramPresetValue);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
         String fileName = "litmustest_" + testName + "_parameters.txt";
 
+        // Get parameter format by reading preset file
         try {
-            FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
             String line = bufferedReader.readLine();
             while (line != null) {
                 String[] words = line.split("=");
-                if(words[0].equals("testIterations")) {
-                    line = words[0] + "=" + testIteration;
-                }
-                fos.write((line + "\n").getBytes());
+                parameterFormat.put(words[0], words[1]);
                 line = bufferedReader.readLine();
             }
             inputStream.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        // Now randomize certain parmeter values
+        parameterFormat.put("testIterations", Integer.toString(testIteration));
+        parameterFormat.put("testingWorkgroups", Integer.toString(testingWorkgroups));
+        parameterFormat.put("maxWorkgroups", Integer.toString(maxWorkgroups));
+        parameterFormat.put("shufflePct", Integer.toString(getPercentage(generator, smoothedParameters)));
+        parameterFormat.put("barrierPct", Integer.toString(getPercentage(generator, smoothedParameters)));
+        parameterFormat.put("scratchMemorySize", Integer.toString(32 * stressLineSize * stressTargetLines));
+        parameterFormat.put("memStride", Integer.toString(memStride));
+        parameterFormat.put("memStressPct", Integer.toString(getPercentage(generator, smoothedParameters)));
+        parameterFormat.put("memStressIterations", Integer.toString(randomGenerator(0, 1024, generator)));
+        parameterFormat.put("preStressPct", Integer.toString(getPercentage(generator, smoothedParameters)));
+        parameterFormat.put("preStressIterations", Integer.toString(randomGenerator(0, 128, generator)));
+        parameterFormat.put("stressLineSize", Integer.toString(stressLineSize));
+        parameterFormat.put("stressTargetLines", Integer.toString(stressTargetLines));
+        parameterFormat.put("stressAssignmentStrategy", Integer.toString(getPercentage(generator, smoothedParameters)));
+
+        // Now insert the parameter values to text file that will be used during test
+
+        try {
+            FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+
+            for (String key: parameterFormat.keySet()) {
+                fos.write((key + "=" + parameterFormat.get(key) + "\n").getBytes());
+            }
         }
         catch (FileNotFoundException e)
         {
@@ -638,6 +694,7 @@ public class MainActivity extends AppCompatActivity {
 
         tuningParameters[0] = (EditText) tuningMenuView.findViewById(R.id.testTuningConfigNum); // testConfigNum
         tuningParameters[1] = (EditText) tuningMenuView.findViewById(R.id.testTuningTestIteration); // testIteration
+        tuningParameters[2] = (EditText) tuningMenuView.findViewById(R.id.testTuningRandomSeed);
 
         tuningStartButton = (Button) tuningMenuView.findViewById(R.id.testTuningStartButton);
         tuningCloseButton = (Button) tuningMenuView.findViewById(R.id.testTuningCloseButton);
@@ -662,6 +719,8 @@ public class MainActivity extends AppCompatActivity {
                 final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) testRV.getChildViewHolder(testRV.getChildAt(position));
                 int tuningConfigNum = Integer.parseInt(tuningParameters[0].getText().toString());
                 int tuningTestIteration = Integer.parseInt(tuningParameters[1].getText().toString());
+                String tuningRandomSeed = tuningParameters[2].getText().toString();
+                ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
 
                 tuningDialog.dismiss();
 
@@ -679,9 +738,17 @@ public class MainActivity extends AppCompatActivity {
                 testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
                 testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name
 
-                ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
+                double generator;
+                Random random;
+                if(tuningRandomSeed.length() == 0) {
+                    random = new Random();
+                }
+                else {
+                    random = new Random(tuningRandomSeed.hashCode());
+                }
+                generator = random.nextDouble();
 
-                tuningTestLoop(testName, testArgument, currTuningResults, 0, tuningConfigNum, viewHolder, tuningTestIteration, currTest);
+                tuningTestLoop(testName, generator, testArgument, currTuningResults, 0, tuningConfigNum, viewHolder, tuningTestIteration, currTest);
             }
         });
 
@@ -695,12 +762,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void tuningTestLoop(String testName, String[] testArgument, ArrayList<TuningResultCase> currTuningResults, int currConfig, int endConfig,
+    public void tuningTestLoop(String testName, double generator, String[] testArgument, ArrayList<TuningResultCase> currTuningResults, int currConfig, int endConfig,
                                 LitmusTestAdapter.LitmusTestViewHolder viewHolder, int tuningTestIteration, TestCase currTest) {
 
         viewHolder.tuningButton.setText(currConfig+1 + "/" + endConfig);
 
-        writeTuningParameters(testName, tuningTestIteration, this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName()));
+        writeTuningParameters(testName, generator, tuningTestIteration, this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName()));
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -726,7 +793,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Tuning Test " + testName + " finished!", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    tuningTestLoop(testName, testArgument, currTuningResults, currConfig+1, endConfig, viewHolder, tuningTestIteration, currTest);
+                    tuningTestLoop(testName, generator, testArgument, currTuningResults, currConfig+1, endConfig, viewHolder, tuningTestIteration, currTest);
                 }
             }
         }, 500);

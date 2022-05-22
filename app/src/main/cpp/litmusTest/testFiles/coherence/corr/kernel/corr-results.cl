@@ -11,7 +11,7 @@ __kernel void litmus_test (
   __global atomic_uint* read_results,
   __global atomic_uint* test_results,
   __global uint* stress_params) {
-  uint id_0 = get_global_id(0) * get_local_size(0) + get_local_id(0);
+  uint id_0 = get_global_id(0);
   uint x_0 = (id_0) * stress_params[10] * 2;
   uint mem_x_0 = atomic_load(&test_locations[x_0]);
   uint r0 = atomic_load(&read_results[id_0 * 2]);
