@@ -26,6 +26,10 @@ public class TuningResultDialogFragment extends DialogFragment {
     private ArrayList<TuningResultCase> tuningResultCases = new ArrayList<TuningResultCase>();
     private MainActivity mainActivity;
 
+    private TextView testNameTextView;
+    private TextView maxWeakBehaviorTextView;
+    private TextView maxWeakBehaviorRowTextView;
+    private TextView avgWeakBehaviorTextView;
     private RecyclerView tuningResultRV;
     private TuningResultAdapter tuningResultAdapter;
     private Button closeButton;
@@ -43,8 +47,34 @@ public class TuningResultDialogFragment extends DialogFragment {
 
         View view = inflater.inflate(R.layout.tuning_result_dialog_layout, container, false);
 
+        testNameTextView = view.findViewById(R.id.tuningResultTestName);
+        maxWeakBehaviorTextView = view.findViewById(R.id.tuningResultMaxWeakBehaviors);
+        maxWeakBehaviorRowTextView = view.findViewById(R.id.tuningResultMaxWeakBehaviorRows);
+        avgWeakBehaviorTextView = view.findViewById(R.id.tuningResultAverageWeakBehaviors);
         tuningResultRV = view.findViewById(R.id.tuningResultRecyclerView);
         closeButton = view.findViewById(R.id.tuningResultCloseButton);
+
+        testNameTextView.setText(testName);
+
+        // Get max weak behavior
+        int maxWeakBehavior = 0;
+        String maxWeakBehaviorRow = "";
+        int sumWeakBehavior = 0;
+        for (int i = 0; i < tuningResultCases.size(); i++) {
+            int numWeakBehavior = tuningResultCases.get(i).numWeakBehaviors;
+            if(numWeakBehavior == maxWeakBehavior) {
+                maxWeakBehaviorRow = maxWeakBehaviorRow + "," + Integer.toString(i + 1);
+            }
+            else if (numWeakBehavior > maxWeakBehavior) {
+                maxWeakBehavior = numWeakBehavior;
+                maxWeakBehaviorRow = Integer.toString(i + 1);
+            }
+            sumWeakBehavior += numWeakBehavior;
+        }
+
+        maxWeakBehaviorTextView.setText(Integer.toString(maxWeakBehavior));
+        maxWeakBehaviorRowTextView.setText(maxWeakBehaviorRow);
+        avgWeakBehaviorTextView.setText(Integer.toString(sumWeakBehavior / tuningResultCases.size()));
 
         tuningResultAdapter = new TuningResultAdapter(testName, getActivity(), tuningResultCases, mainActivity);
         tuningResultRV.setAdapter(tuningResultAdapter);

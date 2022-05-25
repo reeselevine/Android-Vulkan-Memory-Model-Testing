@@ -285,6 +285,8 @@ int runTest(string testName, string shaderFile, string resultShaderFile, string 
         outputFile << "\n";
         outputFile << "Shader Name: " << shaderFile << "\n";
         outputFile << "\n";
+        outputFile << "Result Name: " << resultShaderFile << "\n";
+        outputFile << "\n";
     }
 
     configFile = filePath + "/" + configFile + ".txt";

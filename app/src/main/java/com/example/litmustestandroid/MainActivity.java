@@ -336,31 +336,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public int randomGenerator(int min, int max, double generator) {
+    public int randomGenerator(int min, int max, String tuningRandomSeed) {
+        double generator;
+        Random random;
+        if(tuningRandomSeed.length() == 0) {
+            random = new Random();
+        }
+        else {
+            random = new Random(tuningRandomSeed.hashCode());
+        }
+        generator = random.nextDouble();
         return (int) Math.floor(generator * (max - min + 1) + min);
     }
 
-    public int roundedPercentage(double generator) {
-        return (int) Math.floor(randomGenerator(0, 100, generator) / 5) * 5;
+    public int roundedPercentage(String tuningRandomSeed) {
+        return (int) Math.floor(randomGenerator(0, 100, tuningRandomSeed) / 5) * 5;
     }
 
-    public int getPercentage(double generator, boolean smoothedParameters) {
+    public int getPercentage(String tuningRandomSeed, boolean smoothedParameters) {
         if (smoothedParameters) {
-            return roundedPercentage(generator);
+            return roundedPercentage(tuningRandomSeed);
         }
         else {
-            return randomGenerator(0, 1, generator) * 100;
+            return randomGenerator(0, 1, tuningRandomSeed) * 100;
         }
     }
 
-    public void writeTuningParameters(String testName, double generator, int testIteration, int paramPresetValue) {
+    public void writeTuningParameters(String testName, String tuningRandomSeed, int testIteration, int paramPresetValue) {
         boolean smoothedParameters = true;
         int workgroupLimiter = 1024;
-        int testingWorkgroups = randomGenerator(2, workgroupLimiter, generator);
-        int maxWorkgroups = randomGenerator(testingWorkgroups, workgroupLimiter, generator);
-        int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10, generator));
-        int stressTargetLines = randomGenerator(1, 16, generator);
-        int memStride = randomGenerator(1, 7, generator);
+        int testingWorkgroups = randomGenerator(2, workgroupLimiter, tuningRandomSeed);
+        int maxWorkgroups = randomGenerator(testingWorkgroups, workgroupLimiter, tuningRandomSeed);
+        int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10, tuningRandomSeed));
+        int stressTargetLines = randomGenerator(1, 16, tuningRandomSeed);
+        int memStride = randomGenerator(1, 7, tuningRandomSeed);
         Map<String, String> parameterFormat = new TreeMap<String, String>();
 
         InputStream inputStream = getResources().openRawResource(paramPresetValue);
@@ -387,17 +396,59 @@ public class MainActivity extends AppCompatActivity {
         parameterFormat.put("testIterations", Integer.toString(testIteration));
         parameterFormat.put("testingWorkgroups", Integer.toString(testingWorkgroups));
         parameterFormat.put("maxWorkgroups", Integer.toString(maxWorkgroups));
-        parameterFormat.put("shufflePct", Integer.toString(getPercentage(generator, smoothedParameters)));
-        parameterFormat.put("barrierPct", Integer.toString(getPercentage(generator, smoothedParameters)));
+        parameterFormat.put("shufflePct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
+        parameterFormat.put("barrierPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
         parameterFormat.put("scratchMemorySize", Integer.toString(32 * stressLineSize * stressTargetLines));
         parameterFormat.put("memStride", Integer.toString(memStride));
-        parameterFormat.put("memStressPct", Integer.toString(getPercentage(generator, smoothedParameters)));
-        parameterFormat.put("memStressIterations", Integer.toString(randomGenerator(0, 1024, generator)));
-        parameterFormat.put("preStressPct", Integer.toString(getPercentage(generator, smoothedParameters)));
-        parameterFormat.put("preStressIterations", Integer.toString(randomGenerator(0, 128, generator)));
+        parameterFormat.put("memStressPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
+        parameterFormat.put("memStressIterations", Integer.toString(randomGenerator(0, 1024, tuningRandomSeed)));
+        parameterFormat.put("preStressPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
+        parameterFormat.put("preStressIterations", Integer.toString(randomGenerator(0, 128, tuningRandomSeed)));
         parameterFormat.put("stressLineSize", Integer.toString(stressLineSize));
         parameterFormat.put("stressTargetLines", Integer.toString(stressTargetLines));
-        parameterFormat.put("stressAssignmentStrategy", Integer.toString(getPercentage(generator, smoothedParameters)));
+        parameterFormat.put("stressAssignmentStrategy", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
+
+        boolean memStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(tuningRandomSeed, smoothedParameters);
+        boolean memStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(tuningRandomSeed, smoothedParameters);
+        int memStressPattern;
+        if (memStressStoreFirst) {
+            if (memStressStoreSecond) {
+                memStressPattern = 0;
+            }
+            else {
+                memStressPattern = 1;
+            }
+        }
+        else {
+            if (memStressStoreSecond) {
+                memStressPattern = 2;
+            }
+            else {
+                memStressPattern = 3;
+            }
+        }
+        parameterFormat.put("memStressPattern", Integer.toString(memStressPattern));
+
+        boolean preStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(tuningRandomSeed, smoothedParameters);
+        boolean preStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(tuningRandomSeed, smoothedParameters);
+        int preStressPattern;
+        if (preStressStoreFirst) {
+            if (preStressStoreSecond) {
+                preStressPattern = 0;
+            }
+            else {
+                preStressPattern = 1;
+            }
+        }
+        else {
+            if (preStressStoreSecond) {
+                preStressPattern = 2;
+            }
+            else {
+                preStressPattern = 3;
+            }
+        }
+        parameterFormat.put("preStressPattern", Integer.toString(preStressPattern));
 
         // Now insert the parameter values to text file that will be used during test
 
@@ -738,17 +789,7 @@ public class MainActivity extends AppCompatActivity {
                 testArgument[2] = "litmustest_" + testName + "_results"; // Result Shader Name
                 testArgument[3] = "litmustest_" + testName + "_parameters"; // Parameter Name
 
-                double generator;
-                Random random;
-                if(tuningRandomSeed.length() == 0) {
-                    random = new Random();
-                }
-                else {
-                    random = new Random(tuningRandomSeed.hashCode());
-                }
-                generator = random.nextDouble();
-
-                tuningTestLoop(testName, generator, testArgument, currTuningResults, 0, tuningConfigNum, viewHolder, tuningTestIteration, currTest);
+                tuningTestLoop(testName, tuningRandomSeed, testArgument, currTuningResults, 0, tuningConfigNum, viewHolder, tuningTestIteration, currTest);
             }
         });
 
@@ -762,12 +803,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void tuningTestLoop(String testName, double generator, String[] testArgument, ArrayList<TuningResultCase> currTuningResults, int currConfig, int endConfig,
+    public void tuningTestLoop(String testName, String tuningRandomSeed, String[] testArgument, ArrayList<TuningResultCase> currTuningResults, int currConfig, int endConfig,
                                 LitmusTestAdapter.LitmusTestViewHolder viewHolder, int tuningTestIteration, TestCase currTest) {
 
         viewHolder.tuningButton.setText(currConfig+1 + "/" + endConfig);
 
-        writeTuningParameters(testName, generator, tuningTestIteration, this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName()));
+        writeTuningParameters(testName, tuningRandomSeed, tuningTestIteration, this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName()));
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -780,8 +821,13 @@ public class MainActivity extends AppCompatActivity {
                 // Save result value
                 String currResultValue = convertFileToString(currTest.outputName + ".txt");
 
+                // Go through result and get number of weak behaviors
+                String startIndexIndicator = "weak: ";
+                String endIndexIndicator = "\nTotal elapsed time";
+                String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
                 // Transfer over the tuning result case
-                TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue);
+                TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue, Integer.parseInt(numWeakBehaviors));
 
                 currTuningResults.add(currTuningResult);
 
@@ -793,7 +839,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Tuning Test " + testName + " finished!", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    tuningTestLoop(testName, generator, testArgument, currTuningResults, currConfig+1, endConfig, viewHolder, tuningTestIteration, currTest);
+                    tuningTestLoop(testName, tuningRandomSeed, testArgument, currTuningResults, currConfig+1, endConfig, viewHolder, tuningTestIteration, currTest);
                 }
             }
         }, 500);
