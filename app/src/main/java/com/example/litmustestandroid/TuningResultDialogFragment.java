@@ -63,7 +63,12 @@ public class TuningResultDialogFragment extends DialogFragment {
         for (int i = 0; i < tuningResultCases.size(); i++) {
             int numWeakBehavior = tuningResultCases.get(i).numWeakBehaviors;
             if(numWeakBehavior == maxWeakBehavior) {
-                maxWeakBehaviorRow = maxWeakBehaviorRow + "," + Integer.toString(i + 1);
+                if (maxWeakBehaviorRow.equals("")) {
+                    maxWeakBehaviorRow = Integer.toString(i + 1);
+                }
+                else {
+                    maxWeakBehaviorRow = maxWeakBehaviorRow + "," + Integer.toString(i + 1);
+                }
             }
             else if (numWeakBehavior > maxWeakBehavior) {
                 maxWeakBehavior = numWeakBehavior;

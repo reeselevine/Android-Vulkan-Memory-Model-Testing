@@ -42,8 +42,8 @@
                     android:id="@+id/tuningResultMaxWeakBehaviors"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5sp"
                     android:hint="10000"
-                    android:gravity="center_horizontal"
                     android:textSize="20sp"
                     android:textColor="@color/black"/>
 
@@ -66,7 +66,7 @@
                     android:id="@+id/tuningResultMaxWeakBehaviorRows"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
+                    android:layout_marginLeft="5sp"
                     android:textSize="20sp"
                     android:textColor="@color/black"/>
 
@@ -89,8 +89,8 @@
                     android:id="@+id/tuningResultAverageWeakBehaviors"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5sp"
                     android:hint="10000"
-                    android:gravity="center_horizontal"
                     android:textSize="20sp"
                     android:textColor="@color/black"/>
 
