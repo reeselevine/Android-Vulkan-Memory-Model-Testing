@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.SortedMap;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private LitmusTestAdapter atomicityTestsAdapter;
     private RecyclerView barrierTestsRV;
     private LitmusTestAdapter barrierTestsAdapter;
-    private RecyclerView[] RVLists = new RecyclerView[4];
+    private LitmusTestAdapter[] AdapterLists = new LitmusTestAdapter[4];
 
     private ArrayList<LitmusTestAdapter.LitmusTestViewHolder> litmusTestViewHolders = new ArrayList<LitmusTestAdapter.LitmusTestViewHolder>();
 
@@ -234,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
         weakMemoryTestsRV.setAdapter(weakMemoryTestsAdapter);
         weakMemoryTestsRV.setLayoutManager(new LinearLayoutManager(this));
         weakMemoryTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        RVLists[0] = weakMemoryTestsRV;
+        AdapterLists[0] = weakMemoryTestsAdapter;
 
         // Coherence Tests
         String coherenceTestNames[] = getResources().getStringArray(R.array.coherenceTests);
@@ -244,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         coherenceTestsRV.setAdapter(coherenceTestsAdapter);
         coherenceTestsRV.setLayoutManager(new LinearLayoutManager(this));
         coherenceTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        RVLists[1] = coherenceTestsRV;
+        AdapterLists[1] = coherenceTestsAdapter;
 
         // Atomicity Tests
         String atomicityTestNames[] = getResources().getStringArray(R.array.atomicityTests);
@@ -254,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         atomicityTestsRV.setAdapter(atomicityTestsAdapter);
         atomicityTestsRV.setLayoutManager(new LinearLayoutManager(this));
         atomicityTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        RVLists[2] = atomicityTestsRV;
+        AdapterLists[2] = atomicityTestsAdapter;
 
         // Barrier Tests
         String barrierTestNames[] = getResources().getStringArray(R.array.barrierTests);
@@ -264,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
         barrierTestsRV.setAdapter(barrierTestsAdapter);
         barrierTestsRV.setLayoutManager(new LinearLayoutManager(this));
         barrierTestsRV.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        RVLists[3] = barrierTestsRV;
+        AdapterLists[3] = barrierTestsAdapter;
     }
 
     // Automatically fill parameters with basic values
@@ -505,12 +507,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public RecyclerView findRecyclerView(String testName) {
-        for(int i = 0; i < RVLists.length; i++) {
-            for(int j = 0; j < RVLists[i].getAdapter().getItemCount(); j++) {
-                LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) RVLists[i].getChildViewHolder(RVLists[i].getChildAt(j));
-                if (viewHolder.testName.getText().toString().equals(testName)) {
-                    return RVLists[i];
+    public LitmusTestAdapter.LitmusTestViewHolder findViewHolder(String testName) {
+        for(int i = 0; i < AdapterLists.length; i++) {
+            for (int j = 0; j < AdapterLists[i].litmusTestViewHolders.size(); j++) {
+                if (AdapterLists[i].litmusTestViewHolders.get(j).testName.getText().toString().equals(testName)) {
+                    return AdapterLists[i].litmusTestViewHolders.get(j);
                 }
             }
         }
@@ -619,12 +620,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("EXPLORER TEST", testName + " STARTING");
-                RecyclerView testRV = findRecyclerView(testName);
+                LitmusTestAdapter.LitmusTestViewHolder viewHolder = findViewHolder(testName);
 
-                if(testRV == null) {
-                    Log.e(TAG, testName + " does not exist in any recyclerviews!");
+                if(viewHolder == null) {
+                    Log.e(TAG, testName + " does not exist in any viewholders!");
                 }
-                final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) testRV.getChildViewHolder(testRV.getChildAt(position));
+
                 writeExploreParameters(testName, basic_parameters);
                 exploreDialog.dismiss();
 
@@ -762,12 +763,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("TUNING TEST", testName + " STARTING");
-                RecyclerView testRV = findRecyclerView(testName);
+                LitmusTestAdapter.LitmusTestViewHolder viewHolder = findViewHolder(testName);
 
-                if(testRV == null) {
-                    Log.e(TAG, testName + " does not exist in any recyclerviews!");
+                if(viewHolder == null) {
+                    Log.e(TAG, testName + " does not exist in any viewholders!");
                 }
-                final LitmusTestAdapter.LitmusTestViewHolder viewHolder = (LitmusTestAdapter.LitmusTestViewHolder) testRV.getChildViewHolder(testRV.getChildAt(position));
                 int tuningConfigNum = Integer.parseInt(tuningParameters[0].getText().toString());
                 int tuningTestIteration = Integer.parseInt(tuningParameters[1].getText().toString());
                 String tuningRandomSeed = tuningParameters[2].getText().toString();
