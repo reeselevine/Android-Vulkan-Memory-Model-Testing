@@ -138,7 +138,14 @@ public class MainActivity extends AppCompatActivity {
                 newTest.setShaderNames(shaderNames, totalShaderNames);
 
                 newTest.setResultName(testData.getString("result"), totalResultNames);
-                newTest.setOutputName(testData.getString("output"), totalOutputNames);
+
+                JSONArray outputArray = testData.getJSONArray("outputs");
+                String[] outputNames = new String[outputArray.length()];
+                for(int j = 0; j < outputArray.length(); j++) {
+                    outputNames[j] = outputArray.getString(j);
+                }
+                newTest.setOutputName(outputNames, totalOutputNames);
+
                 newTest.setTestParamName(testData.getString("parameter"), totalTestParamNames);
 
                 JSONArray paramPresetArray = testData.getJSONArray("parameter_presets");
@@ -396,8 +403,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Now randomize certain parmeter values
         parameterFormat.put("testIterations", Integer.toString(testIteration));
+
+        // Temporary fixed number of workgroup
+        //parameterFormat.put("testingWorkgroups", Integer.toString(128));
+        //parameterFormat.put("maxWorkgroups", Integer.toString(128));
+        
         parameterFormat.put("testingWorkgroups", Integer.toString(testingWorkgroups));
         parameterFormat.put("maxWorkgroups", Integer.toString(maxWorkgroups));
+
         parameterFormat.put("shufflePct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
         parameterFormat.put("barrierPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
         parameterFormat.put("scratchMemorySize", Integer.toString(32 * stressLineSize * stressTargetLines));
@@ -676,7 +689,7 @@ public class MainActivity extends AppCompatActivity {
 
         try
         {
-            FileInputStream fis = openFileInput("litmustest_" + testName + "_output.txt");
+            FileInputStream fis = openFileInput("litmustest_" + testName + "_output_explorer.txt");
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
@@ -819,7 +832,7 @@ public class MainActivity extends AppCompatActivity {
                 String currParamValue = convertFileToString(currTest.testParamName + ".txt");
 
                 // Save result value
-                String currResultValue = convertFileToString(currTest.outputName + ".txt");
+                String currResultValue = convertFileToString(currTest.outputNames[1] + ".txt");
 
                 // Go through result and get number of weak behaviors
                 String startIndexIndicator = "weak: ";

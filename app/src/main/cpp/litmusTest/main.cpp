@@ -278,7 +278,16 @@ std::string readOutput(std::string filePath) {
 
 int runTest(string testName, string shaderFile, string resultShaderFile, string configFile, string filePath)
 {
-    std::ofstream outputFile(filePath + "/" + testName + "_output.txt");
+    std::ofstream outputFile;
+    string outputFilePath = "";
+    if(tuningMode) {
+        outputFilePath = filePath + "/" + testName + "_output_tuning.txt";
+        outputFile.open(outputFilePath);
+    }
+    else {
+        outputFilePath = filePath + "/" + testName + "_output_explorer.txt";
+        outputFile.open(outputFilePath);
+    }
 
     if(!tuningMode) {
         outputFile << "Test Name: " << testName << "\n";
@@ -320,10 +329,10 @@ int runTest(string testName, string shaderFile, string resultShaderFile, string 
     outputFile.close();
 
     LOGD(
-            "%s/%s:\n%s_output.txt",
+            "%s/%s:\n%s",
             filePath.c_str(),
             testName.c_str(),
-            readOutput(filePath + "/" + testName + "_output.txt").c_str());
+            readOutput(outputFilePath).c_str());
 
     return 0;
 }

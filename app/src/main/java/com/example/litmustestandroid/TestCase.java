@@ -10,7 +10,7 @@ public class TestCase {
 
     public String resultName; // Shader file that checks for number of behaviors
 
-    public String outputName; // Output text file that will store the test output
+    public String[] outputNames; // Output text file that will store the test output
 
     public String testParamName; // Text file that stores test's parameter values
 
@@ -32,10 +32,12 @@ public class TestCase {
         }
     }
 
-    public void setOutputName(String newOutputName, ArrayList<String> totalOutputNames) {
-        this.outputName = newOutputName;
-        if(!totalOutputNames.contains(newOutputName)) {
-            totalOutputNames.add(newOutputName);
+    public void setOutputName(String[] newOutputNames, ArrayList<String> totalOutputNames) {
+        this.outputNames = newOutputNames;
+        for(int i = 0; i < newOutputNames.length; i++) {
+            if(!totalOutputNames.contains(newOutputNames[i])) {
+                totalOutputNames.add(newOutputNames[i]);
+            }
         }
     }
 

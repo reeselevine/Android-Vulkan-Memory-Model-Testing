@@ -13,7 +13,7 @@
         "litmustest_message_passing_workgroup_barrier"
       ],
       "result": "litmustest_message_passing_results",
-      "output": "litmustest_message_passing_output",
+      "outputs": ["litmustest_message_passing_output_explorer", "litmustest_message_passing_output_tuning"],
       "parameter": "litmustest_message_passing_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -32,7 +32,7 @@
         "litmustest_store_workgroup_barrier"
       ],
       "result": "litmustest_store_results",
-      "output": "litmustest_store_output",
+      "outputs": ["litmustest_store_output_explorer", "litmustest_store_output_tuning"],
       "parameter": "litmustest_store_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -51,7 +51,7 @@
         "litmustest_read_workgroup_rmw_barrier"
       ],
       "result": "litmustest_read_results",
-      "output": "litmustest_read_output",
+      "outputs": ["litmustest_read_output_explorer", "litmustest_read_output_tuning"],
       "parameter": "litmustest_read_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -70,7 +70,7 @@
         "litmustest_load_buffer_workgroup_barrier"
       ],
       "result": "litmustest_load_buffer_results",
-      "output": "litmustest_load_buffer_output",
+      "outputs": ["litmustest_load_buffer_output_explorer", "litmustest_load_buffer_output_tuning"],
       "parameter": "litmustest_load_buffer_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -89,7 +89,7 @@
         "litmustest_store_buffer_workgroup_rmw_barrier"
       ],
       "result": "litmustest_store_buffer_results",
-      "output": "litmustest_store_buffer_output",
+      "outputs": ["litmustest_store_buffer_output_explorer", "litmustest_store_buffer_output_tuning"],
       "parameter": "litmustest_store_buffer_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -108,7 +108,7 @@
         "litmustest_22_write_workgroup_rmw_barrier"
       ],
       "result": "litmustest_22_write_results",
-      "output": "litmustest_22_write_output",
+      "outputs": ["litmustest_22_write_output_explorer", "litmustest_22_write_output_tuning"],
       "parameter": "litmustest_22_write_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -131,7 +131,7 @@
         "litmustest_corr_workgroup"
       ],
       "result": "litmustest_corr_results",
-      "output": "litmustest_corr_output",
+      "outputs": ["litmustest_corr_output_explorer", "litmustest_corr_output_tuning"],
       "parameter": "litmustest_corr_parameters",
       "parameter_presets": [
         "parameters_basic_corr",
@@ -147,7 +147,7 @@
         "litmustest_corw1_workgroup"
       ],
       "result": "litmustest_corw1_results",
-      "output": "litmustest_corw1_output",
+      "outputs": ["litmustest_corw1_output_explorer", "litmustest_corw1_output_tuning"],
       "parameter": "litmustest_corw1_parameters",
       "parameter_presets": [
         "parameters_basic_coherence",
@@ -166,7 +166,7 @@
         "litmustest_corw2_workgroup"
       ],
       "result": "litmustest_corw2_results",
-      "output": "litmustest_corw2_output",
+      "outputs": ["litmustest_corw2_output_explorer", "litmustest_corw2_output_tuning"],
       "parameter": "litmustest_corw2_parameters",
       "parameter_presets": [
         "parameters_basic_coherence",
@@ -186,7 +186,7 @@
         "litmustest_cowr_workgroup"
       ],
       "result": "litmustest_cowr_results",
-      "output": "litmustest_cowr_output",
+      "outputs": ["litmustest_cowr_output_explorer", "litmustest_cowr_output_tuning"],
       "parameter": "litmustest_cowr_parameters",
       "parameter_presets": [
         "parameters_basic_coherence",
@@ -203,7 +203,7 @@
         "litmustest_coww_workgroup"
       ],
       "result": "litmustest_coww_results",
-      "output": "litmustest_coww_output",
+      "outputs": ["litmustest_coww_output_explorer", "litmustest_coww_output_tuning"],
       "parameter": "litmustest_coww_parameters",
       "parameter_presets": [
         "parameters_basic_coherence",
@@ -219,7 +219,7 @@
         "litmustest_atomicity_workgroup"
       ],
       "result": "litmustest_atomicity_results",
-      "output": "litmustest_atomicity_output",
+      "outputs": ["litmustest_atomicity_output_explorer", "litmustest_atomicity_output_tuning"],
       "parameter": "litmustest_atomicity_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -234,7 +234,7 @@
         "litmustest_barrier_store_load_workgroup"
       ],
       "result": "litmustest_barrier_store_load_results",
-      "output": "litmustest_barrier_store_load_output",
+      "outputs": ["litmustest_barrier_store_load_output_explorer", "litmustest_barrier_store_load_output_tuning"],
       "parameter": "litmustest_barrier_store_load_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -249,7 +249,7 @@
         "litmustest_barrier_load_store_workgroup"
       ],
       "result": "litmustest_barrier_load_store_results",
-      "output": "litmustest_barrier_load_store_output",
+      "outputs": ["litmustest_barrier_load_store_output_explorer", "litmustest_barrier_load_store_output_tuning"],
       "parameter": "litmustest_barrier_load_store_parameters",
       "parameter_presets": [
         "parameters_basic",
@@ -264,7 +264,7 @@
         "litmustest_barrier_store_store_workgroup"
       ],
       "result": "litmustest_barrier_store_store_results",
-      "output": "litmustest_barrier_store_store_output",
+      "outputs": ["litmustest_barrier_store_store_output_explorer", "litmustest_barrier_store_store_output_tuning"],
       "parameter": "litmustest_barrier_store_store_parameters",
       "parameter_presets": [
         "parameters_basic",
