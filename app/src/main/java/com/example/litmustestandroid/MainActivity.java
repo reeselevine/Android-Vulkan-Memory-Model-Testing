@@ -24,8 +24,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.litmustestandroid.DialogFragments.ExplorerResultDialogFragment;
 import com.example.litmustestandroid.DialogFragments.TuningResultCase;
 import com.example.litmustestandroid.DialogFragments.TuningResultDialogFragment;
-import com.example.litmustestandroid.Fragment.Introduction;
-import com.example.litmustestandroid.Fragment.MessagePassing;
+import com.example.litmustestandroid.Fragment.*;
 import com.example.litmustestandroid.HelperClass.ResultButton;
 import com.example.litmustestandroid.HelperClass.TestCase;
 import com.example.litmustestandroid.databinding.ActivityMainBinding;
@@ -77,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
 
     private Handler handler = new Handler();
-    private Handler tuningHandler = new Handler();
 
     private String shaderType = "";
 
@@ -125,6 +123,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_message_passing:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new MessagePassing()).commit();
+                break;
+            case R.id.nav_store:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new Store()).commit();
+                break;
+            case R.id.nav_read:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new Read()).commit();
+                break;
+            case R.id.nav_load_buffer:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new LoadBuffer()).commit();
+                break;
+            case R.id.nav_store_buffer:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new StoreBuffer()).commit();
+                break;
+            case R.id.nav_22_write:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new Write22()).commit();
+                break;
+            case R.id.nav_corr:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new CoRR()).commit();
+                break;
+            case R.id.nav_coww:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new CoWW()).commit();
+                break;
+            case R.id.nav_cowr:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new CoWR()).commit();
+                break;
+            case R.id.nav_corw1:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new CoRW1()).commit();
+                break;
+            case R.id.nav_corw2:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new CoRW2()).commit();
+                break;
+            case R.id.nav_atomicity:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new Atomicity()).commit();
+                break;
+            case R.id.nav_barrier_store_load:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new BarrierStoreLoad()).commit();
+                break;
+            case R.id.nav_barrier_load_store:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new BarrierLoadStore()).commit();
+                break;
+            case R.id.nav_barrier_store_store:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new BarrierStoreStore()).commit();
                 break;
         }
         drawer.closeDrawer(GravityCompat.START);
