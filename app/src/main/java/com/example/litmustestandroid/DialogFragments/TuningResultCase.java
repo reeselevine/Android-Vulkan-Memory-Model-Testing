@@ -1,4 +1,4 @@
-package com.example.litmustestandroid;
+package com.example.litmustestandroid.DialogFragments;
 
 public class TuningResultCase {
 

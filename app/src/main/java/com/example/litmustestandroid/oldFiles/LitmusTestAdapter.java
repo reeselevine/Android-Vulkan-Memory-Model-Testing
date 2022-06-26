@@ -1,4 +1,4 @@
-package com.example.litmustestandroid;
+package com.example.litmustestandroid.oldFiles;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.litmustestandroid.MainActivity;
+import com.example.litmustestandroid.R;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +48,7 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
 
         holder.explorerButton.setOnClickListener(new View.OnClickListener() { // Open explorer menu
             public void onClick (View v) {
-                mainActivity.openExploreMenu(currentTestName, position);
+                //mainActivity.openExploreMenu(currentTestName, new Button[]{}, new Result);
             }
         });
         holder.explorerResultButton.setOnClickListener(new View.OnClickListener() { // Show Explorer Result
@@ -55,7 +58,7 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
         });
         holder.tuningButton.setOnClickListener(new View.OnClickListener() { // Open tuning menu
             public void onClick (View v) {
-                mainActivity.openTuningMenu(currentTestName, position);
+                //mainActivity.openTuningMenu(currentTestName, position);
             }
         });
         holder.tuningResultButton.setOnClickListener(new View.OnClickListener() { // Show tuning result

@@ -1,4 +1,4 @@
-package com.example.litmustestandroid;
+package com.example.litmustestandroid.HelperClass;
 
 import java.util.ArrayList;
 

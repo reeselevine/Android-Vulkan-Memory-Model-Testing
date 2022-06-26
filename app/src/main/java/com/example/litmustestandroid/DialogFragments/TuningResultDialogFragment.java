@@ -1,4 +1,4 @@
-package com.example.litmustestandroid;
+package com.example.litmustestandroid.DialogFragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +13,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.litmustestandroid.MainActivity;
+import com.example.litmustestandroid.R;
 
 import org.jetbrains.annotations.NotNull;
 

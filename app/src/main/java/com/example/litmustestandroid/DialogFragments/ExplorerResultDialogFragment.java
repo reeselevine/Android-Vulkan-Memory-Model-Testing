@@ -1,4 +1,4 @@
-package com.example.litmustestandroid;
+package com.example.litmustestandroid.DialogFragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import com.example.litmustestandroid.R;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,7 +1,6 @@
-package com.example.litmustestandroid;
+package com.example.litmustestandroid.DialogFragments;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.litmustestandroid.MainActivity;
+import com.example.litmustestandroid.R;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapter.TuningResultViewHolder>{

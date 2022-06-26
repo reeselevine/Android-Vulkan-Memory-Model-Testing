@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_introduction"
+              android:title="Introduction"/>
+        <item android:id="@+id/nav_multi_tests"
+              android:title="Running Multiple Tests"/>
+        <item android:title="Weak Memory Tests">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_message_passing"
+                        android:title="Message Passing" />
+                    <item
+                        android:id="@+id/nav_store"
+                        android:title="Store" />
+                    <item
+                        android:id="@+id/nav_read"
+                        android:title="Read" />
+                    <item
+                        android:id="@+id/nav_load_buffer"
+                        android:title="Load Buffer" />
+                    <item
+                        android:id="@+id/nav_store_buffer"
+                        android:title="Store Buffer" />
+                    <item
+                        android:id="@+id/nav_22_write"
+                        android:title="2+2 Write" />
+                </group>
+            </menu>
+        </item>
+        <item android:title="Coherence Tests">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_corr"
+                        android:title="CoRR" />
+                    <item
+                        android:id="@+id/nav_coww"
+                        android:title="CoWW" />
+                    <item
+                        android:id="@+id/nav_cowr"
+                        android:title="CoWR" />
+                    <item
+                        android:id="@+id/nav_corw1"
+                        android:title="CoRW1" />
+                    <item
+                        android:id="@+id/nav_corw2"
+                        android:title="CoRW2" />
+                </group>
+            </menu>
+        </item>
+        <item android:title="Atomicity Tests">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_atomicity"
+                        android:title="Atomicity" />
+                </group>
+            </menu>
+        </item>
+        <item android:title="Workgroup Execution Barrier Tests">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_barrier_store_load"
+                        android:title="Barrier Store Load" />
+                    <item
+                        android:id="@+id/nav_barrier_load_store"
+                        android:title="Barrier Load Store" />
+                    <item
+                        android:id="@+id/nav_barrier_store_store"
+                        android:title="Barrier Store Store" />
+                </group>
+            </menu>
+        </item>
+    </group>
+
+</menu>

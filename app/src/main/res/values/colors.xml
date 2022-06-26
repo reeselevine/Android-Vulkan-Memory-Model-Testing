@@ -12,4 +12,5 @@
     <color name="red">#FFFF0000</color>
     <color name="lightgray">#FFE0E0E0</color>
     <color name="cyan">#FF00FFFF</color>
+    <color name="lightblue">#FF3E8ED0</color>
 </resources>
