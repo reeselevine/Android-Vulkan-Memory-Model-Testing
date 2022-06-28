@@ -49,7 +49,7 @@ public class MessagePassing extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("message_passing");
+                ((MainActivity)getActivity()).displayTestResult("message_passing");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

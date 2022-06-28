@@ -9,7 +9,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,13 +22,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.litmustestandroid.DialogFragments.ExplorerResultDialogFragment;
-import com.example.litmustestandroid.DialogFragments.TuningResultCase;
-import com.example.litmustestandroid.DialogFragments.TuningResultDialogFragment;
+import com.example.litmustestandroid.DialogFragments.*;
 import com.example.litmustestandroid.Fragment.*;
-import com.example.litmustestandroid.HelperClass.ResultButton;
-import com.example.litmustestandroid.HelperClass.TestCase;
+import com.example.litmustestandroid.HelperClass.*;
 import com.example.litmustestandroid.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
 
@@ -44,6 +46,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog exploreDialog;
     private TextView exploreTestName;
-    private EditText[] exploreParameters = new EditText[20];
+    private EditText[] exploreParameters = new EditText[18];
     private Button exploreStartButton, exploreCloseButton, defaultParamButton, stressParamButton;
 
     private AlertDialog tuningDialog;
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String shaderType = "";
 
     private ArrayList<TestCase> testCases = new ArrayList<>();
+    private LinkedHashMap<String, Boolean> multiTestCases = new LinkedHashMap<String, Boolean>();
 
     public ArrayList<String> totalShaderNames = new ArrayList<String>();
     public ArrayList<String> totalResultNames = new ArrayList<String>();
@@ -253,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 newTest.setParamPresetNames(paramPresetNames, totalParamPresetNames);
 
                 testCases.add(newTest);
+                multiTestCases.put(newTest.testName, false);
             }
 
         } catch (JSONException e) {
@@ -332,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // Automatically fill parameters with basic values
-    public void loadExploreParameters(int paramValue){
+    public void loadParameters(EditText[] parameters, int paramValue){
         InputStream inputStream = getResources().openRawResource(paramValue);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         int index = 0;
@@ -341,8 +346,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String line = bufferedReader.readLine();
             while (line != null) {
                 String[] words = line.split("=");
-                if((!words[0].equals("numMemLocations") && !words[0].equals("numOutputs")) && index < exploreParameters.length) {
-                    exploreParameters[index].setText(words[1]);
+                if((!words[0].equals("numMemLocations") && !words[0].equals("numOutputs")) && index < parameters.length) {
+                    parameters[index].setText(words[1]);
                     index++;
                 }
                 line = bufferedReader.readLine();
@@ -356,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // Read and write current parameters value for testing
-    public void writeExploreParameters(String testName, int paramValue) {
+    public void writeParameters(String testName, EditText[] parameters, int paramValue) {
         InputStream inputStream = getResources().openRawResource(paramValue);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -372,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String newLine = "\n";
 
                 if(words[0].equals("numMemLocations") || words[0].equals("numOutputs")
+                || words[0].equals("permuteFirst") || words[0].equals("permuteSecond")
                 || words[0].equals("aliasedMemory") || words[0].equals("gpuDeviceId")) {
                     if(words[0].equals("gpuDeviceId")) {
                         newLine = "";
@@ -379,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     outputNumber = words[1];
                 }
                 else {
-                    outputNumber = exploreParameters[index].getText().toString();
+                    outputNumber = parameters[index].getText().toString();
                     index++;
                 }
                 String outputLine = words[0] + "=" + outputNumber + newLine;
@@ -610,6 +616,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreTestName = (TextView) exploreMenuView.findViewById(R.id.testExploreTestName);
         exploreTestName.setText(testName);
 
+        EditText[] exploreParameters = new EditText[18];
         exploreParameters[0] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestIteration); // testIteration
         exploreParameters[1] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestingWorkgroups); // testingWorkgroups
         exploreParameters[2] = (EditText) exploreMenuView.findViewById(R.id.testExploreMaxWorkgroups); // maxWorkgroups
@@ -628,14 +635,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreParameters[15] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressLineSize); // stressLineSize
         exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
         exploreParameters[17] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressAssignmentStrategy); // stressAssignmentStrategy
-        exploreParameters[18] = (EditText) exploreMenuView.findViewById(R.id.testExplorePermuteFirst); // permuteFirst
-        exploreParameters[19] = (EditText) exploreMenuView.findViewById(R.id.testExplorePermuteSecond); // permuteSecond
 
         TestCase currTest = findTestCase(testName);
         int basic_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[0], "raw", this.getPackageName());
         int stress_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName());
 
-        loadExploreParameters(basic_parameters);
+        loadParameters(exploreParameters, basic_parameters);
 
         exploreStartButton = (Button) exploreMenuView.findViewById(R.id.testExploreStartButton);
         exploreCloseButton = (Button) exploreMenuView.findViewById(R.id.testExploreCloseButton);
@@ -658,7 +663,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                loadExploreParameters(basic_parameters);
+                loadParameters(exploreParameters, basic_parameters);
             }
         });
 
@@ -668,7 +673,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                loadExploreParameters(stress_parameters);
+                loadParameters(exploreParameters, stress_parameters);
             }
         });
 
@@ -678,7 +683,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Log.i("EXPLORER TEST", testName + " STARTING");
 
-                writeExploreParameters(testName, basic_parameters);
+                writeParameters(testName, exploreParameters, basic_parameters);
                 exploreDialog.dismiss();
 
                 // Disable buttons and change their color
@@ -717,10 +722,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void explorerTestResult(String testName) {
-        Log.i("EXPLORER RESULT", testName + " PRESSED");
+    public void displayTestResult(String testName) {
+        Log.i("RESULT", testName + " PRESSED");
 
-        ExplorerResultDialogFragment dialog = new ExplorerResultDialogFragment();
+        TestResultDialogFragment dialog = new TestResultDialogFragment();
 
         try
         {
@@ -749,7 +754,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
-        dialog.show(getSupportFragmentManager(), "ExplorerResultDialog");
+        dialog.show(getSupportFragmentManager(), "TestResultDialog");
     }
 
     public String convertFileToString(String fileName) {
@@ -898,6 +903,99 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         TuningResultDialogFragment dialog = new TuningResultDialogFragment(testName, currTestList, MainActivity.this);
         dialog.show(getSupportFragmentManager(), "TuningResultDialog");
+    }
+
+    public void multiTestCheckBoxesListener(View view) {
+        CheckBox currCheckBox = (CheckBox)view;
+        String testName = view.getTag().toString();
+        if(currCheckBox.isChecked()) { // Clicked
+            multiTestCases.put(testName, true);
+        }
+        else { // Un-clicked
+            multiTestCases.put(testName, false);
+        }
+     }
+
+    public void multiTestBegin(EditText[] parameters, Button startButton, LinearLayout resultLayout, RecyclerView resultRV) {
+        ArrayList<TestCase> multiSelectedTestCases = new ArrayList<TestCase>();
+
+        // Check if at least one test selected
+        for (LinkedHashMap.Entry<String, Boolean> entry : multiTestCases.entrySet()) {
+            if(entry.getValue() == true) {
+                multiSelectedTestCases.add(findTestCase(entry.getKey()));
+            }
+        }
+        if(multiSelectedTestCases.size() == 0) { // No test selected
+            Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Write parameters
+        for (int i = 0; i < multiSelectedTestCases.size(); i++) {
+            TestCase currTestCase = multiSelectedTestCases.get(i);
+            int basic_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());
+            writeParameters(currTestCase.testName, parameters, basic_parameters);
+        }
+
+        // Disable start button
+        startButton.setEnabled(false);
+        startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
+
+        // Set result layout invisible
+        resultLayout.setVisibility(View.GONE);
+
+        // Start multi test loop
+        multiTestLoop(0, multiSelectedTestCases, startButton, resultLayout, resultRV);
+    }
+
+    public void multiTestLoop(Integer currIt, ArrayList<TestCase> multiSelectedTestCases, Button startButton, LinearLayout resultLayout, RecyclerView resultRV) {
+        // Update button progress
+        startButton.setText(currIt+1 + "/" + multiSelectedTestCases.size());
+
+        TestCase currTestCase = multiSelectedTestCases.get(currIt);
+        String[] testArgument = new String[4];
+
+        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
+
+        // Shader Name
+        testArgument[1] = currTestCase.shaderNames[0]; // Current selected shader
+        testArgument[2] = currTestCase.resultName; // Result Shader
+        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Run test
+                main(testArgument, false);
+                if(currIt == multiSelectedTestCases.size()-1) { // All test ended, update result
+
+                    Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
+
+                    // Enable start button
+                    startButton.setText("Start");
+                    startButton.setEnabled(true);
+                    startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
+
+                    // Set result layout visible
+                    resultLayout.setVisibility(View.VISIBLE);
+
+                    // Get string array of test names
+                    String[] testNames = new String[multiSelectedTestCases.size()];
+                    for(int i = 0; i < multiSelectedTestCases.size(); i++) {
+                        testNames[i] = multiSelectedTestCases.get(i).testName;
+                    }
+
+                    // Update result
+                    MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this);
+                    resultRV.setAdapter(multiTestResultAdapter);
+                    resultRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    resultRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
+                }
+                else {
+                    multiTestLoop(currIt+1, multiSelectedTestCases, startButton, resultLayout, resultRV);
+                }
+            }
+        }, 500);
     }
 
     public String getFileDir() {

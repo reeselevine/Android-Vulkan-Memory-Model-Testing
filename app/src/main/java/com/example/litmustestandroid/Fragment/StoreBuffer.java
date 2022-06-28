@@ -49,7 +49,7 @@ public class StoreBuffer extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("store_buffer");
+                ((MainActivity)getActivity()).displayTestResult("store_buffer");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

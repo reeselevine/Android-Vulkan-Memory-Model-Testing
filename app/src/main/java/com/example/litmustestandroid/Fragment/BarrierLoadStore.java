@@ -49,7 +49,7 @@ public class BarrierLoadStore extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("barrier_load_store");
+                ((MainActivity)getActivity()).displayTestResult("barrier_load_store");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

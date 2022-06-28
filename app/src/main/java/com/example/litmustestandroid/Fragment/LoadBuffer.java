@@ -49,7 +49,7 @@ public class LoadBuffer extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("load_buffer");
+                ((MainActivity)getActivity()).displayTestResult("load_buffer");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

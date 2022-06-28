@@ -49,7 +49,7 @@ public class CoWR extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("cowr");
+                ((MainActivity)getActivity()).displayTestResult("cowr");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

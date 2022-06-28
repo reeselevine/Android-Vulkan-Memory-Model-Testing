@@ -20,14 +20,14 @@ import java.util.ArrayList;
 public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapter.TuningResultViewHolder>{
 
     String testName;
-    ArrayList<TuningResultCase> tuningResultCases;
     Context context;
+    ArrayList<TuningResultCase> tuningResultCases;
     MainActivity mainActivity;
 
     public TuningResultAdapter(String testName, Context ct, ArrayList<TuningResultCase> tuningResultCases, MainActivity mainActivity) {
         this.testName = testName;
-        this.tuningResultCases = tuningResultCases;
         this.context = ct;
+        this.tuningResultCases = tuningResultCases;
         this.mainActivity = mainActivity;
     }
 
@@ -35,7 +35,7 @@ public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapte
     @Override
     public TuningResultViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.tuning_result_recylerview_layout, parent, false);
+        View view = inflater.inflate(R.layout.tuning_result_recyclerview_layout, parent, false);
         return new TuningResultViewHolder(view);
     }
 
@@ -45,7 +45,7 @@ public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapte
 
         holder.paramButton.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v) {
-                ExplorerResultDialogFragment paramDialog = new ExplorerResultDialogFragment();
+                TestResultDialogFragment paramDialog = new TestResultDialogFragment();
 
                 StringBuilder sb = new StringBuilder();
                 sb.append("Test " + Integer.toString(position + 1) + ":\n");
@@ -56,7 +56,7 @@ public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapte
         });
         holder.resultButton.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v) {
-                ExplorerResultDialogFragment outputDialog = new ExplorerResultDialogFragment();
+                TestResultDialogFragment outputDialog = new TestResultDialogFragment();
 
                 StringBuilder sb = new StringBuilder();
                 sb.append("Test " + Integer.toString(position + 1) + " ");

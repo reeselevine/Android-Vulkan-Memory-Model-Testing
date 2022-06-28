@@ -49,7 +49,7 @@ public class Atomicity extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("atomicity");
+                ((MainActivity)getActivity()).displayTestResult("atomicity");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

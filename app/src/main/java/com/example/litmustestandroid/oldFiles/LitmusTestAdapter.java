@@ -53,7 +53,7 @@ public class LitmusTestAdapter extends RecyclerView.Adapter<LitmusTestAdapter.Li
         });
         holder.explorerResultButton.setOnClickListener(new View.OnClickListener() { // Show Explorer Result
             public void onClick (View v) {
-                mainActivity.explorerTestResult(currentTestName);
+                mainActivity.displayTestResult(currentTestName);
             }
         });
         holder.tuningButton.setOnClickListener(new View.OnClickListener() { // Open tuning menu

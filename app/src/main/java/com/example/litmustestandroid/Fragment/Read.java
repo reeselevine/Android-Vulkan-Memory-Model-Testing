@@ -49,7 +49,7 @@ public class Read extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("read");
+                ((MainActivity)getActivity()).displayTestResult("read");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

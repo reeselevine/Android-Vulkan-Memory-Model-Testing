@@ -49,7 +49,7 @@ public class CoRR extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("corr");
+                ((MainActivity)getActivity()).displayTestResult("corr");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

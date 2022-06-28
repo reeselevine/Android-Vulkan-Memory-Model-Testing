@@ -49,7 +49,7 @@ public class Write22 extends Fragment {
         explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).explorerTestResult("22_write");
+                ((MainActivity)getActivity()).displayTestResult("22_write");
             }
         });
         tuningButton.setOnClickListener(new View.OnClickListener() {

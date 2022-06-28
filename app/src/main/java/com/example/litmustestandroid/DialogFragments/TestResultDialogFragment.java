@@ -15,9 +15,9 @@ import com.example.litmustestandroid.R;
 
 import org.jetbrains.annotations.NotNull;
 
-public class ExplorerResultDialogFragment extends DialogFragment {
+public class TestResultDialogFragment extends DialogFragment {
 
-    private static final String TAG = "ExplorerResultDialog";
+    private static final String TAG = "TestResultDialog";
 
     private TextView resultText;
     private String resultString = "";
@@ -28,7 +28,7 @@ public class ExplorerResultDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.explorer_result_dialog_layout, container, false);
+        View view = inflater.inflate(R.layout.test_result_dialog_layout, container, false);
 
         resultText = view.findViewById(R.id.resultText);
         closeButton = view.findViewById(R.id.closeButton);
