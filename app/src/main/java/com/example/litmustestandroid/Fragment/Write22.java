@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.litmustestandroid.HelperClass.ResultButton;
+import com.example.litmustestandroid.HelperClass.TestViewObject;
 import com.example.litmustestandroid.MainActivity;
 import com.example.litmustestandroid.R;
 
@@ -28,37 +29,54 @@ public class Write22 extends Fragment {
         TextView description = fragmentView.findViewById(R.id.write_22_description);
         description.setText(getResources().getString(R.string.write_22_description));
 
-        Button explorerButton = fragmentView.findViewById(R.id.write_22_explorerButton);
-        Button tuningButton = fragmentView.findViewById(R.id.write_22_tuningButton);
+        TestViewObject testViewObject = new TestViewObject();
 
-        ResultButton explorerResultButton = new ResultButton(fragmentView.findViewById(R.id.write_22_explorerResultButton));
-        ResultButton tuningResultButton = new ResultButton(fragmentView.findViewById(R.id.write_22_tuningResultButton));
+        testViewObject.testName = "22_write";
+
+        testViewObject.explorerProgressLayout = fragmentView.findViewById(R.id.write_22_explorerProgressLayout);
+        testViewObject.explorerCurrentIterationNumber = fragmentView.findViewById(R.id.write_22_explorerCurrentIterationNumber);
+        testViewObject.explorerProgressLayout.setVisibility(View.GONE);
+
+        testViewObject.tuningProgressLayout = fragmentView.findViewById(R.id.write_22_tuningProgressLayout);
+        testViewObject.tuningCurrentConfigNumber = fragmentView.findViewById(R.id.write_22_tuningCurrentConfigNumber);
+        testViewObject.tuningCurrentIterationNumber = fragmentView.findViewById(R.id.write_22_tuningCurrentIterationNumber);
+        testViewObject.tuningProgressLayout.setVisibility(View.GONE);
+
+        testViewObject.explorerButton = fragmentView.findViewById(R.id.write_22_explorerButton);
+        testViewObject.tuningButton = fragmentView.findViewById(R.id.write_22_tuningButton);
+
+        testViewObject.explorerResultButton = new ResultButton(fragmentView.findViewById(R.id.write_22_explorerResultButton));
+        testViewObject.tuningResultButton = new ResultButton(fragmentView.findViewById(R.id.write_22_tuningResultButton));
 
         // Initial button state
-        explorerResultButton.button.setEnabled(false);
-        tuningResultButton.button.setEnabled(false);
-        explorerResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
-        tuningResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
+        testViewObject.explorerResultButton.button.setEnabled(false);
+        testViewObject.tuningResultButton.button.setEnabled(false);
+        testViewObject.explorerResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
+        testViewObject.tuningResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
 
-        explorerButton.setOnClickListener(new View.OnClickListener() {
+        testViewObject.explorerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).openExploreMenu("22_write", new Button[]{explorerButton, tuningButton}, new ResultButton[]{explorerResultButton, tuningResultButton});
+                testViewObject.buttons = new Button[]{testViewObject.explorerButton, testViewObject.tuningButton};
+                testViewObject.resultButtons = new ResultButton[]{testViewObject.explorerResultButton, testViewObject.tuningResultButton};
+                ((MainActivity)getActivity()).openExploreMenu("22_write", testViewObject);
             }
         });
-        explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
+        testViewObject.explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).displayTestResult("22_write");
             }
         });
-        tuningButton.setOnClickListener(new View.OnClickListener() {
+        testViewObject.tuningButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).openTuningMenu("22_write", new Button[]{tuningButton, explorerButton}, new ResultButton[]{tuningResultButton, explorerResultButton});
+                testViewObject.buttons = new Button[]{testViewObject.tuningButton, testViewObject.explorerButton};
+                testViewObject.resultButtons = new ResultButton[]{testViewObject.tuningResultButton, testViewObject.explorerResultButton};
+                ((MainActivity)getActivity()).openTuningMenu("22_write", testViewObject);
             }
         });
-        tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
+        testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).tuningTestResult("22_write");

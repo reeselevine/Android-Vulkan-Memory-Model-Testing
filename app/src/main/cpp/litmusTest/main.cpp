@@ -156,7 +156,7 @@ int setBetween(int min, int max) {
 }
 
 /** A test consists of N iterations of a shader and its corresponding result shader. */
-void run(string &shader_file, string &result_shader_file, map<string, int> params, ofstream &outputFile)
+void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_file, map<string, int> params, ofstream &outputFile)
 {
     // initialize settings
     auto instance = Instance(false);
@@ -182,10 +182,20 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
     vector<Buffer> buffers = {testLocations, readResults, shuffledWorkgroups, barrier, scratchpad, scratchLocations, stressParams};
     vector<Buffer> resultBuffers = {testLocations, readResults, testResults, stressParams};
 
+    jclass clazz = env->GetObjectClass(obj);
+    jmethodID method = env->GetMethodID(clazz, "iterationProgress", "(Ljava/lang/String;)V");
+
     // run iterations
     chrono::time_point<std::chrono::system_clock> start, end, itStart, itEnd;
     start = chrono::system_clock::now();
     for (int i = 0; i < params["testIterations"]; i++) {
+        // Update iteration number if explorer mode
+        string iterationStr = to_string(i+1);
+        const char* iterationChar = iterationStr.c_str();
+        jstring iterationNum = env->NewStringUTF(iterationChar);
+        env->CallVoidMethod(obj, method, iterationNum);
+
+
         auto program = Program(device, shader_file.c_str(), buffers);
         auto resultProgram = Program(device, result_shader_file.c_str(), resultBuffers);
         int numWorkgroups = setBetween(params["testingWorkgroups"], params["maxWorkgroups"]);
@@ -243,6 +253,10 @@ void run(string &shader_file, string &result_shader_file, map<string, int> param
     testResults.teardown();
     device.teardown();
     instance.teardown();
+
+    clazz = env->GetObjectClass(obj);
+    method = env->GetMethodID(clazz, "testComplete", "()V");
+    env->CallVoidMethod(obj, method);
 }
 
 /** Reads a specified config file and stores the parameters in a map. Parameters should be of the form "key=value", one per line. */
@@ -276,7 +290,7 @@ std::string readOutput(std::string filePath) {
     return ss.str();
 }
 
-int runTest(string testName, string shaderFile, string resultShaderFile, string configFile, string filePath)
+int runTest(JNIEnv* env, jobject obj, string testName, string shaderFile, string resultShaderFile, string configFile, string filePath)
 {
     std::ofstream outputFile;
     string outputFilePath = "";
@@ -319,7 +333,7 @@ int runTest(string testName, string shaderFile, string resultShaderFile, string 
     }
 
     try{
-        run(shaderFile, resultShaderFile, params, outputFile);
+        run(env, obj, shaderFile, resultShaderFile, params, outputFile);
     }
     catch (const std::runtime_error& e) {
         outputFile << e.what() << "\n";
@@ -339,6 +353,7 @@ int runTest(string testName, string shaderFile, string resultShaderFile, string 
 
 std::string getFileDirFromJava(JNIEnv *env, jobject obj) {
     jclass clazz = env->GetObjectClass(obj);
+    //jclass clazz = env->FindClass("com/example/litmustestandroid/MainActivity");
     jmethodID method = env->GetMethodID(clazz, "getFileDir", "()Ljava/lang/String;");
     jobject ret = env->CallObjectMethod(obj, method);
 
@@ -348,9 +363,10 @@ std::string getFileDirFromJava(JNIEnv *env, jobject obj) {
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_litmustestandroid_MainActivity_main(
+Java_com_example_litmustestandroid_TestThread_main(
         JNIEnv* env,
         jobject obj,
+        jobject mainObj,
         jobjectArray testArray,
         jboolean tuningModeEnabled) {
 
@@ -373,11 +389,11 @@ Java_com_example_litmustestandroid_MainActivity_main(
     std::string configFile = configConvertedValue;
 
     LOGD("Get file path via JNI");
-    std::string filePath = getFileDirFromJava(env, obj);
+    std::string filePath = getFileDirFromJava(env, mainObj);
 
     tuningMode = tuningModeEnabled;
 
-    runTest(testName, shaderFile, resultShaderFile, configFile, filePath);
+    runTest(env, mainObj, testName, shaderFile, resultShaderFile, configFile, filePath);
     return 0;
 }
 

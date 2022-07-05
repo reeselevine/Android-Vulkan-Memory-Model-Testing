@@ -318,7 +318,7 @@
                     android:id="@+id/multiTestParameter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Parameter"
+                    android:text="Test Parameters"
                     android:textSize="@dimen/_17sdp"
                     android:textStyle="bold"
                     android:background="?android:attr/selectableItemBackground"/>

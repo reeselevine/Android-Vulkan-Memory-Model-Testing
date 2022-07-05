@@ -1,7 +1,10 @@
 package com.example.litmustestandroid;
+import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -64,19 +68,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AutoCompleteTextView autoCompleteTextView;
     private ArrayAdapter<String> adapterItems;
 
+    private TestViewObject currTestViewObject;
+
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog exploreDialog;
     private TextView exploreTestName;
-    private EditText[] exploreParameters = new EditText[18];
     private Button exploreStartButton, exploreCloseButton, defaultParamButton, stressParamButton;
+    private String currTestIterations;
 
     private AlertDialog tuningDialog;
     private TextView tuningTestName;
     private EditText[] tuningParameters = new EditText[3];
     private Button tuningStartButton, tuningCloseButton;
+    private String tuningRandomSeed;
+    private String[] tuningTestArgument = new String[4];
+    private int tuningCurrConfig, tuningEndConfig;
+    private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
 
     private static final String TAG = "MainActivity";
+
+    private String currTestType = "";
+    private TestCase currTestCase;
 
     private Handler handler = new Handler();
 
@@ -385,6 +398,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     outputNumber = words[1];
                 }
                 else {
+                    if(words[0].equals("testIterations")) {
+                        currTestIterations = parameters[index].getText().toString();
+                    }
                     outputNumber = parameters[index].getText().toString();
                     index++;
                 }
@@ -432,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void writeTuningParameters(String testName, String tuningRandomSeed, int testIteration, int paramPresetValue) {
+    public void writeTuningParameters(String testName, int paramPresetValue) {
         boolean smoothedParameters = true;
         int workgroupLimiter = 1024;
         int testingWorkgroups = randomGenerator(2, workgroupLimiter, tuningRandomSeed);
@@ -463,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // Now randomize certain parmeter values
-        parameterFormat.put("testIterations", Integer.toString(testIteration));
+        parameterFormat.put("testIterations", currTestIterations);
 
         // Temporary fixed number of workgroup
         //parameterFormat.put("testingWorkgroups", Integer.toString(128));
@@ -607,8 +623,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void openExploreMenu(String testName, Button[] buttons, ResultButton[] resultButtons) {
+    public void openExploreMenu(String testName, TestViewObject testViewObject) {
         Log.i("TEST", testName + " PRESSED, OPENING Explore MENU");
+
+        currTestViewObject = testViewObject;
+        currTestType = "Explorer";
 
         dialogBuilder = new AlertDialog.Builder(this);
         final View exploreMenuView = getLayoutInflater().inflate(R.layout.main_test_explore, null);
@@ -636,9 +655,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
         exploreParameters[17] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressAssignmentStrategy); // stressAssignmentStrategy
 
-        TestCase currTest = findTestCase(testName);
-        int basic_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[0], "raw", this.getPackageName());
-        int stress_parameters = this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName());
+        currTestCase = findTestCase(testName);
+        int basic_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());
+        int stress_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[1], "raw", this.getPackageName());
 
         loadParameters(exploreParameters, basic_parameters);
 
@@ -652,7 +671,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreDialog.show();
 
         // Reset shader type
-        shaderType = currTest.shaderNames[0];
+        shaderType = currTestCase.shaderNames[0];
 
         // Initialize shader drop down explore menu
         initializeShaderMenu(testName, exploreMenuView);
@@ -687,7 +706,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 exploreDialog.dismiss();
 
                 // Disable buttons and change their color
-                handleButtons(true, buttons, resultButtons);
+                handleButtons(true, testViewObject.buttons, testViewObject.resultButtons);
+
+                // Make progress layout visible
+                testViewObject.explorerProgressLayout.setVisibility(View.VISIBLE);
 
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -697,15 +719,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                         // Shader Name
                         testArgument[1] = shaderType; // Current selected shader
-                        testArgument[2] = currTest.resultName; // Result Shader
-                        testArgument[3] = currTest.testParamName; // Txt file that stores parameter
+                        testArgument[2] = currTestCase.resultName; // Result Shader
+                        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
-                        main(testArgument, false);
-
-                        // Enable buttons and change their color
-                        handleButtons(false, buttons, resultButtons);
-
-                        Toast.makeText(MainActivity.this, "Test " + testName + " finished!", Toast.LENGTH_LONG).show();
+                        TestThread testThread = new TestThread(MainActivity.this, testArgument, false);
+                        testThread.start();
                     }
                 }, 500);
             }
@@ -788,8 +806,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return result;
     }
 
-    public void openTuningMenu(String testName, Button[] buttons, ResultButton[] resultButtons) {
+    public void openTuningMenu(String testName, TestViewObject testViewObject) {
         Log.i("TUNING TEST", testName + " PRESSED, OPENING TUNING MENU");
+
+        currTestViewObject = testViewObject;
+        currTestType = "Tuning";
 
         dialogBuilder = new AlertDialog.Builder(this);
         final View tuningMenuView = getLayoutInflater().inflate(R.layout.main_test_tuning, null);
@@ -808,8 +829,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tuningDialog = dialogBuilder.create();
         tuningDialog.show();
 
-        TestCase currTest = findTestCase(testName);
-        shaderType = currTest.shaderNames[0];
+        currTestCase = findTestCase(testName);
+        shaderType = currTestCase.shaderNames[0];
 
         // Start tuning test
         tuningStartButton.setOnClickListener(new View.OnClickListener() {
@@ -818,24 +839,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i("TUNING TEST", testName + " STARTING");
 
                 int tuningConfigNum = Integer.parseInt(tuningParameters[0].getText().toString());
-                int tuningTestIteration = Integer.parseInt(tuningParameters[1].getText().toString());
-                String tuningRandomSeed = tuningParameters[2].getText().toString();
-                ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
+                currTuningResults = new ArrayList<TuningResultCase>();
+                tuningRandomSeed = tuningParameters[2].getText().toString();
 
                 tuningDialog.dismiss();
 
-                // Disable buttons and change their color
-                handleButtons(true, buttons, resultButtons);
+                currTestIterations = tuningParameters[1].getText().toString();
 
-                String[] testArgument = new String[4];
-                testArgument[0] = "litmustest_" + testName; // Test Name
+                // Disable buttons and change their color
+                handleButtons(true, testViewObject.buttons, testViewObject.resultButtons);
+
+                // Make progress layout visible
+                testViewObject.tuningProgressLayout.setVisibility(View.VISIBLE);
+
+                tuningTestArgument[0] = "litmustest_" + testName; // Test Name
 
                 // Shader Name
-                testArgument[1] = shaderType; // Current selected shader
-                testArgument[2] = currTest.resultName; // Result Shader
-                testArgument[3] = currTest.testParamName; // Txt file that stores parameter
+                tuningTestArgument[1] = shaderType; // Current selected shader
+                tuningTestArgument[2] = currTestCase.resultName; // Result Shader
+                tuningTestArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
-                tuningTestLoop(testName, tuningRandomSeed, testArgument, currTuningResults, 0, tuningConfigNum, tuningTestIteration, buttons, resultButtons, currTest);
+                tuningCurrConfig = 0;
+                tuningEndConfig = tuningConfigNum;
+
+                tuningTestLoop(testName);
             }
         });
 
@@ -849,45 +876,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void tuningTestLoop(String testName, String tuningRandomSeed, String[] testArgument, ArrayList<TuningResultCase> currTuningResults, int currConfig, int endConfig,
-                               int tuningTestIteration, Button[] buttons, ResultButton[] resultButtons, TestCase currTest) {
+    public void tuningTestLoop(String testName) {
 
-        buttons[0].setText(currConfig+1 + "/" + endConfig);
+        currTestViewObject.tuningCurrentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
 
-        writeTuningParameters(testName, tuningRandomSeed, tuningTestIteration, this.getResources().getIdentifier(currTest.paramPresetNames[1], "raw", this.getPackageName()));
+        writeTuningParameters(testName, this.getResources().getIdentifier(currTestCase.paramPresetNames[1], "raw", this.getPackageName()));
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                main(testArgument, true);
-
-                // Save param value
-                String currParamValue = convertFileToString(currTest.testParamName + ".txt");
-
-                // Save result value
-                String currResultValue = convertFileToString(currTest.outputNames[1] + ".txt");
-
-                // Go through result and get number of weak behaviors
-                String startIndexIndicator = "weak: ";
-                String endIndexIndicator = "\nTotal elapsed time";
-                String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-                // Transfer over the tuning result case
-                TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue, Integer.parseInt(numWeakBehaviors));
-
-                currTuningResults.add(currTuningResult);
-
-                if(currConfig == endConfig - 1) {
-                    tuningResultCases.put(testName, currTuningResults);
-                    buttons[0].setText("Tuning");
-
-                    // Enable buttons and change their color
-                    handleButtons(false, buttons, resultButtons);
-                    Toast.makeText(MainActivity.this, "Tuning Test " + testName + " finished!", Toast.LENGTH_LONG).show();
-                }
-                else {
-                    tuningTestLoop(testName, tuningRandomSeed, testArgument, currTuningResults, currConfig+1, endConfig, tuningTestIteration, buttons, resultButtons, currTest);
-                }
+                // Run test in different thread
+                TestThread testThread = new TestThread(MainActivity.this, tuningTestArgument, true);
+                testThread.start();
             }
         }, 500);
     }
@@ -918,6 +918,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void multiTestBegin(EditText[] parameters, Button startButton, LinearLayout resultLayout, RecyclerView resultRV) {
         ArrayList<TestCase> multiSelectedTestCases = new ArrayList<TestCase>();
+
+        currTestType = "Tuning";
 
         // Check if at least one test selected
         for (LinkedHashMap.Entry<String, Boolean> entry : multiTestCases.entrySet()) {
@@ -965,35 +967,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                // Run test
-                main(testArgument, false);
-                if(currIt == multiSelectedTestCases.size()-1) { // All test ended, update result
+                // Run test in different thread
+                TestThread testThread = new TestThread(MainActivity.this, testArgument, false);
+                testThread.start();
 
-                    Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
+                try {
+                    testThread.join();
 
-                    // Enable start button
-                    startButton.setText("Start");
-                    startButton.setEnabled(true);
-                    startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
+                    if(currIt == multiSelectedTestCases.size()-1) { // All test ended, update result
 
-                    // Set result layout visible
-                    resultLayout.setVisibility(View.VISIBLE);
+                        Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
 
-                    // Get string array of test names
-                    String[] testNames = new String[multiSelectedTestCases.size()];
-                    for(int i = 0; i < multiSelectedTestCases.size(); i++) {
-                        testNames[i] = multiSelectedTestCases.get(i).testName;
+                        // Enable start button
+                        startButton.setText("Start");
+                        startButton.setEnabled(true);
+                        startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
+
+                        // Set result layout visible
+                        resultLayout.setVisibility(View.VISIBLE);
+
+                        // Get string array of test names
+                        String[] testNames = new String[multiSelectedTestCases.size()];
+                        for(int i = 0; i < multiSelectedTestCases.size(); i++) {
+                            testNames[i] = multiSelectedTestCases.get(i).testName;
+                        }
+
+                        // Update result
+                        MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this);
+                        resultRV.setAdapter(multiTestResultAdapter);
+                        resultRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                        resultRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
                     }
+                    else {
+                        multiTestLoop(currIt+1, multiSelectedTestCases, startButton, resultLayout, resultRV);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-                    // Update result
-                    MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this);
-                    resultRV.setAdapter(multiTestResultAdapter);
-                    resultRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                    resultRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
-                }
-                else {
-                    multiTestLoop(currIt+1, multiSelectedTestCases, startButton, resultLayout, resultRV);
-                }
             }
         }, 500);
     }
@@ -1002,5 +1013,73 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return getFilesDir().toString();
     }
 
-    public native int main(String[] testName, boolean tuningMode);
+    public void iterationProgress(String iterationNum) {
+        Log.i(TAG, "IterationProgress: " + iterationNum + "/" + currTestIterations);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if(currTestType.equals("Explorer")) {
+                    currTestViewObject.explorerCurrentIterationNumber.setText(iterationNum + "/" + currTestIterations);
+                }
+                else if (currTestType.equals("Tuning")) {
+                    currTestViewObject.tuningCurrentIterationNumber.setText(iterationNum + "/" + currTestIterations);
+                }
+                else { // Multi test
+
+                }
+            }
+        });
+    }
+
+    public void testComplete() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if(currTestType.equals("Explorer")) {
+                    // Enable buttons and change their color
+                    handleButtons(false, currTestViewObject.buttons, currTestViewObject.resultButtons);
+
+                    currTestViewObject.explorerProgressLayout.setVisibility(View.GONE);
+
+                    Toast.makeText(MainActivity.this, "Test " + currTestViewObject.testName + " finished!", Toast.LENGTH_LONG).show();
+                }
+                else if (currTestType.equals("Tuning")) {
+                    // Save param value
+                    String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
+
+                    // Save result value
+                    String currResultValue = convertFileToString(currTestCase.outputNames[1] + ".txt");
+
+                    // Go through result and get number of weak behaviors
+                    String startIndexIndicator = "weak: ";
+                    String endIndexIndicator = "\nTotal elapsed time";
+                    String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
+                    // Transfer over the tuning result case
+                    TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue, Integer.parseInt(numWeakBehaviors));
+
+                    currTuningResults.add(currTuningResult);
+
+                    if(tuningCurrConfig == tuningEndConfig - 1) {
+                        tuningResultCases.put(currTestViewObject.testName, currTuningResults);
+                        currTestViewObject.tuningButton.setText("Tuning");
+
+                        // Enable buttons and change their color
+                        handleButtons(false, currTestViewObject.buttons, currTestViewObject.resultButtons);
+
+                        currTestViewObject.tuningProgressLayout.setVisibility(View.GONE);
+
+                        Toast.makeText(MainActivity.this, "Tuning Test " + currTestViewObject.testName + " finished!", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        tuningCurrConfig++;
+                        tuningTestLoop(currTestViewObject.testName);
+                    }
+                }
+                else { // Multi test
+
+                }
+            }
+        });
+    }
 }

@@ -1,16 +1,19 @@
 package com.example.litmustestandroid.Fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.litmustestandroid.HelperClass.TestViewObject;
 import com.example.litmustestandroid.MainActivity;
 import com.example.litmustestandroid.R;
 import com.example.litmustestandroid.HelperClass.ResultButton;
@@ -18,6 +21,8 @@ import com.example.litmustestandroid.HelperClass.ResultButton;
 import org.jetbrains.annotations.NotNull;
 
 public class MessagePassing extends Fragment {
+
+    private int count = 0;
 
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -28,37 +33,54 @@ public class MessagePassing extends Fragment {
         TextView description = fragmentView.findViewById(R.id.message_passing_description);
         description.setText(getResources().getString(R.string.message_passing_description));
 
-        Button explorerButton = fragmentView.findViewById(R.id.message_passing_explorerButton);
-        Button tuningButton = fragmentView.findViewById(R.id.message_passing_tuningButton);
+        TestViewObject testViewObject = new TestViewObject();
 
-        ResultButton explorerResultButton = new ResultButton(fragmentView.findViewById(R.id.message_passing_explorerResultButton));
-        ResultButton tuningResultButton = new ResultButton(fragmentView.findViewById(R.id.message_passing_tuningResultButton));
+        testViewObject.testName = "message_passing";
+
+        testViewObject.explorerProgressLayout = fragmentView.findViewById(R.id.message_passing_explorerProgressLayout);
+        testViewObject.explorerCurrentIterationNumber = fragmentView.findViewById(R.id.message_passing_explorerCurrentIterationNumber);
+        testViewObject.explorerProgressLayout.setVisibility(View.GONE);
+
+        testViewObject.tuningProgressLayout = fragmentView.findViewById(R.id.message_passing_tuningProgressLayout);
+        testViewObject.tuningCurrentConfigNumber = fragmentView.findViewById(R.id.message_passing_tuningCurrentConfigNumber);
+        testViewObject.tuningCurrentIterationNumber = fragmentView.findViewById(R.id.message_passing_tuningCurrentIterationNumber);
+        testViewObject.tuningProgressLayout.setVisibility(View.GONE);
+
+        testViewObject.explorerButton = fragmentView.findViewById(R.id.message_passing_explorerButton);
+        testViewObject.tuningButton = fragmentView.findViewById(R.id.message_passing_tuningButton);
+
+        testViewObject.explorerResultButton = new ResultButton(fragmentView.findViewById(R.id.message_passing_explorerResultButton));
+        testViewObject.tuningResultButton = new ResultButton(fragmentView.findViewById(R.id.message_passing_tuningResultButton));
 
         // Initial button state
-        explorerResultButton.button.setEnabled(false);
-        tuningResultButton.button.setEnabled(false);
-        explorerResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
-        tuningResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
+        testViewObject.explorerResultButton.button.setEnabled(false);
+        testViewObject.tuningResultButton.button.setEnabled(false);
+        testViewObject.explorerResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
+        testViewObject.tuningResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
 
-        explorerButton.setOnClickListener(new View.OnClickListener() {
+        testViewObject.explorerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).openExploreMenu("message_passing", new Button[]{explorerButton, tuningButton}, new ResultButton[]{explorerResultButton, tuningResultButton});
+                testViewObject.buttons = new Button[]{testViewObject.explorerButton, testViewObject.tuningButton};
+                testViewObject.resultButtons = new ResultButton[]{testViewObject.explorerResultButton, testViewObject.tuningResultButton};
+                ((MainActivity)getActivity()).openExploreMenu("message_passing", testViewObject);
             }
         });
-        explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
+        testViewObject.explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).displayTestResult("message_passing");
             }
         });
-        tuningButton.setOnClickListener(new View.OnClickListener() {
+        testViewObject.tuningButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).openTuningMenu("message_passing", new Button[]{tuningButton, explorerButton}, new ResultButton[]{tuningResultButton, explorerResultButton});
+                testViewObject.buttons = new Button[]{testViewObject.tuningButton, testViewObject.explorerButton};
+                testViewObject.resultButtons = new ResultButton[]{testViewObject.tuningResultButton, testViewObject.explorerResultButton};
+                ((MainActivity)getActivity()).openTuningMenu("message_passing", testViewObject);
             }
         });
-        tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
+        testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).tuningTestResult("message_passing");
@@ -67,5 +89,6 @@ public class MessagePassing extends Fragment {
 
         return fragmentView;
     }
+
 }
 
