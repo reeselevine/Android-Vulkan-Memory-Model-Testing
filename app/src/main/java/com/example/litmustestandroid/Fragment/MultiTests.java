@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.litmustestandroid.HelperClass.MultiTestViewObject;
 import com.example.litmustestandroid.HelperClass.ResultButton;
 import com.example.litmustestandroid.HelperClass.TestCase;
 import com.example.litmustestandroid.MainActivity;
@@ -31,7 +32,7 @@ import java.io.InputStreamReader;
 
 public class MultiTests extends Fragment {
 
-    private Button defaultParamButton, stressParamButton, startButton;
+    private Button defaultParamButton, stressParamButton;
 
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -42,9 +43,15 @@ public class MultiTests extends Fragment {
         TextView description = fragmentView.findViewById(R.id.multi_tests_description);
         description.setText(getResources().getString(R.string.multi_tests_description));
 
+        MultiTestViewObject multiTestViewObject= new MultiTestViewObject();
+
+        // Set progress layout to be invisible in default
+        multiTestViewObject.progressLayout = fragmentView.findViewById(R.id.multiTestProgressLayout);
+        multiTestViewObject.progressLayout.setVisibility(View.GONE);
+
         // Set result layout to be invisible in default
-        LinearLayout resultLayout = fragmentView.findViewById(R.id.multiTestResultLayout);
-        resultLayout.setVisibility(View.GONE);
+        multiTestViewObject.resultLayout = fragmentView.findViewById(R.id.multiTestResultLayout);
+        multiTestViewObject.resultLayout.setVisibility(View.GONE);
 
         RecyclerView multiTestResultRV = fragmentView.findViewById(R.id.multiTestResultRV);
 
@@ -105,7 +112,10 @@ public class MultiTests extends Fragment {
 
         defaultParamButton = fragmentView.findViewById(R.id.multiTestDefaultParamButton);
         stressParamButton = fragmentView.findViewById(R.id.multiTestStressParamButton);
-        startButton = fragmentView.findViewById(R.id.multiTestStartButton);
+        multiTestViewObject.startButton = fragmentView.findViewById(R.id.multiTestStartButton);
+
+        multiTestViewObject.currentTestName = fragmentView.findViewById(R.id.multiTestCurrentName);
+        multiTestViewObject.currentIterationNumber = fragmentView.findViewById(R.id.multiTestCurrentIterationNumber);
 
         defaultParamButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,10 +135,10 @@ public class MultiTests extends Fragment {
             }
         });
 
-        startButton.setOnClickListener(new View.OnClickListener() {
+        multiTestViewObject.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).multiTestBegin(multiTestParameters, startButton, resultLayout, multiTestResultRV);
+                ((MainActivity)getActivity()).multiTestBegin(multiTestParameters,  multiTestViewObject, multiTestResultRV);
             }
         });
 

@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayAdapter<String> adapterItems;
 
     private TestViewObject currTestViewObject;
+    private MultiTestViewObject currMultiTestViewObject;
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog exploreDialog;
@@ -85,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int tuningCurrConfig, tuningEndConfig;
     private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
+
+    private ArrayList<TestCase> multiSelectedTestCases = new ArrayList<TestCase>();
+    private int multiCurrIteration;
+    private RecyclerView currMultiTestRV;
 
     private static final String TAG = "MainActivity";
 
@@ -882,14 +887,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         writeTuningParameters(testName, this.getResources().getIdentifier(currTestCase.paramPresetNames[1], "raw", this.getPackageName()));
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Run test in different thread
-                TestThread testThread = new TestThread(MainActivity.this, tuningTestArgument, true);
-                testThread.start();
-            }
-        }, 500);
+        // Run test in different thread
+        TestThread testThread = new TestThread(MainActivity.this, tuningTestArgument, true);
+        testThread.start();
     }
 
     public void tuningTestResult(String testName) {
@@ -916,10 +916,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
      }
 
-    public void multiTestBegin(EditText[] parameters, Button startButton, LinearLayout resultLayout, RecyclerView resultRV) {
-        ArrayList<TestCase> multiSelectedTestCases = new ArrayList<TestCase>();
-
-        currTestType = "Tuning";
+    public void multiTestBegin(EditText[] parameters, MultiTestViewObject multiTestViewObject, RecyclerView multiTestRV) {
+        currTestType = "Multi";
+        currMultiTestViewObject = multiTestViewObject;
+        currMultiTestRV = multiTestRV;
 
         // Check if at least one test selected
         for (LinkedHashMap.Entry<String, Boolean> entry : multiTestCases.entrySet()) {
@@ -934,79 +934,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Write parameters
         for (int i = 0; i < multiSelectedTestCases.size(); i++) {
-            TestCase currTestCase = multiSelectedTestCases.get(i);
-            int basic_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());
-            writeParameters(currTestCase.testName, parameters, basic_parameters);
+            TestCase testCase = multiSelectedTestCases.get(i);
+            int basic_parameters = this.getResources().getIdentifier(testCase.paramPresetNames[0], "raw", this.getPackageName());
+            writeParameters(testCase.testName, parameters, basic_parameters);
         }
 
         // Disable start button
-        startButton.setEnabled(false);
-        startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
+        currMultiTestViewObject.startButton.setEnabled(false);
+        currMultiTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
+
+        // Set progress layout visible
+        currMultiTestViewObject.progressLayout.setVisibility(View.VISIBLE);
 
         // Set result layout invisible
-        resultLayout.setVisibility(View.GONE);
+        currMultiTestViewObject.resultLayout.setVisibility(View.GONE);
+
+        multiCurrIteration = 0;
 
         // Start multi test loop
-        multiTestLoop(0, multiSelectedTestCases, startButton, resultLayout, resultRV);
+        multiTestLoop();
     }
 
-    public void multiTestLoop(Integer currIt, ArrayList<TestCase> multiSelectedTestCases, Button startButton, LinearLayout resultLayout, RecyclerView resultRV) {
-        // Update button progress
-        startButton.setText(currIt+1 + "/" + multiSelectedTestCases.size());
+    public void multiTestLoop() {
 
-        TestCase currTestCase = multiSelectedTestCases.get(currIt);
+        TestCase testCase = multiSelectedTestCases.get(multiCurrIteration);
         String[] testArgument = new String[4];
 
-        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
+        testArgument[0] = "litmustest_" + testCase.testName; // Test Name
 
         // Shader Name
-        testArgument[1] = currTestCase.shaderNames[0]; // Current selected shader
-        testArgument[2] = currTestCase.resultName; // Result Shader
-        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
+        testArgument[1] = testCase.shaderNames[0]; // Current selected shader
+        testArgument[2] = testCase.resultName; // Result Shader
+        testArgument[3] = testCase.testParamName; // Txt file that stores parameter
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Run test in different thread
-                TestThread testThread = new TestThread(MainActivity.this, testArgument, false);
-                testThread.start();
+        // Update test name
+        currMultiTestViewObject.currentTestName.setText(testCase.testName);
 
-                try {
-                    testThread.join();
-
-                    if(currIt == multiSelectedTestCases.size()-1) { // All test ended, update result
-
-                        Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
-
-                        // Enable start button
-                        startButton.setText("Start");
-                        startButton.setEnabled(true);
-                        startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
-
-                        // Set result layout visible
-                        resultLayout.setVisibility(View.VISIBLE);
-
-                        // Get string array of test names
-                        String[] testNames = new String[multiSelectedTestCases.size()];
-                        for(int i = 0; i < multiSelectedTestCases.size(); i++) {
-                            testNames[i] = multiSelectedTestCases.get(i).testName;
-                        }
-
-                        // Update result
-                        MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this);
-                        resultRV.setAdapter(multiTestResultAdapter);
-                        resultRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                        resultRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
-                    }
-                    else {
-                        multiTestLoop(currIt+1, multiSelectedTestCases, startButton, resultLayout, resultRV);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }, 500);
+        // Run test in different thread
+        TestThread testThread = new TestThread(MainActivity.this, testArgument, false);
+        testThread.start();
     }
 
     public String getFileDir() {
@@ -1025,7 +991,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     currTestViewObject.tuningCurrentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
                 else { // Multi test
-
+                    currMultiTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
             }
         });
@@ -1077,7 +1043,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 else { // Multi test
+                    if(multiCurrIteration == multiSelectedTestCases.size()-1) { // All test ended, update result
 
+                        Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
+
+                        // Enable start button
+                        currMultiTestViewObject.startButton.setEnabled(true);
+                        currMultiTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
+
+                        // Set progress layout invisible
+                        currMultiTestViewObject.progressLayout.setVisibility(View.GONE);
+
+                        // Set result layout visible
+                        currMultiTestViewObject.resultLayout.setVisibility(View.VISIBLE);
+
+                        // Get string array of test names
+                        String[] testNames = new String[multiSelectedTestCases.size()];
+                        for(int i = 0; i < multiSelectedTestCases.size(); i++) {
+                            testNames[i] = multiSelectedTestCases.get(i).testName;
+                        }
+
+                        // Update result
+                        MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this);
+                        currMultiTestRV.setAdapter(multiTestResultAdapter);
+                        currMultiTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                        currMultiTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
+                    }
+                    else {
+                        multiCurrIteration++;
+                        multiTestLoop();
+                    }
                 }
             }
         });
