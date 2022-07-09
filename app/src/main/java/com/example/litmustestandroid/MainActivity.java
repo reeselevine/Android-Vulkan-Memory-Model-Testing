@@ -924,6 +924,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currTestType = "Multi";
         currMultiTestViewObject = multiTestViewObject;
         currMultiTestRV = multiTestRV;
+        multiSelectedTestCases = new ArrayList<TestCase>();
 
         // Check if at least one test selected
         for (LinkedHashMap.Entry<String, Boolean> entry : multiTestCases.entrySet()) {
