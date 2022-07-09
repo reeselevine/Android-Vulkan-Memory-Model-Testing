@@ -80,11 +80,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private AlertDialog tuningDialog;
     private TextView tuningTestName;
-    private EditText[] tuningParameters = new EditText[3];
+    private EditText[] tuningParameters = new EditText[4];
     private Button tuningStartButton, tuningCloseButton;
     private String tuningRandomSeed;
     private String[] tuningTestArgument = new String[4];
-    private int tuningCurrConfig, tuningEndConfig;
+    private int tuningCurrConfig, tuningEndConfig, tuningMaxWorkgroups;
     private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
 
@@ -459,9 +459,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void writeTuningParameters(String testName, int paramPresetValue) {
         boolean smoothedParameters = true;
-        int workgroupLimiter = 1024;
+        int workgroupLimiter = tuningMaxWorkgroups;
         int testingWorkgroups = randomGenerator(2, workgroupLimiter, tuningRandomSeed);
-        int maxWorkgroups = randomGenerator(testingWorkgroups, workgroupLimiter, tuningRandomSeed);
         int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10, tuningRandomSeed));
         int stressTargetLines = randomGenerator(1, 16, tuningRandomSeed);
         int memStride = randomGenerator(1, 7, tuningRandomSeed);
@@ -495,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //parameterFormat.put("maxWorkgroups", Integer.toString(128));
         
         parameterFormat.put("testingWorkgroups", Integer.toString(testingWorkgroups));
-        parameterFormat.put("maxWorkgroups", Integer.toString(maxWorkgroups));
+        parameterFormat.put("maxWorkgroups", Integer.toString(tuningMaxWorkgroups));
 
         parameterFormat.put("shufflePct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
         parameterFormat.put("barrierPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
@@ -829,7 +828,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         tuningParameters[0] = (EditText) tuningMenuView.findViewById(R.id.testTuningConfigNum); // testConfigNum
         tuningParameters[1] = (EditText) tuningMenuView.findViewById(R.id.testTuningTestIteration); // testIteration
-        tuningParameters[2] = (EditText) tuningMenuView.findViewById(R.id.testTuningRandomSeed);
+        tuningParameters[2] = (EditText) tuningMenuView.findViewById(R.id.testTuningRandomSeed); // randomSeed
+        tuningParameters[3] = (EditText) tuningMenuView.findViewById(R.id.testTuningMaxWorkgroups); // maxWorkgroups
 
         tuningStartButton = (Button) tuningMenuView.findViewById(R.id.testTuningStartButton);
         tuningCloseButton = (Button) tuningMenuView.findViewById(R.id.testTuningCloseButton);
@@ -850,6 +850,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int tuningConfigNum = Integer.parseInt(tuningParameters[0].getText().toString());
                 currTuningResults = new ArrayList<TuningResultCase>();
                 tuningRandomSeed = tuningParameters[2].getText().toString();
+                tuningMaxWorkgroups = Integer.parseInt(tuningParameters[3].getText().toString());
 
                 tuningDialog.dismiss();
 
