@@ -108,13 +108,13 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="0.1: let r0 = x"
+                        android:text="0.1: r0 = atomic_load_explicit(x, memory_order_relaxed)"
                         android:textSize="@dimen/_11sdp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="0.1: atomicFence()"
+                        android:text="0.2: atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_device)"
                         android:textSize="@dimen/_11sdp"/>
 
 
@@ -147,13 +147,13 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="1.1: atomicFence()"
+                        android:text="1.1: atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_device)"
                         android:textSize="@dimen/_11sdp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="1.2: *x = 1"
+                        android:text="1.2: atomic_store_explicit(x, 1, memory_order_relaxed)"
                         android:textSize="@dimen/_11sdp"/>
 
                 </LinearLayout>

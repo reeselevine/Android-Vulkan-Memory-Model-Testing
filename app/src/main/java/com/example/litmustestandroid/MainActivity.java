@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -133,6 +134,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         registerTestCases();
         initFileConfig();
+
+        // Keeps screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override

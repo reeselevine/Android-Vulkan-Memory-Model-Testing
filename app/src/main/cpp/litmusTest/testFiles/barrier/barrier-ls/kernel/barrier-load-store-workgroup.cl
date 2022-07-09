@@ -52,7 +52,7 @@ __kernel void litmus_test (
   __global atomic_uint* barrier,
   __global uint* scratchpad,
   __global uint* scratch_locations,
-  __global uint* stress_params) {
+  __global uint* stress_params) { __local atomic_uint wg_test_locations[3584];
   uint shuffled_workgroup = shuffled_workgroups[get_group_id(0)];
   if(shuffled_workgroup < stress_params[9]) {
     uint total_ids = get_local_size(0) * stress_params[9];
@@ -69,9 +69,10 @@ __kernel void litmus_test (
     if (stress_params[0]) {
       spin(barrier, get_local_size(0) * stress_params[9]);
     }
-    uint r0 = atomic_load_explicit(&test_locations[x_0], memory_order_relaxed);
+    uint r0 = atomic_load_explicit(&wg_test_locations[x_0], memory_order_relaxed);
     atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_device);
-    atomic_store_explicit(&test_locations[x_1], 1, memory_order_relaxed);
+    atomic_store_explicit(&wg_test_locations[x_1], 1, memory_order_relaxed);
+    atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_device);
     atomic_store(&read_results[id_0 * 2], r0);
   } else if (stress_params[1]) {
     do_stress(scratchpad, scratch_locations, stress_params[2], stress_params[3]);

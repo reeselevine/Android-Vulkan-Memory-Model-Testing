@@ -219,7 +219,7 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         resultProgram.prepare();
         resultProgram.run();
 
-        if(!tuningMode) {
+        /*if(!tuningMode) {
             outputFile << "Iteration " << i << "\n";
             outputFile << "seq: " << testResults.load(0) + testResults.load(1) << "\n";
             outputFile << "interleaved: " << testResults.load(2) << "\n";
@@ -228,7 +228,7 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
             std::chrono::duration<double> itDuration = itEnd - itStart;
             outputFile << "durationSeconds: " << itDuration.count() << "s\n";
             outputFile << "\n";
-        }
+        }*/
 
         numSeq += testResults.load(0) + testResults.load(1);
         numInter += testResults.load(2);

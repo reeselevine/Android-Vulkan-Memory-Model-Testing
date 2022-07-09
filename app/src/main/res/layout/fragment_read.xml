@@ -107,13 +107,13 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="0.1: atomicStore(x, 1)"
+                        android:text="0.1: atomic_store_explicit(x, 1, memory_order_relaxed)"
                         android:textSize="@dimen/_11sdp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="0.2: atomicStore(y, 1)"
+                        android:text="0.2: atomic_store_explicit(y, 1, memory_order_relaxed)"
                         android:textSize="@dimen/_11sdp"/>
 
 
@@ -146,13 +146,13 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="1.1: atomicStore(y, 2)"
+                        android:text="1.1: atomic_store_explicit(y, 2, memory_order_relaxed)"
                         android:textSize="@dimen/_11sdp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="1.2: let r0 = atomicLoad(x)"
+                        android:text="1.2: r0 = atomic_load_explicit(x, memory_order_relaxed)"
                         android:textSize="@dimen/_11sdp"/>
 
 
