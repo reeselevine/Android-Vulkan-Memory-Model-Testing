@@ -32,7 +32,8 @@ import java.io.InputStreamReader;
 
 public class MultiTests extends Fragment {
 
-    private Button defaultParamButton, stressParamButton;
+    private Button explorerButton, tuningButton, defaultParamButton, stressParamButton;
+    private String testMode = "Explorer";
 
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -49,6 +50,10 @@ public class MultiTests extends Fragment {
         multiTestViewObject.progressLayout = fragmentView.findViewById(R.id.multiTestProgressLayout);
         multiTestViewObject.progressLayout.setVisibility(View.GONE);
 
+        // Set progress config layout to be invisible in default
+        multiTestViewObject.configLayout = fragmentView.findViewById(R.id.multiTestCurrentConfigLayout);
+        multiTestViewObject.configLayout.setVisibility(View.GONE);
+
         // Set result layout to be invisible in default
         multiTestViewObject.resultLayout = fragmentView.findViewById(R.id.multiTestResultLayout);
         multiTestViewObject.resultLayout.setVisibility(View.GONE);
@@ -56,7 +61,6 @@ public class MultiTests extends Fragment {
         RecyclerView multiTestResultRV = fragmentView.findViewById(R.id.multiTestResultRV);
 
         TextView testList = fragmentView.findViewById(R.id.multiTestList);
-        TextView parameterList = fragmentView.findViewById(R.id.multiTestParameter);
 
         testList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,16 +75,60 @@ public class MultiTests extends Fragment {
             }
         });
 
-        parameterList.setOnClickListener(new View.OnClickListener() {
+        TextView explorerParameterList = fragmentView.findViewById(R.id.multiTestExplorerParameter);
+        LinearLayout explorerParameterLayout = fragmentView.findViewById(R.id.multiTestExplorerParameterLayout);
+        LinearLayout explorerParameterItemLayout = fragmentView.findViewById(R.id.multiTestExplorerParameterItemLayout);
+        explorerParameterList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LinearLayout parameterLayout = fragmentView.findViewById(R.id.multiTestParameterLayout);
-                if(parameterLayout.getVisibility() == View.GONE) {
-                    parameterLayout.setVisibility(View.VISIBLE);
+                if(explorerParameterItemLayout.getVisibility() == View.GONE) {
+                    explorerParameterItemLayout.setVisibility(View.VISIBLE);
                 }
                 else {
-                    parameterLayout.setVisibility(View.GONE);
+                    explorerParameterItemLayout.setVisibility(View.GONE);
                 }
+            }
+        });
+
+        TextView tuningParameterList = fragmentView.findViewById(R.id.multiTestTuningParameter);
+        LinearLayout tuningParameterLayout = fragmentView.findViewById(R.id.multiTestTuningParameterLayout);
+        LinearLayout tuningParameterItemLayout = fragmentView.findViewById(R.id.multiTestTuningParameterItemLayout);
+        tuningParameterList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tuningParameterItemLayout.getVisibility() == View.GONE) {
+                    tuningParameterItemLayout.setVisibility(View.VISIBLE);
+                }
+                else {
+                    tuningParameterItemLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        explorerButton = fragmentView.findViewById(R.id.multiTestExplorerButton);
+        tuningButton = fragmentView.findViewById(R.id.multiTestTuningButton);
+
+        explorerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                explorerButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                tuningButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                explorerParameterLayout.setVisibility(View.VISIBLE);
+                explorerParameterItemLayout.setVisibility(View.VISIBLE);
+                tuningParameterLayout.setVisibility(View.GONE);
+                testMode = "Explorer";
+            }
+        });
+
+        tuningButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tuningButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                explorerButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                tuningParameterLayout.setVisibility(View.VISIBLE);
+                tuningParameterItemLayout.setVisibility(View.VISIBLE);
+                explorerParameterLayout.setVisibility(View.GONE);
+                testMode = "Tuning";
             }
         });
 
@@ -88,33 +136,40 @@ public class MultiTests extends Fragment {
         int basic_parameters = getResources().getIdentifier(currTest.paramPresetNames[0], "raw", getActivity().getPackageName());
         int stress_parameters = getResources().getIdentifier(currTest.paramPresetNames[1], "raw", getActivity().getPackageName());
 
-        EditText[] multiTestParameters = new EditText[18];
-        multiTestParameters[0] = (EditText) fragmentView.findViewById(R.id.multiTestExploreTestIteration); // testIteration
-        multiTestParameters[1] = (EditText) fragmentView.findViewById(R.id.multiTestExploreTestingWorkgroups); // testingWorkgroups
-        multiTestParameters[2] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMaxWorkgroups); // maxWorkgroups
-        multiTestParameters[3] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMinWorkgroupSize); // minWorkgroupSize
-        multiTestParameters[4] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMaxWorkgroupSize); // maxWorkgroupSize
-        multiTestParameters[5] = (EditText) fragmentView.findViewById(R.id.multiTestExploreShufflePct); // shufflePct
-        multiTestParameters[6] = (EditText) fragmentView.findViewById(R.id.multiTestExploreBarrierPct); // barrierPct
-        multiTestParameters[7] = (EditText) fragmentView.findViewById(R.id.multiTestExploreScratchMemorySize); // scratchMemorySize
-        multiTestParameters[8] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStride); // memStride
-        multiTestParameters[9] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPct); // memStressPct
-        multiTestParameters[10] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressIterations); // memStressIterations
-        multiTestParameters[11] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemOryStressPattern); // memStressPattern
-        multiTestParameters[12] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPct); // preStressPct
-        multiTestParameters[13] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressIterations); // preStressIterations
-        multiTestParameters[14] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPattern); // preStressPattern
-        multiTestParameters[15] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressLineSize); // stressLineSize
-        multiTestParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressTargetLines); // stressTargetLines
-        multiTestParameters[17] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressAssignmentStrategy); // stressAssignmentStrategy
+        EditText[] multiTestExplorerParameters = new EditText[18];
+        multiTestExplorerParameters[0] = (EditText) fragmentView.findViewById(R.id.multiTestExploreTestIteration); // testIteration
+        multiTestExplorerParameters[1] = (EditText) fragmentView.findViewById(R.id.multiTestExploreTestingWorkgroups); // testingWorkgroups
+        multiTestExplorerParameters[2] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMaxWorkgroups); // maxWorkgroups
+        multiTestExplorerParameters[3] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMinWorkgroupSize); // minWorkgroupSize
+        multiTestExplorerParameters[4] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMaxWorkgroupSize); // maxWorkgroupSize
+        multiTestExplorerParameters[5] = (EditText) fragmentView.findViewById(R.id.multiTestExploreShufflePct); // shufflePct
+        multiTestExplorerParameters[6] = (EditText) fragmentView.findViewById(R.id.multiTestExploreBarrierPct); // barrierPct
+        multiTestExplorerParameters[7] = (EditText) fragmentView.findViewById(R.id.multiTestExploreScratchMemorySize); // scratchMemorySize
+        multiTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStride); // memStride
+        multiTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPct); // memStressPct
+        multiTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressIterations); // memStressIterations
+        multiTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemOryStressPattern); // memStressPattern
+        multiTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPct); // preStressPct
+        multiTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressIterations); // preStressIterations
+        multiTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPattern); // preStressPattern
+        multiTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressLineSize); // stressLineSize
+        multiTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressTargetLines); // stressTargetLines
+        multiTestExplorerParameters[17] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressAssignmentStrategy); // stressAssignmentStrategy
 
-        ((MainActivity)getActivity()).loadParameters(multiTestParameters, basic_parameters);
+        EditText[] multiTestTuningParameters = new EditText[4];
+        multiTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.multiTestTuningConfigNum); // testConfigNum
+        multiTestTuningParameters [1] = (EditText) fragmentView.findViewById(R.id.multiTestTuningTestIteration); // testIteration
+        multiTestTuningParameters [2] = (EditText) fragmentView.findViewById(R.id.multiTestTuningRandomSeed); // randomSeed
+        multiTestTuningParameters [3] = (EditText) fragmentView.findViewById(R.id.multiTestTuningMaxWorkgroups); // maxWorkgroups
+
+        ((MainActivity)getActivity()).loadParameters(multiTestExplorerParameters, basic_parameters);
 
         defaultParamButton = fragmentView.findViewById(R.id.multiTestDefaultParamButton);
         stressParamButton = fragmentView.findViewById(R.id.multiTestStressParamButton);
         multiTestViewObject.startButton = fragmentView.findViewById(R.id.multiTestStartButton);
 
         multiTestViewObject.currentTestName = fragmentView.findViewById(R.id.multiTestCurrentName);
+        multiTestViewObject.currentConfigNumber = fragmentView.findViewById(R.id.multiTestCurrentConfigNumber);
         multiTestViewObject.currentIterationNumber = fragmentView.findViewById(R.id.multiTestCurrentIterationNumber);
 
         defaultParamButton.setOnClickListener(new View.OnClickListener() {
@@ -122,7 +177,7 @@ public class MultiTests extends Fragment {
             public void onClick(View v) {
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                ((MainActivity)getActivity()).loadParameters(multiTestParameters, basic_parameters);
+                ((MainActivity)getActivity()).loadParameters(multiTestExplorerParameters, basic_parameters);
             }
         });
 
@@ -131,14 +186,20 @@ public class MultiTests extends Fragment {
             public void onClick(View v) {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                ((MainActivity)getActivity()).loadParameters(multiTestParameters, stress_parameters);
+                ((MainActivity)getActivity()).loadParameters(multiTestExplorerParameters, stress_parameters);
             }
         });
 
         multiTestViewObject.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).multiTestBegin(multiTestParameters,  multiTestViewObject, multiTestResultRV);
+                if(testMode.equals("Explorer")) {
+                    ((MainActivity)getActivity()).multiExplorerTestBegin(multiTestExplorerParameters,  multiTestViewObject, multiTestResultRV);
+                }
+                else { // Tuning
+                    ((MainActivity)getActivity()).multiTuningTestBegin(multiTestTuningParameters,  multiTestViewObject, multiTestResultRV);
+                }
+
             }
         });
 

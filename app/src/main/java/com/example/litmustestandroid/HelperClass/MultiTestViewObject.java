@@ -9,7 +9,9 @@ public class MultiTestViewObject {
     public Button startButton;
 
     public LinearLayout progressLayout;
+    public LinearLayout configLayout;
     public TextView currentTestName;
+    public TextView currentConfigNumber;
     public TextView currentIterationNumber;
 
     public LinearLayout resultLayout;

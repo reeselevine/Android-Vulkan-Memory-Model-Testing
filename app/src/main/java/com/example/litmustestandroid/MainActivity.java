@@ -921,8 +921,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
      }
 
-    public void multiTestBegin(EditText[] parameters, MultiTestViewObject multiTestViewObject, RecyclerView multiTestRV) {
-        currTestType = "Multi";
+    public void multiExplorerTestBegin(EditText[] parameters, MultiTestViewObject multiTestViewObject, RecyclerView multiTestRV) {
+        currTestType = "MultiExplorer";
         currMultiTestViewObject = multiTestViewObject;
         currMultiTestRV = multiTestRV;
         multiSelectedTestCases = new ArrayList<TestCase>();
@@ -952,32 +952,105 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set progress layout visible
         currMultiTestViewObject.progressLayout.setVisibility(View.VISIBLE);
 
+        // Set config layout remain invisible
+        currMultiTestViewObject.configLayout.setVisibility(View.GONE);
+
         // Set result layout invisible
         currMultiTestViewObject.resultLayout.setVisibility(View.GONE);
 
         multiCurrIteration = 0;
 
-        // Start multi test loop
-        multiTestLoop();
+        // Start multi explorer test loop
+        multiExplorerTestLoop();
     }
 
-    public void multiTestLoop() {
+    public void multiExplorerTestLoop() {
 
-        TestCase testCase = multiSelectedTestCases.get(multiCurrIteration);
+        currTestCase = multiSelectedTestCases.get(multiCurrIteration);
         String[] testArgument = new String[4];
 
-        testArgument[0] = "litmustest_" + testCase.testName; // Test Name
+        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
 
         // Shader Name
-        testArgument[1] = testCase.shaderNames[0]; // Current selected shader
-        testArgument[2] = testCase.resultName; // Result Shader
-        testArgument[3] = testCase.testParamName; // Txt file that stores parameter
+        testArgument[1] = currTestCase.shaderNames[0]; // Current selected shader
+        testArgument[2] = currTestCase.resultName; // Result Shader
+        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
         // Update test name
-        currMultiTestViewObject.currentTestName.setText(testCase.testName);
+        currMultiTestViewObject.currentTestName.setText(currTestCase.testName);
 
         // Run test in different thread
         TestThread testThread = new TestThread(MainActivity.this, testArgument, false);
+        testThread.start();
+    }
+
+    public void multiTuningTestBegin(EditText[] parameters, MultiTestViewObject multiTestViewObject, RecyclerView multiTestRV) {
+        currTestType = "MultiTuning";
+        currMultiTestViewObject = multiTestViewObject;
+        currMultiTestRV = multiTestRV;
+        multiSelectedTestCases = new ArrayList<TestCase>();
+
+        // Check if at least one test selected
+        for (LinkedHashMap.Entry<String, Boolean> entry : multiTestCases.entrySet()) {
+            if(entry.getValue() == true) {
+                multiSelectedTestCases.add(findTestCase(entry.getKey()));
+            }
+        }
+        if(multiSelectedTestCases.size() == 0) { // No test selected
+            Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Disable start button
+        currMultiTestViewObject.startButton.setEnabled(false);
+        currMultiTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
+
+        // Set progress layout visible
+        currMultiTestViewObject.progressLayout.setVisibility(View.VISIBLE);
+
+        // Set config layout visible
+        currMultiTestViewObject.configLayout.setVisibility(View.VISIBLE);
+
+        // Set result layout invisible
+        currMultiTestViewObject.resultLayout.setVisibility(View.GONE);
+
+        int tuningConfigNum = Integer.parseInt(parameters[0].getText().toString());
+        currTuningResults = new ArrayList<TuningResultCase>();
+        currTestIterations = parameters[1].getText().toString();
+        tuningRandomSeed = parameters[2].getText().toString();
+        tuningMaxWorkgroups = Integer.parseInt(parameters[3].getText().toString());
+
+        tuningCurrConfig = 0;
+        tuningEndConfig = tuningConfigNum;
+
+        multiCurrIteration = 0;
+
+        // Start multi tuning test loop
+        multiTuningTestLoop();
+    }
+
+    public void multiTuningTestLoop() {
+        currTestCase = multiSelectedTestCases.get(multiCurrIteration);
+        String[] testArgument = new String[4];
+
+        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
+
+        // Shader Name
+        testArgument[1] = currTestCase.shaderNames[0]; // Current selected shader
+        testArgument[2] = currTestCase.resultName; // Result Shader
+        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
+
+        // Update test name
+        currMultiTestViewObject.currentTestName.setText(currTestCase.testName);
+
+        // Update current config number
+        currMultiTestViewObject.currentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
+
+        // Write tuning parameter
+        writeTuningParameters(currTestCase.testName, this.getResources().getIdentifier(currTestCase.paramPresetNames[1], "raw", this.getPackageName()));
+
+        // Run test in different thread
+        TestThread testThread = new TestThread(MainActivity.this, testArgument, true);
         testThread.start();
     }
 
@@ -996,7 +1069,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else if (currTestType.equals("Tuning")) {
                     currTestViewObject.tuningCurrentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
-                else { // Multi test
+                else if (currTestType.equals("MultiExplorer")) {
+                    currMultiTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
+                }
+                else { // Multi Tuning test
                     currMultiTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
             }
@@ -1034,7 +1110,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     if(tuningCurrConfig == tuningEndConfig - 1) {
                         tuningResultCases.put(currTestViewObject.testName, currTuningResults);
-                        currTestViewObject.tuningButton.setText("Tuning");
 
                         // Enable buttons and change their color
                         handleButtons(false, currTestViewObject.buttons, currTestViewObject.resultButtons);
@@ -1048,7 +1123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         tuningTestLoop(currTestViewObject.testName);
                     }
                 }
-                else { // Multi test
+                else if (currTestType.equals("MultiExplorer")){ // Multi Explorer test
                     if(multiCurrIteration == multiSelectedTestCases.size()-1) { // All test ended, update result
 
                         Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
@@ -1070,14 +1145,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
 
                         // Update result
-                        MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this);
+                        MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this, "Explorer");
                         currMultiTestRV.setAdapter(multiTestResultAdapter);
                         currMultiTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                         currMultiTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
                     }
                     else {
                         multiCurrIteration++;
-                        multiTestLoop();
+                        multiExplorerTestLoop();
+                    }
+                }
+                else { // Multi Tuning Test
+                    // Save param value
+                    String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
+
+                    // Save result value
+                    String currResultValue = convertFileToString(currTestCase.outputNames[1] + ".txt");
+
+                    // Go through result and get number of weak behaviors
+                    String startIndexIndicator = "weak: ";
+                    String endIndexIndicator = "\nTotal elapsed time";
+                    String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
+                    // Transfer over the tuning result case
+                    TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue, Integer.parseInt(numWeakBehaviors));
+
+                    currTuningResults.add(currTuningResult);
+
+                    if(tuningCurrConfig == tuningEndConfig - 1) { // One tuning test completed
+                        tuningResultCases.put(currTestCase.testName, currTuningResults);
+                        currTuningResults = new ArrayList<TuningResultCase>();
+
+                        // Reset tuning config
+                        tuningCurrConfig = 0;
+                        multiCurrIteration++;
+
+                        if(multiCurrIteration == multiSelectedTestCases.size()) { // All tuning tests completed
+
+                            Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
+
+                            // Enable start button
+                            currMultiTestViewObject.startButton.setEnabled(true);
+                            currMultiTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
+
+                            // Set progress layout invisible
+                            currMultiTestViewObject.progressLayout.setVisibility(View.GONE);
+
+                            // Set result layout visible
+                            currMultiTestViewObject.resultLayout.setVisibility(View.VISIBLE);
+
+                            // Get string array of test names
+                            String[] testNames = new String[multiSelectedTestCases.size()];
+                            for(int i = 0; i < multiSelectedTestCases.size(); i++) {
+                                testNames[i] = multiSelectedTestCases.get(i).testName;
+                            }
+
+                            // Update Result
+                            MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this, "Tuning");
+                            currMultiTestRV.setAdapter(multiTestResultAdapter);
+                            currMultiTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                            currMultiTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
+                        }
+                        else {
+                            multiTuningTestLoop();
+                        }
+                    }
+                    else {
+                        tuningCurrConfig++;
+                        multiTuningTestLoop();
                     }
                 }
             }

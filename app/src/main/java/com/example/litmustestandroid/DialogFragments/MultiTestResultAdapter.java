@@ -21,10 +21,12 @@ public class MultiTestResultAdapter extends RecyclerView.Adapter<MultiTestResult
 
     String testNames[];
     Context context;
+    String testType;
 
-    public MultiTestResultAdapter(String[] testNames, Context ct) {
+    public MultiTestResultAdapter(String[] testNames, Context ct, String testType) {
         this.testNames = testNames;
         this.context = ct;
+        this.testType = testType;
     }
 
     @NotNull
@@ -43,7 +45,13 @@ public class MultiTestResultAdapter extends RecyclerView.Adapter<MultiTestResult
         holder.resultButton.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v) {
                 // call main activity multi test result function
-                ((MainActivity)context).displayTestResult(currentTestName);
+                if (testType.equals("Explorer")) { // Explorer
+                    ((MainActivity)context).displayTestResult(currentTestName);
+                }
+                else { // Tuning
+                    ((MainActivity)context).tuningTestResult(currentTestName);
+                }
+
             }
         });
     }
