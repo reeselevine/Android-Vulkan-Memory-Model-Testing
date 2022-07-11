@@ -939,6 +939,30 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
+                                android:hint="Testing Workgroups:"
+                                android:textSize="@dimen/_12sdp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/multiTestTuningTestingWorkgroups"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="5"
+                                android:gravity="center_horizontal"
+                                android:inputType="number"
+                                android:text="2"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:hint="Max Workgroups:"
                                 android:textSize="@dimen/_12sdp"
                                 android:textStyle="bold" />
@@ -950,7 +974,56 @@
                                 android:layout_weight="5"
                                 android:gravity="center_horizontal"
                                 android:inputType="number"
-                                android:text="1024"/>
+                                android:text="4"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="Minimum Workgroup Size:"
+                                android:textSize="@dimen/_12sdp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/multiTestTuningMinWorkgroupSize"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="5"
+                                android:gravity="center_horizontal"
+                                android:inputType="number"
+                                android:text="256"/>
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="Max Workgroup Size:"
+                                android:textSize="@dimen/_12sdp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/multiTestTuningMaxWorkgroupSize"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="5"
+                                android:gravity="center_horizontal"
+                                android:inputType="number"
+                                android:text="256"/>
 
                         </LinearLayout>
                     </LinearLayout>
@@ -1066,6 +1139,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_5sdp"/>
+
+                <Button
+                    android:id="@+id/multiTestSendResultButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/_13sdp"
+                    android:backgroundTint="@color/purple_500"
+                    android:text="Send Result"
+                    android:textSize="@dimen/_13sdp"
+                    android:textColor="@color/white">
+
+                </Button>
 
             </LinearLayout>
 

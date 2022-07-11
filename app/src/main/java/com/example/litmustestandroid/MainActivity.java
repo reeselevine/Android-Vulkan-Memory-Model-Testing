@@ -2,6 +2,8 @@ package com.example.litmustestandroid;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -80,11 +82,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private AlertDialog tuningDialog;
     private TextView tuningTestName;
-    private EditText[] tuningParameters = new EditText[4];
+    private EditText[] tuningParameters = new EditText[7];
     private Button tuningStartButton, tuningCloseButton;
     private String tuningRandomSeed;
     private String[] tuningTestArgument = new String[4];
-    private int tuningCurrConfig, tuningEndConfig, tuningMaxWorkgroups;
+    private int tuningCurrConfig, tuningEndConfig, tuningTestWorkgroups, tuningMaxWorkgroups, tuningMinWorkgroupSize, tuningMaxWorkgroupSize;
     private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
 
@@ -460,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void writeTuningParameters(String testName, int paramPresetValue) {
         boolean smoothedParameters = true;
         int workgroupLimiter = tuningMaxWorkgroups;
-        int testingWorkgroups = randomGenerator(2, workgroupLimiter, tuningRandomSeed);
+        int testingWorkgroups = randomGenerator(tuningTestWorkgroups, workgroupLimiter, tuningRandomSeed);
         int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10, tuningRandomSeed));
         int stressTargetLines = randomGenerator(1, 16, tuningRandomSeed);
         int memStride = randomGenerator(1, 7, tuningRandomSeed);
@@ -495,6 +497,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         
         parameterFormat.put("testingWorkgroups", Integer.toString(testingWorkgroups));
         parameterFormat.put("maxWorkgroups", Integer.toString(tuningMaxWorkgroups));
+
+        parameterFormat.put("minWorkgroupSize", Integer.toString(tuningMinWorkgroupSize));
+        parameterFormat.put("maxWorkgroupSize", Integer.toString(tuningMaxWorkgroupSize));
 
         parameterFormat.put("shufflePct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
         parameterFormat.put("barrierPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
@@ -829,7 +834,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tuningParameters[0] = (EditText) tuningMenuView.findViewById(R.id.testTuningConfigNum); // testConfigNum
         tuningParameters[1] = (EditText) tuningMenuView.findViewById(R.id.testTuningTestIteration); // testIteration
         tuningParameters[2] = (EditText) tuningMenuView.findViewById(R.id.testTuningRandomSeed); // randomSeed
-        tuningParameters[3] = (EditText) tuningMenuView.findViewById(R.id.testTuningMaxWorkgroups); // maxWorkgroups
+        tuningParameters[3] = (EditText) tuningMenuView.findViewById(R.id.testTuningTestingWorkgroups); // testingWorkgroups
+        tuningParameters[4] = (EditText) tuningMenuView.findViewById(R.id.testTuningMaxWorkgroups); // maxWorkgroups
+        tuningParameters[5] = (EditText) tuningMenuView.findViewById(R.id.testTuningMinWorkgroupSize); // minWorkgroupSize
+        tuningParameters[6] = (EditText) tuningMenuView.findViewById(R.id.testTuningMaxWorkgroupSize); // maxWorkgroupSize
 
         tuningStartButton = (Button) tuningMenuView.findViewById(R.id.testTuningStartButton);
         tuningCloseButton = (Button) tuningMenuView.findViewById(R.id.testTuningCloseButton);
@@ -850,7 +858,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int tuningConfigNum = Integer.parseInt(tuningParameters[0].getText().toString());
                 currTuningResults = new ArrayList<TuningResultCase>();
                 tuningRandomSeed = tuningParameters[2].getText().toString();
-                tuningMaxWorkgroups = Integer.parseInt(tuningParameters[3].getText().toString());
+                tuningTestWorkgroups = Integer.parseInt(tuningParameters[3].getText().toString());
+                tuningMaxWorkgroups = Integer.parseInt(tuningParameters[4].getText().toString());
+                tuningMinWorkgroupSize =  Integer.parseInt(tuningParameters[5].getText().toString());
+                tuningMaxWorkgroupSize =  Integer.parseInt(tuningParameters[6].getText().toString());
 
                 tuningDialog.dismiss();
 
@@ -1018,7 +1029,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currTuningResults = new ArrayList<TuningResultCase>();
         currTestIterations = parameters[1].getText().toString();
         tuningRandomSeed = parameters[2].getText().toString();
-        tuningMaxWorkgroups = Integer.parseInt(parameters[3].getText().toString());
+        tuningTestWorkgroups = Integer.parseInt(parameters[3].getText().toString());
+        tuningMaxWorkgroups = Integer.parseInt(parameters[4].getText().toString());
+        tuningMinWorkgroupSize = Integer.parseInt(parameters[5].getText().toString());
+        tuningMaxWorkgroupSize = Integer.parseInt(parameters[6].getText().toString());
 
         tuningCurrConfig = 0;
         tuningEndConfig = tuningConfigNum;
@@ -1077,6 +1091,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+    }
+
+    public void multiTestSendResult() {
+        Log.i(TAG, "Sending result via email");
+
+        String recipient = "mingun0108@gmail.com";
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+
+
+
+
     }
 
     public void testComplete() {

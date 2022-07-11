@@ -32,7 +32,7 @@ import java.io.InputStreamReader;
 
 public class MultiTests extends Fragment {
 
-    private Button explorerButton, tuningButton, defaultParamButton, stressParamButton;
+    private Button explorerButton, tuningButton, defaultParamButton, stressParamButton, sendResultButton;
     private String testMode = "Explorer";
 
     @Nullable
@@ -156,16 +156,20 @@ public class MultiTests extends Fragment {
         multiTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressTargetLines); // stressTargetLines
         multiTestExplorerParameters[17] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressAssignmentStrategy); // stressAssignmentStrategy
 
-        EditText[] multiTestTuningParameters = new EditText[4];
+        EditText[] multiTestTuningParameters = new EditText[7];
         multiTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.multiTestTuningConfigNum); // testConfigNum
         multiTestTuningParameters [1] = (EditText) fragmentView.findViewById(R.id.multiTestTuningTestIteration); // testIteration
         multiTestTuningParameters [2] = (EditText) fragmentView.findViewById(R.id.multiTestTuningRandomSeed); // randomSeed
-        multiTestTuningParameters [3] = (EditText) fragmentView.findViewById(R.id.multiTestTuningMaxWorkgroups); // maxWorkgroups
+        multiTestTuningParameters [3] = (EditText) fragmentView.findViewById(R.id.multiTestTuningTestingWorkgroups); // testingWorkgroups
+        multiTestTuningParameters [4] = (EditText) fragmentView.findViewById(R.id.multiTestTuningMaxWorkgroups); // maxWorkgroups
+        multiTestTuningParameters [5] = (EditText) fragmentView.findViewById(R.id.multiTestTuningMinWorkgroupSize); // minWorkgroupSize
+        multiTestTuningParameters [6] = (EditText) fragmentView.findViewById(R.id.multiTestTuningMaxWorkgroupSize); // maxWorkgroupSize
 
         ((MainActivity)getActivity()).loadParameters(multiTestExplorerParameters, basic_parameters);
 
         defaultParamButton = fragmentView.findViewById(R.id.multiTestDefaultParamButton);
         stressParamButton = fragmentView.findViewById(R.id.multiTestStressParamButton);
+        sendResultButton = fragmentView.findViewById(R.id.multiTestSendResultButton);
         multiTestViewObject.startButton = fragmentView.findViewById(R.id.multiTestStartButton);
 
         multiTestViewObject.currentTestName = fragmentView.findViewById(R.id.multiTestCurrentName);
@@ -187,6 +191,14 @@ public class MultiTests extends Fragment {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 ((MainActivity)getActivity()).loadParameters(multiTestExplorerParameters, stress_parameters);
+            }
+        });
+
+        sendResultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open dialog for sending result
+                ((MainActivity)getActivity()).multiTestSendResult();
             }
         });
 
