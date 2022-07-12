@@ -1119,7 +1119,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/multiTestResultLayout"
+                android:id="@+id/multiTestExplorerResultLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_10sdp"
@@ -1129,19 +1129,19 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Test Result"
+                    android:text="Explorer Test Result"
                     android:textSize="@dimen/_17sdp"
                     android:textStyle="bold"/>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/multiTestResultRV"
+                    android:id="@+id/multiTestExplorerResultRV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_5sdp"/>
 
                 <Button
-                    android:id="@+id/multiTestSendResultButton"
+                    android:id="@+id/multiTestExplorerSendResultButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
@@ -1150,10 +1150,44 @@
                     android:backgroundTint="@color/purple_500"
                     android:text="Send Result"
                     android:textSize="@dimen/_13sdp"
-                    android:textColor="@color/white">
+                    android:textColor="@color/white"/>
 
-                </Button>
+            </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/multiTestTuningResultLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tuning Test Result"
+                    android:textSize="@dimen/_17sdp"
+                    android:textStyle="bold"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/multiTestTuningResultRV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_5sdp"/>
+
+                <Button
+                    android:id="@+id/multiTestTuningSendResultButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/_13sdp"
+                    android:backgroundTint="@color/purple_500"
+                    android:text="Send Result"
+                    android:textSize="@dimen/_13sdp"
+                    android:textColor="@color/white"/>
             </LinearLayout>
 
         </LinearLayout>

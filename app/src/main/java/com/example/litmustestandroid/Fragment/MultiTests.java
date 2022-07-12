@@ -32,7 +32,7 @@ import java.io.InputStreamReader;
 
 public class MultiTests extends Fragment {
 
-    private Button explorerButton, tuningButton, defaultParamButton, stressParamButton, sendResultButton;
+    private Button explorerButton, tuningButton, defaultParamButton, stressParamButton, explorerSendResultButton, tuningSendResultButton;
     private String testMode = "Explorer";
 
     @Nullable
@@ -54,11 +54,16 @@ public class MultiTests extends Fragment {
         multiTestViewObject.configLayout = fragmentView.findViewById(R.id.multiTestCurrentConfigLayout);
         multiTestViewObject.configLayout.setVisibility(View.GONE);
 
-        // Set result layout to be invisible in default
-        multiTestViewObject.resultLayout = fragmentView.findViewById(R.id.multiTestResultLayout);
-        multiTestViewObject.resultLayout.setVisibility(View.GONE);
+        // Set explorer result layout to be invisible in default
+        multiTestViewObject.explorerResultLayout = fragmentView.findViewById(R.id.multiTestExplorerResultLayout);
+        multiTestViewObject.explorerResultLayout.setVisibility(View.GONE);
 
-        RecyclerView multiTestResultRV = fragmentView.findViewById(R.id.multiTestResultRV);
+        // Set explorer result layout to be invisible in default
+        multiTestViewObject.tuningResultLayout = fragmentView.findViewById(R.id.multiTestTuningResultLayout);
+        multiTestViewObject.tuningResultLayout.setVisibility(View.GONE);
+
+        RecyclerView multiTestExplorerResultRV = fragmentView.findViewById(R.id.multiTestExplorerResultRV);
+        RecyclerView multiTestTuningResultRV = fragmentView.findViewById(R.id.multiTestTuningResultRV);
 
         TextView testList = fragmentView.findViewById(R.id.multiTestList);
 
@@ -115,6 +120,12 @@ public class MultiTests extends Fragment {
                 tuningButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 explorerParameterLayout.setVisibility(View.VISIBLE);
                 explorerParameterItemLayout.setVisibility(View.VISIBLE);
+
+                if(!multiTestViewObject.newExplorer) {
+                    multiTestViewObject.explorerResultLayout.setVisibility(View.VISIBLE);
+                }
+
+                multiTestViewObject.tuningResultLayout.setVisibility(View.GONE);
                 tuningParameterLayout.setVisibility(View.GONE);
                 testMode = "Explorer";
             }
@@ -127,6 +138,12 @@ public class MultiTests extends Fragment {
                 explorerButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 tuningParameterLayout.setVisibility(View.VISIBLE);
                 tuningParameterItemLayout.setVisibility(View.VISIBLE);
+
+                if(!multiTestViewObject.newTuning) {
+                    multiTestViewObject.tuningResultLayout.setVisibility(View.VISIBLE);
+                }
+
+                multiTestViewObject.explorerResultLayout.setVisibility(View.GONE);
                 explorerParameterLayout.setVisibility(View.GONE);
                 testMode = "Tuning";
             }
@@ -169,7 +186,8 @@ public class MultiTests extends Fragment {
 
         defaultParamButton = fragmentView.findViewById(R.id.multiTestDefaultParamButton);
         stressParamButton = fragmentView.findViewById(R.id.multiTestStressParamButton);
-        sendResultButton = fragmentView.findViewById(R.id.multiTestSendResultButton);
+        explorerSendResultButton = fragmentView.findViewById(R.id.multiTestExplorerSendResultButton);
+        tuningSendResultButton = fragmentView.findViewById(R.id.multiTestTuningSendResultButton);
         multiTestViewObject.startButton = fragmentView.findViewById(R.id.multiTestStartButton);
 
         multiTestViewObject.currentTestName = fragmentView.findViewById(R.id.multiTestCurrentName);
@@ -194,11 +212,19 @@ public class MultiTests extends Fragment {
             }
         });
 
-        sendResultButton.setOnClickListener(new View.OnClickListener() {
+        explorerSendResultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Open dialog for sending result
-                ((MainActivity)getActivity()).multiTestSendResult();
+                ((MainActivity)getActivity()).multiTestSendResult(testMode);
+            }
+        });
+
+        tuningSendResultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open dialog for sending result
+                ((MainActivity)getActivity()).multiTestSendResult(testMode);
             }
         });
 
@@ -206,10 +232,10 @@ public class MultiTests extends Fragment {
             @Override
             public void onClick(View v) {
                 if(testMode.equals("Explorer")) {
-                    ((MainActivity)getActivity()).multiExplorerTestBegin(multiTestExplorerParameters,  multiTestViewObject, multiTestResultRV);
+                    ((MainActivity)getActivity()).multiExplorerTestBegin(multiTestExplorerParameters,  multiTestViewObject, multiTestExplorerResultRV);
                 }
                 else { // Tuning
-                    ((MainActivity)getActivity()).multiTuningTestBegin(multiTestTuningParameters,  multiTestViewObject, multiTestResultRV);
+                    ((MainActivity)getActivity()).multiTuningTestBegin(multiTestTuningParameters,  multiTestViewObject, multiTestTuningResultRV);
                 }
 
             }

@@ -3,8 +3,11 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -26,6 +29,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -45,6 +49,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -54,6 +59,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -98,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private String currTestType = "";
     private TestCase currTestCase;
+    private String GPUName = "";
 
     private Handler handler = new Handler();
 
@@ -967,7 +974,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currMultiTestViewObject.configLayout.setVisibility(View.GONE);
 
         // Set result layout invisible
-        currMultiTestViewObject.resultLayout.setVisibility(View.GONE);
+        currMultiTestViewObject.explorerResultLayout.setVisibility(View.GONE);
 
         multiCurrIteration = 0;
 
@@ -1023,7 +1030,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currMultiTestViewObject.configLayout.setVisibility(View.VISIBLE);
 
         // Set result layout invisible
-        currMultiTestViewObject.resultLayout.setVisibility(View.GONE);
+        currMultiTestViewObject.tuningResultLayout.setVisibility(View.GONE);
 
         int tuningConfigNum = Integer.parseInt(parameters[0].getText().toString());
         currTuningResults = new ArrayList<TuningResultCase>();
@@ -1073,7 +1080,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void iterationProgress(String iterationNum) {
-        Log.i(TAG, "IterationProgress: " + iterationNum + "/" + currTestIterations);
+        //Log.i(TAG, "IterationProgress: " + iterationNum + "/" + currTestIterations);
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -1093,17 +1100,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void multiTestSendResult() {
+    public void setGPUName(String gpuName) {
+        GPUName = gpuName;
+        Log.i(TAG, gpuName);
+    }
+
+    public void multiTestSendResult(String testMode) {
         Log.i(TAG, "Sending result via email");
 
-        String recipient = "mingun0108@gmail.com";
+        String recipient[] = {"mingun0108@gmail.com"};
+        String subject = "LitmusTestAndroid";
+        String message = "GPU: " + GPUName;
+        String fileName = "";
+
+        if(testMode.equals("Explorer")) {
+            subject += " MultiTest Explorer Result";
+            fileName = "litmustest_multitest_explorer_result.txt";
+        }
+        else if (testMode.equals("Tuning")) {
+            subject += " MultiTest Tuning Result";
+            fileName = "litmustest_multitest_tuning_result.txt";
+        }
+        else { // Shouldn't be here
+            Log.e(TAG, "multiTestSendResult invalid currTestType!: " + currTestType);
+        }
+
+        File fileLocation = new File(getFileDir(), fileName);
+        Uri path = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", fileLocation);
+
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setData(Uri.parse("mailto:"));
-        emailIntent.setType("text/plain");
 
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, recipient);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+        emailIntent.putExtra(Intent.EXTRA_STREAM, path);
 
+        emailIntent.setType("plain/text");
 
+        Intent chooser = Intent.createChooser(emailIntent, "Share File");
 
+        List<ResolveInfo> resInfoList = this.getPackageManager().queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY);
+
+        for (ResolveInfo resolveInfo : resInfoList) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            this.grantUriPermission(packageName, path, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
+        try {
+            startActivity(chooser);
+        }
+        catch(android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void testComplete() {
@@ -1151,6 +1199,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 else if (currTestType.equals("MultiExplorer")){ // Multi Explorer test
+                    // Append to result file
+                    String outputFileName = "litmustest_multitest_explorer_result.txt";
+                    try
+                    {
+                        FileOutputStream fos;
+                        if(multiCurrIteration == 0) {
+                            fos = openFileOutput(outputFileName, Context.MODE_PRIVATE);
+                        }
+                        else {
+                            fos = openFileOutput(outputFileName, Context.MODE_APPEND);
+                        }
+
+                        FileInputStream fis = openFileInput("litmustest_" + multiSelectedTestCases.get(multiCurrIteration).testName + "_output_explorer.txt");
+                        InputStreamReader isr = new InputStreamReader(fis);
+                        BufferedReader br = new BufferedReader(isr);
+
+                        String line = br.readLine();
+                        while (line != null) {
+                            line += "\n";
+                            fos.write(line.getBytes());
+                            line = br.readLine();
+                        }
+
+                        String eof = "----------\n";
+                        fos.write(eof.getBytes());
+
+                        fis.close();
+                        isr.close();
+                        br.close();
+
+                        fos.close();
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
                     if(multiCurrIteration == multiSelectedTestCases.size()-1) { // All test ended, update result
 
                         Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
@@ -1163,7 +1247,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         currMultiTestViewObject.progressLayout.setVisibility(View.GONE);
 
                         // Set result layout visible
-                        currMultiTestViewObject.resultLayout.setVisibility(View.VISIBLE);
+                        currMultiTestViewObject.explorerResultLayout.setVisibility(View.VISIBLE);
+
+                        // Indicate that there is result to be displayed
+                        currMultiTestViewObject.newExplorer = false;
 
                         // Get string array of test names
                         String[] testNames = new String[multiSelectedTestCases.size()];
@@ -1183,6 +1270,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 else { // Multi Tuning Test
+                    // Append to result file
+                    String outputFileName = "litmustest_multitest_tuning_result.txt";
+                    try
+                    {
+                        FileOutputStream fos;
+                        if(multiCurrIteration == 0 && tuningCurrConfig == 0) {
+                            fos = openFileOutput(outputFileName, Context.MODE_PRIVATE);
+                        }
+                        else {
+                            fos = openFileOutput(outputFileName, Context.MODE_APPEND);
+                        }
+
+                        String header = currTestCase.testName + " Test " + (tuningCurrConfig + 1) + " Parameter: \n";
+                        fos.write(header.getBytes());
+
+                        FileInputStream fis = openFileInput(currTestCase.testParamName + ".txt");
+                        InputStreamReader isr = new InputStreamReader(fis);
+                        BufferedReader br = new BufferedReader(isr);
+
+                        String line = br.readLine();
+                        while (line != null) {
+                            line += "\n";
+                            fos.write(line.getBytes());
+                            line = br.readLine();
+                        }
+                        fos.write("\n".getBytes());
+                        header = currTestCase.testName + " Test " + (tuningCurrConfig + 1) + " ";
+                        fos.write(header.getBytes());
+
+                        fis.close();
+                        isr.close();
+                        br.close();
+
+                        fis = openFileInput(currTestCase.outputNames[1] + ".txt");
+                        isr = new InputStreamReader(fis);
+                        br = new BufferedReader(isr);
+
+                        line = br.readLine();
+                        while (line != null) {
+                            line += "\n";
+                            fos.write(line.getBytes());
+                            line = br.readLine();
+                        }
+
+                        String eof = "----------\n";
+                        fos.write(eof.getBytes());
+
+                        fis.close();
+                        isr.close();
+                        br.close();
+                        fos.close();
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
                     // Save param value
                     String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
 
@@ -1219,7 +1362,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             currMultiTestViewObject.progressLayout.setVisibility(View.GONE);
 
                             // Set result layout visible
-                            currMultiTestViewObject.resultLayout.setVisibility(View.VISIBLE);
+                            currMultiTestViewObject.tuningResultLayout.setVisibility(View.VISIBLE);
+
+                            // Indicate that there is result to be displayed
+                            currMultiTestViewObject.newTuning = false;
 
                             // Get string array of test names
                             String[] testNames = new String[multiSelectedTestCases.size()];

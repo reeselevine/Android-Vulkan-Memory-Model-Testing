@@ -183,7 +183,14 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
     vector<Buffer> resultBuffers = {testLocations, readResults, testResults, stressParams};
 
     jclass clazz = env->GetObjectClass(obj);
-    jmethodID method = env->GetMethodID(clazz, "iterationProgress", "(Ljava/lang/String;)V");
+    jmethodID iterationMethod = env->GetMethodID(clazz, "iterationProgress", "(Ljava/lang/String;)V");
+    jmethodID deviceMethod = env->GetMethodID(clazz, "setGPUName", "(Ljava/lang/String;)V");
+    jmethodID completeMethod = env->GetMethodID(clazz, "testComplete", "()V");
+
+    string gpuStr = device.properties().deviceName;
+    const char* gpuChar =  gpuStr.c_str();
+    jstring gpuName = env->NewStringUTF(gpuChar);
+    env->CallVoidMethod(obj, deviceMethod, gpuName);
 
     // run iterations
     chrono::time_point<std::chrono::system_clock> start, end, itStart, itEnd;
@@ -193,8 +200,7 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         string iterationStr = to_string(i+1);
         const char* iterationChar = iterationStr.c_str();
         jstring iterationNum = env->NewStringUTF(iterationChar);
-        env->CallVoidMethod(obj, method, iterationNum);
-
+        env->CallVoidMethod(obj, iterationMethod, iterationNum);
 
         auto program = Program(device, shader_file.c_str(), buffers);
         auto resultProgram = Program(device, result_shader_file.c_str(), resultBuffers);
@@ -254,9 +260,7 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
     device.teardown();
     instance.teardown();
 
-    clazz = env->GetObjectClass(obj);
-    method = env->GetMethodID(clazz, "testComplete", "()V");
-    env->CallVoidMethod(obj, method);
+    env->CallVoidMethod(obj, completeMethod);
 }
 
 /** Reads a specified config file and stores the parameters in a map. Parameters should be of the form "key=value", one per line. */
@@ -305,9 +309,7 @@ int runTest(JNIEnv* env, jobject obj, string testName, string shaderFile, string
 
     if(!tuningMode) {
         outputFile << "Test Name: " << testName << "\n";
-        outputFile << "\n";
         outputFile << "Shader Name: " << shaderFile << "\n";
-        outputFile << "\n";
         outputFile << "Result Name: " << resultShaderFile << "\n";
         outputFile << "\n";
     }
