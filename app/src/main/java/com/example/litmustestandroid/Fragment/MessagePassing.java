@@ -83,7 +83,7 @@ public class MessagePassing extends Fragment {
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("message_passing");
+                ((MainActivity)getActivity()).tuningTestResult("message_passing", "Single");
             }
         });
 

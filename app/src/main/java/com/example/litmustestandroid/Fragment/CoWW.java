@@ -79,7 +79,7 @@ public class CoWW extends Fragment {
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("coww");
+                ((MainActivity)getActivity()).tuningTestResult("coww", "Single");
             }
         });
 

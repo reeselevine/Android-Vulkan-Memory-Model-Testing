@@ -49,7 +49,7 @@ public class MultiTestResultAdapter extends RecyclerView.Adapter<MultiTestResult
                     ((MainActivity)context).displayTestResult(currentTestName);
                 }
                 else { // Tuning
-                    ((MainActivity)context).tuningTestResult(currentTestName);
+                    ((MainActivity)context).tuningTestResult(currentTestName, "Multi");
                 }
 
             }

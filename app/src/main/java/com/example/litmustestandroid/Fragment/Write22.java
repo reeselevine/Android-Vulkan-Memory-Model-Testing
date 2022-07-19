@@ -79,7 +79,7 @@ public class Write22 extends Fragment {
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("22_write");
+                ((MainActivity)getActivity()).tuningTestResult("22_write", "Single");
             }
         });
 

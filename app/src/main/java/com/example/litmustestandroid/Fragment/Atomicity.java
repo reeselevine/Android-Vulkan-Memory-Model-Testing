@@ -79,7 +79,7 @@ public class Atomicity extends Fragment {
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("atomicity");
+                ((MainActivity)getActivity()).tuningTestResult("atomicity", "Single");
             }
         });
 

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,6 +57,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -466,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void writeTuningParameters(String testName, int paramPresetValue) {
+    public void writeTuningParameters(ArrayList<TestCase> testCases) {
         boolean smoothedParameters = true;
         int workgroupLimiter = tuningMaxWorkgroups;
         int testingWorkgroups = randomGenerator(tuningTestWorkgroups, workgroupLimiter, tuningRandomSeed);
@@ -475,24 +477,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int memStride = randomGenerator(1, 7, tuningRandomSeed);
         Map<String, String> parameterFormat = new TreeMap<String, String>();
 
-        InputStream inputStream = getResources().openRawResource(paramPresetValue);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        for(int i = 0; i < testCases.size(); i++) {
+            int paramPresetValue = this.getResources().getIdentifier(testCases.get(i).paramPresetNames[1], "raw", this.getPackageName());
+            InputStream inputStream = getResources().openRawResource(paramPresetValue);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
-        String fileName = "litmustest_" + testName + "_parameters.txt";
-
-        // Get parameter format by reading preset file
-        try {
-            String line = bufferedReader.readLine();
-            while (line != null) {
-                String[] words = line.split("=");
-                parameterFormat.put(words[0], words[1]);
-                line = bufferedReader.readLine();
+            // Get parameter format by reading preset file
+            try {
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    String[] words = line.split("=");
+                    parameterFormat.put(words[0], words[1]);
+                    line = bufferedReader.readLine();
+                }
+                inputStream.close();
+                bufferedReader.close();
             }
-            inputStream.close();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
 
         // Now randomize certain parmeter values
@@ -562,23 +566,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         parameterFormat.put("preStressPattern", Integer.toString(preStressPattern));
 
-        // Now insert the parameter values to text file that will be used during test
+        for(int i = 0; i < testCases.size(); i++) {
+            // Now insert the parameter values to text file that will be used during test
+            try {
+                String fileName = "litmustest_" + testCases.get(i).testName + "_parameters.txt";
+                FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
 
-        try {
-            FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
-
-            for (String key: parameterFormat.keySet()) {
-                fos.write((key + "=" + parameterFormat.get(key) + "\n").getBytes());
+                for (String key: parameterFormat.keySet()) {
+                    fos.write((key + "=" + parameterFormat.get(key) + "\n").getBytes());
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
             }
         }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+
     }
 
     public void handleButtons(boolean testBegin, Button[] buttons, ResultButton[] resultButtons) {
@@ -890,7 +897,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 tuningCurrConfig = 0;
                 tuningEndConfig = tuningConfigNum;
 
-                tuningTestLoop(testName);
+                tuningTestLoop();
             }
         });
 
@@ -904,18 +911,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void tuningTestLoop(String testName) {
+    public void tuningTestLoop() {
 
         currTestViewObject.tuningCurrentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
 
-        writeTuningParameters(testName, this.getResources().getIdentifier(currTestCase.paramPresetNames[1], "raw", this.getPackageName()));
+        ArrayList<TestCase> testCase = new ArrayList<TestCase>();
+        testCase.add(currTestCase);
+        writeTuningParameters(testCase);
 
         // Run test in different thread
         TestThread testThread = new TestThread(MainActivity.this, tuningTestArgument, true);
         testThread.start();
     }
 
-    public void tuningTestResult(String testName) {
+    public void tuningTestResult(String testName, String testType) {
         Log.i("TUNING RESULT", testName + " PRESSED");
 
         ArrayList<TuningResultCase> currTestList = tuningResultCases.get(testName);
@@ -924,8 +933,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.e(TAG, testName + " cannot find result cases!");
         }
 
-        TuningResultDialogFragment dialog = new TuningResultDialogFragment(testName, currTestList, MainActivity.this);
-        dialog.show(getSupportFragmentManager(), "TuningResultDialog");
+        if(testType.equals("Single")) {
+            TuningResultDialogFragment dialog = new TuningResultDialogFragment(testName, currTestList, MainActivity.this);
+            dialog.show(getSupportFragmentManager(), "TuningResultDialog");
+        }
+        else { // Multi
+            String[] testNames = new String[multiSelectedTestCases.size()];
+            for(int i = 0; i < testNames.length; i++) {
+                testNames[i] = multiSelectedTestCases.get(i).testName;
+            }
+
+            MultiTuningResultDialogFragment dialog = new MultiTuningResultDialogFragment(testNames, currTestList, MainActivity.this);
+            dialog.show(getSupportFragmentManager(), "MultiTuningResultDialog");
+        }
     }
 
     public void multiTestCheckBoxesListener(View view) {
@@ -1062,13 +1082,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
         // Update test name
-        currMultiTestViewObject.currentTestName.setText(currTestCase.testName);
+        currMultiTestViewObject.currentTestName.setText(currTestCase.testName + " (" + (multiCurrIteration + 1) + "/" + multiSelectedTestCases.size() + ")");
 
         // Update current config number
         currMultiTestViewObject.currentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
 
-        // Write tuning parameter
-        writeTuningParameters(currTestCase.testName, this.getResources().getIdentifier(currTestCase.paramPresetNames[1], "raw", this.getPackageName()));
+        if(multiCurrIteration == 0) {
+            // Write tuning parameter to all selected test cases
+            writeTuningParameters(multiSelectedTestCases);
+        }
 
         // Run test in different thread
         TestThread testThread = new TestThread(MainActivity.this, testArgument, true);
@@ -1195,7 +1217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     else {
                         tuningCurrConfig++;
-                        tuningTestLoop(currTestViewObject.testName);
+                        tuningTestLoop();
                     }
                 }
                 else if (currTestType.equals("MultiExplorer")){ // Multi Explorer test
@@ -1272,6 +1294,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else { // Multi Tuning Test
                     // Append to result file
                     String outputFileName = "litmustest_multitest_tuning_result.txt";
+                    //String outputFileName = "litmustest_multitest_tuning_result.json";
                     try
                     {
                         FileOutputStream fos;
@@ -1282,26 +1305,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             fos = openFileOutput(outputFileName, Context.MODE_APPEND);
                         }
 
-                        String header = currTestCase.testName + " Test " + (tuningCurrConfig + 1) + " Parameter: \n";
-                        fos.write(header.getBytes());
+                        /*JsonWriter resultWriter = new JsonWriter(new OutputStreamWriter(fos, "UTF-8"));
+                        resultWriter.setIndent("  ");*/
+                        String header = "";
+                        String line = "";
+                        FileInputStream fis;
+                        InputStreamReader isr;
+                        BufferedReader br;
 
-                        FileInputStream fis = openFileInput(currTestCase.testParamName + ".txt");
-                        InputStreamReader isr = new InputStreamReader(fis);
-                        BufferedReader br = new BufferedReader(isr);
+                        if(multiCurrIteration == 0) {
+                            header = "Tuning Test " + (tuningCurrConfig + 1) + " Parameter: \n";
+                            fos.write(header.getBytes());
 
-                        String line = br.readLine();
-                        while (line != null) {
-                            line += "\n";
-                            fos.write(line.getBytes());
+                            fis = openFileInput(currTestCase.testParamName + ".txt");
+                            isr = new InputStreamReader(fis);
+                            br = new BufferedReader(isr);
+
                             line = br.readLine();
+                            while (line != null) {
+                                line += "\n";
+                                fos.write(line.getBytes());
+                                line = br.readLine();
+                            }
+                            fos.write("\n".getBytes());
                         }
-                        fos.write("\n".getBytes());
-                        header = currTestCase.testName + " Test " + (tuningCurrConfig + 1) + " ";
-                        fos.write(header.getBytes());
 
-                        fis.close();
-                        isr.close();
-                        br.close();
+                        header = currTestCase.testName + " ";
+                        fos.write(header.getBytes());
 
                         fis = openFileInput(currTestCase.outputNames[1] + ".txt");
                         isr = new InputStreamReader(fis);
@@ -1314,8 +1344,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             line = br.readLine();
                         }
 
-                        String eof = "----------\n";
-                        fos.write(eof.getBytes());
+
+                        if(multiCurrIteration == multiSelectedTestCases.size() - 1)  {
+                            String eof = "----------\n";
+                            fos.write(eof.getBytes());
+                        }
+                        else {
+                            fos.write("\n".getBytes());
+                        }
 
                         fis.close();
                         isr.close();
@@ -1342,15 +1378,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     currTuningResults.add(currTuningResult);
 
-                    if(tuningCurrConfig == tuningEndConfig - 1) { // One tuning test completed
-                        tuningResultCases.put(currTestCase.testName, currTuningResults);
+                    if(multiCurrIteration == multiSelectedTestCases.size() - 1) { // One tuning config test completed
+                        tuningResultCases.put(Integer.toString(tuningCurrConfig), currTuningResults);
                         currTuningResults = new ArrayList<TuningResultCase>();
 
                         // Reset tuning config
-                        tuningCurrConfig = 0;
-                        multiCurrIteration++;
+                        multiCurrIteration = 0;
+                        tuningCurrConfig++;
 
-                        if(multiCurrIteration == multiSelectedTestCases.size()) { // All tuning tests completed
+                        if(tuningCurrConfig == tuningEndConfig) { // All tuning tests completed
 
                             Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
 
@@ -1368,13 +1404,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             currMultiTestViewObject.newTuning = false;
 
                             // Get string array of test names
-                            String[] testNames = new String[multiSelectedTestCases.size()];
-                            for(int i = 0; i < multiSelectedTestCases.size(); i++) {
-                                testNames[i] = multiSelectedTestCases.get(i).testName;
+                            String[] testNumbers = new String[tuningEndConfig];
+                            for(int i = 0; i < tuningEndConfig; i++) {
+                                testNumbers[i] = Integer.toString(i);
                             }
 
                             // Update Result
-                            MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this, "Tuning");
+                            MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNumbers, MainActivity.this, "Tuning");
                             currMultiTestRV.setAdapter(multiTestResultAdapter);
                             currMultiTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                             currMultiTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
@@ -1384,7 +1420,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
                     else {
-                        tuningCurrConfig++;
+                        multiCurrIteration++;
                         multiTuningTestLoop();
                     }
                 }
