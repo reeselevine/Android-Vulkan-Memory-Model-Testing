@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<TestCase> multiSelectedTestCases = new ArrayList<TestCase>();
     private int multiCurrIteration;
     private RecyclerView currMultiTestRV;
+    private FileOutputStream multiTuningFOS;
+    private JsonWriter multiTuningResultWriter;
 
     private static final String TAG = "MainActivity";
 
@@ -1066,6 +1068,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         multiCurrIteration = 0;
 
+        // Initialize result writer
+        String outputFileName = "litmustest_multitest_tuning_result.json";
+        try {
+            multiTuningFOS = openFileOutput(outputFileName, Context.MODE_PRIVATE);
+            multiTuningResultWriter = new JsonWriter(new OutputStreamWriter(multiTuningFOS, "UTF-8"));
+            multiTuningResultWriter.setIndent("  ");
+            multiTuningResultWriter.beginArray();
+            multiTuningResultWriter.beginObject();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
         // Start multi tuning test loop
         multiTuningTestLoop();
     }
@@ -1141,7 +1155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (testMode.equals("Tuning")) {
             subject += " MultiTest Tuning Result";
-            fileName = "litmustest_multitest_tuning_result.txt";
+            fileName = "litmustest_multitest_tuning_result.json";
         }
         else { // Shouldn't be here
             Log.e(TAG, "multiTestSendResult invalid currTestType!: " + currTestType);
@@ -1195,13 +1209,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Save result value
                     String currResultValue = convertFileToString(currTestCase.outputNames[1] + ".txt");
 
+                    // Go through result and get number of sequential behaviors
+                    String startIndexIndicator = "seq: ";
+                    String endIndexIndicator = "\ninterleaved:";
+                    String numSeqBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
+                    // Go through result and get number of interleaved behaviors
+                    startIndexIndicator = "interleaved: ";
+                    endIndexIndicator = "\nweak:";
+                    String numInterleavedBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
                     // Go through result and get number of weak behaviors
-                    String startIndexIndicator = "weak: ";
-                    String endIndexIndicator = "\nTotal elapsed time";
+                    startIndexIndicator = "weak: ";
+                    endIndexIndicator = "\nTotal elapsed time";
                     String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
 
                     // Transfer over the tuning result case
-                    TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue, Integer.parseInt(numWeakBehaviors));
+                    TuningResultCase currTuningResult = new TuningResultCase(currTestCase.testName, currParamValue, currResultValue,
+                            Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors));
 
                     currTuningResults.add(currTuningResult);
 
@@ -1292,94 +1317,84 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 else { // Multi Tuning Test
-                    // Append to result file
-                    String outputFileName = "litmustest_multitest_tuning_result.txt";
-                    //String outputFileName = "litmustest_multitest_tuning_result.json";
-                    try
-                    {
-                        FileOutputStream fos;
-                        if(multiCurrIteration == 0 && tuningCurrConfig == 0) {
-                            fos = openFileOutput(outputFileName, Context.MODE_PRIVATE);
-                        }
-                        else {
-                            fos = openFileOutput(outputFileName, Context.MODE_APPEND);
-                        }
-
-                        /*JsonWriter resultWriter = new JsonWriter(new OutputStreamWriter(fos, "UTF-8"));
-                        resultWriter.setIndent("  ");*/
-                        String header = "";
-                        String line = "";
-                        FileInputStream fis;
-                        InputStreamReader isr;
-                        BufferedReader br;
-
-                        if(multiCurrIteration == 0) {
-                            header = "Tuning Test " + (tuningCurrConfig + 1) + " Parameter: \n";
-                            fos.write(header.getBytes());
-
-                            fis = openFileInput(currTestCase.testParamName + ".txt");
-                            isr = new InputStreamReader(fis);
-                            br = new BufferedReader(isr);
-
-                            line = br.readLine();
-                            while (line != null) {
-                                line += "\n";
-                                fos.write(line.getBytes());
-                                line = br.readLine();
-                            }
-                            fos.write("\n".getBytes());
-                        }
-
-                        header = currTestCase.testName + " ";
-                        fos.write(header.getBytes());
-
-                        fis = openFileInput(currTestCase.outputNames[1] + ".txt");
-                        isr = new InputStreamReader(fis);
-                        br = new BufferedReader(isr);
-
-                        line = br.readLine();
-                        while (line != null) {
-                            line += "\n";
-                            fos.write(line.getBytes());
-                            line = br.readLine();
-                        }
-
-
-                        if(multiCurrIteration == multiSelectedTestCases.size() - 1)  {
-                            String eof = "----------\n";
-                            fos.write(eof.getBytes());
-                        }
-                        else {
-                            fos.write("\n".getBytes());
-                        }
-
-                        fis.close();
-                        isr.close();
-                        br.close();
-                        fos.close();
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
                     // Save param value
                     String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
 
                     // Save result value
                     String currResultValue = convertFileToString(currTestCase.outputNames[1] + ".txt");
 
+                    // Go through result and get number of sequential behaviors
+                    String startIndexIndicator = "seq: ";
+                    String endIndexIndicator = "\ninterleaved:";
+                    String numSeqBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
+                    // Go through result and get number of interleaved behaviors
+                    startIndexIndicator = "interleaved: ";
+                    endIndexIndicator = "\nweak:";
+                    String numInterleavedBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
                     // Go through result and get number of weak behaviors
-                    String startIndexIndicator = "weak: ";
-                    String endIndexIndicator = "\nTotal elapsed time";
+                    startIndexIndicator = "weak: ";
+                    endIndexIndicator = "\nTotal elapsed time";
                     String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
 
                     // Transfer over the tuning result case
-                    TuningResultCase currTuningResult = new TuningResultCase(currParamValue, currResultValue, Integer.parseInt(numWeakBehaviors));
+                    TuningResultCase currTuningResult = new TuningResultCase(currTestCase.testName, currParamValue, currResultValue,
+                            Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors));
 
                     currTuningResults.add(currTuningResult);
 
                     if(multiCurrIteration == multiSelectedTestCases.size() - 1) { // One tuning config test completed
                         tuningResultCases.put(Integer.toString(tuningCurrConfig), currTuningResults);
+
+                        // Append to the result file
+                        try {
+                            multiTuningResultWriter.name(Integer.toString(tuningCurrConfig));
+                            multiTuningResultWriter.beginObject();
+
+                            // Result
+                            for(int i = 0; i < currTuningResults.size(); i++) {
+                                TuningResultCase resultCase = currTuningResults.get(i);
+
+                                String resultName = resultCase.testName + "_result_name";
+                                String suffix = " Default";
+                                int resultId = getResources().getIdentifier(resultName, "string", getPackageName());
+
+                                multiTuningResultWriter.name((getResources().getString(resultId)) + suffix);
+                                multiTuningResultWriter.beginObject();
+                                multiTuningResultWriter.name("seq").value(resultCase.numSeqBehaviors);
+                                multiTuningResultWriter.name("interleaved").value(resultCase.numInterleavedBehaviors);
+                                multiTuningResultWriter.name("weak").value(resultCase.numWeakBehaviors);
+                                multiTuningResultWriter.endObject();
+                            }
+
+                            // Parameter
+                            multiTuningResultWriter.name("Test Parameters");
+                            multiTuningResultWriter.beginObject();
+
+                            FileInputStream fis = openFileInput(currTestCase.testParamName + ".txt");
+                            InputStreamReader isr = new InputStreamReader(fis);
+                            BufferedReader br = new BufferedReader(isr);
+
+                            String line = br.readLine();
+                            while (line != null) {
+                                String[] words = line.split("=");
+                                multiTuningResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
+                                line = br.readLine();
+                            }
+                            fis.close();
+                            isr.close();
+                            br.close();
+                            multiTuningResultWriter.endObject();
+
+                            multiTuningResultWriter.endObject();
+
+                        }
+                        catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        // Reset currTuningResults for next test config
                         currTuningResults = new ArrayList<TuningResultCase>();
 
                         // Reset tuning config
@@ -1402,6 +1417,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                             // Indicate that there is result to be displayed
                             currMultiTestViewObject.newTuning = false;
+
+                            // Close result writer
+                            try {
+                                multiTuningResultWriter.name("gpu").value(GPUName);
+                                multiTuningResultWriter.name("configurations").value(tuningEndConfig);
+                                multiTuningResultWriter.name("randomSeed").value(tuningRandomSeed);
+
+                                multiTuningResultWriter.endObject();
+                                multiTuningResultWriter.endArray();
+                                multiTuningResultWriter.close();
+                                multiTuningFOS.close();
+                            }
+                            catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
                             // Get string array of test names
                             String[] testNumbers = new String[tuningEndConfig];

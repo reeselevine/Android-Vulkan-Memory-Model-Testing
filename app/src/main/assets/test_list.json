@@ -97,19 +97,19 @@
       ]
     },
     {
-      "name": "22_write",
+      "name": "write_22",
       "type": "weakMemory",
       "shaders": [
-        "litmustest_22_write_default",
-        "litmustest_22_write_rmw_barrier",
-        "litmustest_22_write_storage_workgroup",
-        "litmustest_22_write_storage_workgroup_rmw_barrier",
-        "litmustest_22_write_workgroup",
-        "litmustest_22_write_workgroup_rmw_barrier"
+        "litmustest_write_22_default",
+        "litmustest_write_22_rmw_barrier",
+        "litmustest_write_22_storage_workgroup",
+        "litmustest_write_22_storage_workgroup_rmw_barrier",
+        "litmustest_write_22_workgroup",
+        "litmustest_write_22_workgroup_rmw_barrier"
       ],
-      "result": "litmustest_22_write_results",
-      "outputs": ["litmustest_22_write_output_explorer", "litmustest_22_write_output_tuning"],
-      "parameter": "litmustest_22_write_parameters",
+      "result": "litmustest_write_22_results",
+      "outputs": ["litmustest_write_22_output_explorer", "litmustest_write_22_output_tuning"],
+      "parameter": "litmustest_write_22_parameters",
       "parameter_presets": [
         "parameters_basic",
         "parameters_stress"

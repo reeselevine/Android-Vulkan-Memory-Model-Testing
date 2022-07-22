@@ -31,7 +31,7 @@ public class Write22 extends Fragment {
 
         TestViewObject testViewObject = new TestViewObject();
 
-        testViewObject.testName = "22_write";
+        testViewObject.testName = "write_22";
 
         testViewObject.explorerProgressLayout = fragmentView.findViewById(R.id.write_22_explorerProgressLayout);
         testViewObject.explorerCurrentIterationNumber = fragmentView.findViewById(R.id.write_22_explorerCurrentIterationNumber);
@@ -59,13 +59,13 @@ public class Write22 extends Fragment {
             public void onClick(View v) {
                 testViewObject.buttons = new Button[]{testViewObject.explorerButton, testViewObject.tuningButton};
                 testViewObject.resultButtons = new ResultButton[]{testViewObject.explorerResultButton, testViewObject.tuningResultButton};
-                ((MainActivity)getActivity()).openExploreMenu("22_write", testViewObject);
+                ((MainActivity)getActivity()).openExploreMenu("write_22", testViewObject);
             }
         });
         testViewObject.explorerResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).displayTestResult("22_write");
+                ((MainActivity)getActivity()).displayTestResult("write_22");
             }
         });
         testViewObject.tuningButton.setOnClickListener(new View.OnClickListener() {
@@ -73,13 +73,13 @@ public class Write22 extends Fragment {
             public void onClick(View v) {
                 testViewObject.buttons = new Button[]{testViewObject.tuningButton, testViewObject.explorerButton};
                 testViewObject.resultButtons = new ResultButton[]{testViewObject.tuningResultButton, testViewObject.explorerResultButton};
-                ((MainActivity)getActivity()).openTuningMenu("22_write", testViewObject);
+                ((MainActivity)getActivity()).openTuningMenu("write_22", testViewObject);
             }
         });
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("22_write", "Single");
+                ((MainActivity)getActivity()).tuningTestResult("write_22", "Single");
             }
         });
 

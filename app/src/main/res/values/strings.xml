@@ -25,4 +25,11 @@
     <string name="barrier_load_store_description">The barrier load store test checks to see if Vulkan barriers correctly synchronize a load before the barrier on one thread and a store on another thread after the barrier.</string>
     <string name="barrier_store_store_description">The barrier store store test checks to see if Vulkan barriers correctly synchronize a store before the barrier on one thread and a store on another thread after the barrier.</string>
 
+    <string name="message_passing_result_name">Message Passing</string>
+    <string name="store_result_name">Store</string>
+    <string name="read_result_name">Read</string>
+    <string name="load_buffer_result_name">Load Buffer</string>
+    <string name="store_buffer_result_name">Store Buffer</string>
+    <string name="write_22_result_name">2+2 Write</string>
+
 </resources>

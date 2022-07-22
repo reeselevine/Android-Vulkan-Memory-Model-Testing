@@ -137,7 +137,7 @@
                                     android:onClick="multiTestCheckBoxesListener"/>
 
                                 <CheckBox
-                                    android:tag="22_write"
+                                    android:tag="write_22"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:minWidth="0dp"
