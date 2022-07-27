@@ -185,7 +185,6 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
     jclass clazz = env->GetObjectClass(obj);
     jmethodID iterationMethod = env->GetMethodID(clazz, "iterationProgress", "(Ljava/lang/String;)V");
     jmethodID deviceMethod = env->GetMethodID(clazz, "setGPUName", "(Ljava/lang/String;)V");
-    jmethodID completeMethod = env->GetMethodID(clazz, "testComplete", "()V");
 
     string gpuStr = device.properties().deviceName;
     const char* gpuChar =  gpuStr.c_str();
@@ -217,6 +216,8 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         program.setWorkgroupSize(workgroupSize);
         resultProgram.setWorkgroupSize(workgroupSize);
         program.prepare();
+
+        //LOGD("numWorkgroups: %d, workgroupSize: %d", numWorkgroups, workgroupSize);
 
         itStart = chrono::system_clock::now();
         program.run();
@@ -259,8 +260,6 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
     testResults.teardown();
     device.teardown();
     instance.teardown();
-
-    env->CallVoidMethod(obj, completeMethod);
 }
 
 /** Reads a specified config file and stores the parameters in a map. Parameters should be of the form "key=value", one per line. */
@@ -396,6 +395,10 @@ Java_com_example_litmustestandroid_TestThread_main(
     tuningMode = tuningModeEnabled;
 
     runTest(env, mainObj, testName, shaderFile, resultShaderFile, configFile, filePath);
+
+    jclass clazz = env->GetObjectClass(mainObj);
+    jmethodID completeMethod = env->GetMethodID(clazz, "testComplete", "()V");
+    env->CallVoidMethod(mainObj, completeMethod);
     return 0;
 }
 

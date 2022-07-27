@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView tuningTestName;
     private EditText[] tuningParameters = new EditText[7];
     private Button tuningStartButton, tuningCloseButton;
+    private Random tuningRandom;
     private String tuningRandomSeed;
     private String[] tuningTestArgument = new String[4];
     private int tuningCurrConfig, tuningEndConfig, tuningTestWorkgroups, tuningMaxWorkgroups, tuningMinWorkgroupSize, tuningMaxWorkgroupSize;
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String currTestType = "";
     private TestCase currTestCase;
     private String GPUName = "";
+    private TestThread testThread;
 
     private Handler handler = new Handler();
 
@@ -444,39 +446,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public int randomGenerator(int min, int max, String tuningRandomSeed) {
-        double generator;
-        Random random;
-        if(tuningRandomSeed.length() == 0) {
-            random = new Random();
-        }
-        else {
-            random = new Random(tuningRandomSeed.hashCode());
-        }
-        generator = random.nextDouble();
-        return (int) Math.floor(generator * (max - min + 1) + min);
+    public int randomGenerator(int min, int max) {
+        return (int) Math.floor(tuningRandom.nextDouble() * (max - min + 1) + min);
     }
 
-    public int roundedPercentage(String tuningRandomSeed) {
-        return (int) Math.floor(randomGenerator(0, 100, tuningRandomSeed) / 5) * 5;
+    public int roundedPercentage() {
+        return (int) Math.floor(randomGenerator(0, 100) / 5) * 5;
     }
 
-    public int getPercentage(String tuningRandomSeed, boolean smoothedParameters) {
+    public int getPercentage(boolean smoothedParameters) {
         if (smoothedParameters) {
-            return roundedPercentage(tuningRandomSeed);
+            return roundedPercentage();
         }
         else {
-            return randomGenerator(0, 1, tuningRandomSeed) * 100;
+            return randomGenerator(0, 1) * 100;
         }
     }
 
-    public void writeTuningParameters(ArrayList<TestCase> testCases) {
+    public void writeTuningParameters(ArrayList<TestCase> testCases, double generator) {
         boolean smoothedParameters = true;
         int workgroupLimiter = tuningMaxWorkgroups;
-        int testingWorkgroups = randomGenerator(tuningTestWorkgroups, workgroupLimiter, tuningRandomSeed);
-        int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10, tuningRandomSeed));
-        int stressTargetLines = randomGenerator(1, 16, tuningRandomSeed);
-        int memStride = randomGenerator(1, 7, tuningRandomSeed);
+
+        int testingWorkgroups = randomGenerator(tuningTestWorkgroups, workgroupLimiter);
+        int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10));
+        int stressTargetLines = randomGenerator(1, 16);
+        int memStride = randomGenerator(1, 7);
         Map<String, String> parameterFormat = new TreeMap<String, String>();
 
         for(int i = 0; i < testCases.size(); i++) {
@@ -514,20 +508,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         parameterFormat.put("minWorkgroupSize", Integer.toString(tuningMinWorkgroupSize));
         parameterFormat.put("maxWorkgroupSize", Integer.toString(tuningMaxWorkgroupSize));
 
-        parameterFormat.put("shufflePct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
-        parameterFormat.put("barrierPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
+        parameterFormat.put("shufflePct", Integer.toString(getPercentage(smoothedParameters)));
+        parameterFormat.put("barrierPct", Integer.toString(getPercentage(smoothedParameters)));
         parameterFormat.put("scratchMemorySize", Integer.toString(32 * stressLineSize * stressTargetLines));
         parameterFormat.put("memStride", Integer.toString(memStride));
-        parameterFormat.put("memStressPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
-        parameterFormat.put("memStressIterations", Integer.toString(randomGenerator(0, 1024, tuningRandomSeed)));
-        parameterFormat.put("preStressPct", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
-        parameterFormat.put("preStressIterations", Integer.toString(randomGenerator(0, 128, tuningRandomSeed)));
+        parameterFormat.put("memStressPct", Integer.toString(getPercentage(smoothedParameters)));
+        parameterFormat.put("memStressIterations", Integer.toString(randomGenerator(0, 1024)));
+        parameterFormat.put("preStressPct", Integer.toString(getPercentage(smoothedParameters)));
+        parameterFormat.put("preStressIterations", Integer.toString(randomGenerator(0, 128)));
         parameterFormat.put("stressLineSize", Integer.toString(stressLineSize));
         parameterFormat.put("stressTargetLines", Integer.toString(stressTargetLines));
-        parameterFormat.put("stressAssignmentStrategy", Integer.toString(getPercentage(tuningRandomSeed, smoothedParameters)));
+        parameterFormat.put("stressAssignmentStrategy", Integer.toString(getPercentage(smoothedParameters)));
 
-        boolean memStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(tuningRandomSeed, smoothedParameters);
-        boolean memStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(tuningRandomSeed, smoothedParameters);
+        boolean memStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
+        boolean memStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
         int memStressPattern;
         if (memStressStoreFirst) {
             if (memStressStoreSecond) {
@@ -547,8 +541,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         parameterFormat.put("memStressPattern", Integer.toString(memStressPattern));
 
-        boolean preStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(tuningRandomSeed, smoothedParameters);
-        boolean preStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(tuningRandomSeed, smoothedParameters);
+        boolean preStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
+        boolean preStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
         int preStressPattern;
         if (preStressStoreFirst) {
             if (preStressStoreSecond) {
@@ -751,7 +745,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         testArgument[2] = currTestCase.resultName; // Result Shader
                         testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
-                        TestThread testThread = new TestThread(MainActivity.this, testArgument, false);
+                        testThread = new TestThread(MainActivity.this, testArgument, false);
                         testThread.start();
                     }
                 }, 500);
@@ -899,6 +893,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 tuningCurrConfig = 0;
                 tuningEndConfig = tuningConfigNum;
 
+                if(tuningRandomSeed.length() == 0) {
+                    tuningRandom = new Random();
+                }
+                else {
+                    tuningRandom = new Random(tuningRandomSeed.hashCode());
+                }
+
                 tuningTestLoop();
             }
         });
@@ -917,12 +918,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         currTestViewObject.tuningCurrentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
 
+        double generator = tuningRandom.nextDouble();
+
         ArrayList<TestCase> testCase = new ArrayList<TestCase>();
         testCase.add(currTestCase);
-        writeTuningParameters(testCase);
+        writeTuningParameters(testCase, generator);
 
         // Run test in different thread
-        TestThread testThread = new TestThread(MainActivity.this, tuningTestArgument, true);
+        testThread = new TestThread(MainActivity.this, tuningTestArgument, true);
         testThread.start();
     }
 
@@ -1020,7 +1023,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currMultiTestViewObject.currentTestName.setText(currTestCase.testName);
 
         // Run test in different thread
-        TestThread testThread = new TestThread(MainActivity.this, testArgument, false);
+        testThread = new TestThread(MainActivity.this, testArgument, false);
         testThread.start();
     }
 
@@ -1068,6 +1071,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         multiCurrIteration = 0;
 
+        if(tuningRandomSeed.length() == 0) {
+            tuningRandom = new Random();
+        }
+        else {
+            tuningRandom = new Random(tuningRandomSeed.hashCode());
+        }
+
         // Initialize result writer
         String outputFileName = "litmustest_multitest_tuning_result.json";
         try {
@@ -1102,12 +1112,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currMultiTestViewObject.currentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
 
         if(multiCurrIteration == 0) {
+            // Get generator
+            double generator = tuningRandom.nextDouble();
+
             // Write tuning parameter to all selected test cases
-            writeTuningParameters(multiSelectedTestCases);
+            writeTuningParameters(multiSelectedTestCases, generator);
         }
 
         // Run test in different thread
-        TestThread testThread = new TestThread(MainActivity.this, testArgument, true);
+        testThread = new TestThread(MainActivity.this, testArgument, true);
         testThread.start();
     }
 
@@ -1115,7 +1128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return getFilesDir().toString();
     }
 
-    public void iterationProgress(String iterationNum) {
+    public void iterationProgress(String iterationNum) { ;
         //Log.i(TAG, "IterationProgress: " + iterationNum + "/" + currTestIterations);
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
@@ -1191,9 +1204,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void testComplete() {
+        testThread.interrupt();
+        testThread = null;
+        Log.i(TAG, "Thread Count: " + Thread.activeCount());
+        Log.i(TAG, "Thread Name: " + Thread.currentThread().getName());
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
+                Log.i(TAG, "testComplete");
                 if(currTestType.equals("Explorer")) {
                     // Enable buttons and change their color
                     handleButtons(false, currTestViewObject.buttons, currTestViewObject.resultButtons);
