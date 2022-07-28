@@ -518,7 +518,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         parameterFormat.put("preStressIterations", Integer.toString(randomGenerator(0, 128)));
         parameterFormat.put("stressLineSize", Integer.toString(stressLineSize));
         parameterFormat.put("stressTargetLines", Integer.toString(stressTargetLines));
-        parameterFormat.put("stressAssignmentStrategy", Integer.toString(getPercentage(smoothedParameters)));
+
+        boolean stressStrategyBalance = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
+        int stressAssignmentStrategy;
+        if(stressStrategyBalance) {
+            stressAssignmentStrategy = 1;
+        }
+        else {
+            stressAssignmentStrategy = 0;
+        }
+        parameterFormat.put("stressAssignmentStrategy", Integer.toString(stressAssignmentStrategy));
 
         boolean memStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
         boolean memStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
