@@ -58,6 +58,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -65,6 +66,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+
+import static android.os.Environment.getExternalStorageDirectory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -237,7 +240,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawer.closeDrawer(GravityCompat.START);
         }
         else {
-            super.onBackPressed();
+            Intent startMain = new Intent(Intent.ACTION_MAIN);
+            startMain.addCategory(Intent.CATEGORY_HOME);
+            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(startMain);
         }
     }
 
@@ -1227,6 +1233,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     currTestViewObject.explorerProgressLayout.setVisibility(View.GONE);
 
+                    // Write to external storage
+                    String fileName = "litmustest_" + currTestViewObject.testName + "_output_explorer.txt";
+                    try {
+                        FileInputStream fis = openFileInput(fileName);
+                        FileChannel inChannel = fis.getChannel();
+                        File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName);
+                        FileChannel outChannel =  new FileOutputStream(output).getChannel();
+
+                        inChannel.transferTo(0, inChannel.size(), outChannel);
+                        fis.close();
+                        inChannel.close();
+                        outChannel.close();
+                    }
+                    catch (FileNotFoundException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
                     Toast.makeText(MainActivity.this, "Test " + currTestViewObject.testName + " finished!", Toast.LENGTH_LONG).show();
                 }
                 else if (currTestType.equals("Tuning")) {
@@ -1285,7 +1313,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             fos = openFileOutput(outputFileName, Context.MODE_APPEND);
                         }
 
-                        FileInputStream fis = openFileInput("litmustest_" + multiSelectedTestCases.get(multiCurrIteration).testName + "_output_explorer.txt");
+                        String fileName = "litmustest_" + multiSelectedTestCases.get(multiCurrIteration).testName + "_output_explorer.txt";
+                        FileInputStream fis = openFileInput(fileName);
                         InputStreamReader isr = new InputStreamReader(fis);
                         BufferedReader br = new BufferedReader(isr);
 
@@ -1304,6 +1333,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         br.close();
 
                         fos.close();
+
+                        // Write to external storage
+                        fis = openFileInput(fileName);
+                        FileChannel inChannel = fis.getChannel();
+                        File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM), fileName);
+                        FileChannel outChannel =  new FileOutputStream(output).getChannel();
+
+                        inChannel.transferTo(0, inChannel.size(), outChannel);
+                        fis.close();
+                        inChannel.close();
+                        outChannel.close();
                     }
                     catch (IOException e)
                     {
@@ -1457,6 +1497,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 multiTuningFOS.close();
                             }
                             catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            // Write to external storage
+                            String fileName = "litmustest_multitest_tuning_result.json";
+                            try {
+                                FileInputStream fis = openFileInput(fileName);
+                                FileChannel inChannel = fis.getChannel();
+                                File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName);
+                                FileChannel outChannel =  new FileOutputStream(output).getChannel();
+
+                                inChannel.transferTo(0, inChannel.size(), outChannel);
+                                fis.close();
+                                inChannel.close();
+                                outChannel.close();
+                            }
+                            catch (FileNotFoundException e)
+                            {
+                                e.printStackTrace();
+                            }
+                            catch (IOException e)
+                            {
                                 e.printStackTrace();
                             }
 
