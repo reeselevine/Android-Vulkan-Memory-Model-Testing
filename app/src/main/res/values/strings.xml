@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">LitmusTestAndroid</string>
+    <string name="app_name">Android Vulkan Memory Model Testing</string>
 
     <string name="nav_drawer_open">Open Navigation Drawer</string>
     <string name="nav_drawer_close">Close Navigation Drawer</string>
 
-    <string name="litmustest_description">LitmusTestAndroid is an Android app that uses litmus tests to showcase the allowed behaviors of Vulkan memory model. This app is required to be run on devices with Android 8.0+, and GPU that supports Vulkan 1.1.</string>
+    <string name="litmustest_description">This app uses litmus tests to showcase the allowed behaviors of Vulkan memory model. This app is required to be run on devices with Android 8.0+, and GPU that supports Vulkan 1.1.</string>
     <string name="multi_tests_description">This page lets users to run multiple litmus tests with specific parameters at once. The test results will be displayed under the \'Start\' button once all tests have finished running.</string>
 
     <string name="message_passing_description">The message passing litmus test checks to see if two stores in one thread can be re-ordered according to loads on a second thread.</string>

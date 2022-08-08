@@ -9,10 +9,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LitmusTestAndroid"
+        android:text="Android Vulkan Memory Model Testing"
         android:textColor="@color/blue"
         android:textStyle="bold"
         android:textSize="20dp"
+        android:textAlignment="center"
         />
 
 </LinearLayout>
