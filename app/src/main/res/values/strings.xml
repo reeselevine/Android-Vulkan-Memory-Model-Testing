@@ -32,4 +32,15 @@
     <string name="store_buffer_result_name">Store Buffer</string>
     <string name="write_22_result_name">2+2 Write</string>
 
+    <string name="corr_result_name">CoRR</string>
+    <string name="coww_result_name">CoWW</string>
+    <string name="cowr_result_name">CoWR</string>
+    <string name="corw1_result_name">CoRW1</string>
+    <string name="corw2_result_name">CoRW2</string>
+
+    <string name="atomicity_name">Atomicity</string>
+    <string name="barrier_store_load_name">Barrier Store Load</string>
+    <string name="barrier_load_store_name">Barrier Load Store</string>
+    <string name="barrier_store_store_name">Barrier Store Store</string>
+
 </resources>
