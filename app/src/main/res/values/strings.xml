@@ -38,9 +38,9 @@
     <string name="corw1_result_name">CoRW1</string>
     <string name="corw2_result_name">CoRW2</string>
 
-    <string name="atomicity_name">Atomicity</string>
-    <string name="barrier_store_load_name">Barrier Store Load</string>
-    <string name="barrier_load_store_name">Barrier Load Store</string>
-    <string name="barrier_store_store_name">Barrier Store Store</string>
+    <string name="atomicity_result_name">Atomicity</string>
+    <string name="barrier_store_load_result_name">Barrier Store Load</string>
+    <string name="barrier_load_store_result_name">Barrier Load Store</string>
+    <string name="barrier_store_store_result_name">Barrier Store Store</string>
 
 </resources>
