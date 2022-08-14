@@ -8,6 +8,8 @@
               android:title="Introduction"/>
         <item android:id="@+id/nav_multi_tests"
               android:title="Running Multiple Tests"/>
+        <item android:id="@+id/nav_conformance_test"
+            android:title="Conformance Test Suite"/>
         <item android:title="Weak Memory Tests">
             <menu>
                 <group android:checkableBehavior="single">

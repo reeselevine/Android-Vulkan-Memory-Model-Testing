@@ -159,7 +159,7 @@ int setBetween(int min, int max) {
 void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_file, map<string, int> params, ofstream &outputFile)
 {
     // initialize settings
-    auto instance = Instance(false);
+    auto instance = Instance(true);
     auto device = getDevice(instance, params, outputFile);
     int workgroupSize = setBetween(params["minWorkgroupSize"], params["maxWorkgroupSize"]);
     int testingThreads = workgroupSize * params["testingWorkgroups"];

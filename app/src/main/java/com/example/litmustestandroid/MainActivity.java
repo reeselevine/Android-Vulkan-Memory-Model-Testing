@@ -168,6 +168,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new MultiTests()).commit();
                 break;
+            case R.id.nav_conformance_test:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new ConformanceTest()).commit();
+                break;
             case R.id.nav_message_passing:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new MessagePassing()).commit();
@@ -480,7 +484,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Map<String, String> parameterFormat = new TreeMap<String, String>();
 
         for(int i = 0; i < testCases.size(); i++) {
-            int paramPresetValue = this.getResources().getIdentifier(testCases.get(i).paramPresetNames[1], "raw", this.getPackageName());
+            int paramPresetValue = this.getResources().getIdentifier(testCases.get(i).paramPresetNames[0], "raw", this.getPackageName());
             InputStream inputStream = getResources().openRawResource(paramPresetValue);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -504,16 +508,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Now randomize certain parmeter values
         parameterFormat.put("testIterations", currTestIterations);
 
-        // Temporary fixed number of workgroup
-        //parameterFormat.put("testingWorkgroups", Integer.toString(128));
-        //parameterFormat.put("maxWorkgroups", Integer.toString(128));
-        
         parameterFormat.put("testingWorkgroups", Integer.toString(testingWorkgroups));
         parameterFormat.put("maxWorkgroups", Integer.toString(tuningMaxWorkgroups));
-
         parameterFormat.put("minWorkgroupSize", Integer.toString(tuningMinWorkgroupSize));
         parameterFormat.put("maxWorkgroupSize", Integer.toString(tuningMaxWorkgroupSize));
-
         parameterFormat.put("shufflePct", Integer.toString(getPercentage(smoothedParameters)));
         parameterFormat.put("barrierPct", Integer.toString(getPercentage(smoothedParameters)));
         parameterFormat.put("scratchMemorySize", Integer.toString(32 * stressLineSize * stressTargetLines));
@@ -1173,7 +1171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i(TAG, "Sending result via email");
 
         String recipient[] = {"mingun0108@gmail.com"};
-        String subject = "LitmusTestAndroid";
+        String subject = "Android Vulkan Memory Model Testing";
         String message = "GPU: " + GPUName;
         String fileName = "";
 

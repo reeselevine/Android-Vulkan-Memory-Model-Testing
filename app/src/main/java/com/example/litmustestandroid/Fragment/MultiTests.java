@@ -165,7 +165,7 @@ public class MultiTests extends Fragment {
         multiTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStride); // memStride
         multiTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPct); // memStressPct
         multiTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressIterations); // memStressIterations
-        multiTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemOryStressPattern); // memStressPattern
+        multiTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPattern); // memStressPattern
         multiTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPct); // preStressPct
         multiTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressIterations); // preStressIterations
         multiTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPattern); // preStressPattern

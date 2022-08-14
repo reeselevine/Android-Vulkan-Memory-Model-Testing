@@ -134,8 +134,8 @@
       "outputs": ["litmustest_corr_output_explorer", "litmustest_corr_output_tuning"],
       "parameter": "litmustest_corr_parameters",
       "parameter_presets": [
-        "parameters_basic_corr",
-        "parameters_stress_corr"
+        "parameters_basic_coherence",
+        "parameters_stress_coherence"
       ]
     },
     {
