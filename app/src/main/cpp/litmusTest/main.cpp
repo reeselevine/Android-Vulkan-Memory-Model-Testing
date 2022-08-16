@@ -241,6 +241,8 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         numInter += testResults.load(2);
         numWeak += testResults.load(3);
 
+        LOGD("readResults[0]: %d, readResults[1]: %d", readResults.load(0), readResults.load(1));
+
         program.teardown();
         resultProgram.teardown();
     }
