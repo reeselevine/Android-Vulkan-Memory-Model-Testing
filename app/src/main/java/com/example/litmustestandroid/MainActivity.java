@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private TestViewObject currTestViewObject;
     private MultiTestViewObject currMultiTestViewObject;
+    private ConformanceTestViewObject conformanceTestViewObject;
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog exploreDialog;
@@ -108,6 +109,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FileOutputStream multiTuningFOS;
     private JsonWriter multiTuningResultWriter;
 
+    private EditText[] conformanceParameters = new EditText[18];
+    private ArrayList<String> conformanceSelectedShaders = new ArrayList<String>();
+    private int conformanceCurrConfig;
+    private int conformanceEndConfig;
+    private RecyclerView conformanceTestRV;
+    private ArrayList<ConformanceResultCase> conformanceTestResults = new ArrayList<ConformanceResultCase>();
+
     private static final String TAG = "MainActivity";
 
     private String currTestType = "";
@@ -121,6 +129,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private ArrayList<TestCase> testCases = new ArrayList<>();
     private LinkedHashMap<String, Boolean> multiTestCases = new LinkedHashMap<String, Boolean>();
+
+    private LinkedHashMap<String, Boolean> conformanceShaders = new LinkedHashMap<String, Boolean>();
 
     public ArrayList<String> totalShaderNames = new ArrayList<String>();
     public ArrayList<String> totalResultNames = new ArrayList<String>();
@@ -285,7 +295,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 newTest.setShaderNames(shaderNames, totalShaderNames);
 
-                newTest.setResultName(testData.getString("result"), totalResultNames);
+                JSONArray conformanceShaderArray = testData.getJSONArray("conformanceShaders");
+                String[] conformanceShaderNames = new String[conformanceShaderArray.length()];
+                for(int j = 0; j < conformanceShaderArray.length(); j++) {
+                    conformanceShaderNames[j] = conformanceShaderArray.getString(j);
+                    conformanceShaders.put(conformanceShaderArray.getString(j), false);
+                }
+                newTest.conformanceShaderNames = conformanceShaderNames;
+
+                JSONArray resultArray = testData.getJSONArray("results");
+                String[] resultNames = new String[resultArray.length()];
+                for(int j = 0; j < resultArray.length(); j++) {
+                    resultNames[j] = resultArray.getString(j);
+                }
+                newTest.setResultNames(resultNames, totalResultNames);
 
                 JSONArray outputArray = testData.getJSONArray("outputs");
                 String[] outputNames = new String[outputArray.length()];
@@ -316,6 +339,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (int i = 0; i < testCases.size(); i++) {
             if(testCases.get(i).testName.equals(testName)) {
                 return testCases.get(i);
+            }
+        }
+        return null;
+    }
+
+    public TestCase findTestCaseWithConformanceShader(String shaderName) {
+        for (int i = 0; i < testCases.size(); i++) {
+            TestCase currentTestCase = testCases.get(i);
+            for (int j = 0; j < currentTestCase.conformanceShaderNames.length; j++) {
+                if(currentTestCase.conformanceShaderNames[j].equals(shaderName)) {
+                    return currentTestCase;
+                }
             }
         }
         return null;
@@ -755,7 +790,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                         // Shader Name
                         testArgument[1] = shaderType; // Current selected shader
-                        testArgument[2] = currTestCase.resultName; // Result Shader
+                        testArgument[2] = currTestCase.resultNames[0]; // Result Shader
                         testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
                         testThread = new TestThread(MainActivity.this, testArgument, false);
@@ -900,7 +935,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 // Shader Name
                 tuningTestArgument[1] = shaderType; // Current selected shader
-                tuningTestArgument[2] = currTestCase.resultName; // Result Shader
+                tuningTestArgument[2] = currTestCase.resultNames[0]; // Result Shader
                 tuningTestArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
                 tuningCurrConfig = 0;
@@ -1029,7 +1064,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Shader Name
         testArgument[1] = currTestCase.shaderNames[0]; // Current selected shader
-        testArgument[2] = currTestCase.resultName; // Result Shader
+        testArgument[2] = currTestCase.resultNames[0]; // Result Shader
         testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
         // Update test name
@@ -1115,7 +1150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Shader Name
         testArgument[1] = currTestCase.shaderNames[0]; // Current selected shader
-        testArgument[2] = currTestCase.resultName; // Result Shader
+        testArgument[2] = currTestCase.resultNames[0]; // Result Shader
         testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
         // Update test name
@@ -1155,8 +1190,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else if (currTestType.equals("MultiExplorer")) {
                     currMultiTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
-                else { // Multi Tuning test
+                else if (currTestType.equals("MultiTuning")){ // Multi Tuning test
                     currMultiTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
+                }
+                else { // Conformance
+                    conformanceTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
             }
         });
@@ -1214,6 +1252,105 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         catch(android.content.ActivityNotFoundException ex) {
             Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void conformanceTestCheckBoxesListener(View view) {
+        CheckBox currCheckBox = (CheckBox)view;
+        String shaderName = view.getTag().toString();
+        if(currCheckBox.isChecked()) { // Clicked
+            conformanceShaders.put(shaderName, true);
+        }
+        else { // Un-clicked
+            conformanceShaders.put(shaderName, false);
+        }
+        //Log.i(TAG, "conformance: " + shaderName + " " + currCheckBox.isChecked());
+    }
+
+    public void conformanceTestBegin(EditText[] parameters, ConformanceTestViewObject multiTestViewObject, RecyclerView multiTestRV) {
+        currTestType = "Conformance";
+        conformanceParameters = parameters;
+        conformanceTestViewObject = multiTestViewObject;
+        conformanceTestRV = multiTestRV;
+        conformanceSelectedShaders = new ArrayList<String>();
+
+        // Check if at least one test selected
+        for (LinkedHashMap.Entry<String, Boolean> entry :  conformanceShaders.entrySet()) {
+            if(entry.getValue() == true) {
+                conformanceSelectedShaders.add(entry.getKey());
+            }
+        }
+        if(conformanceSelectedShaders.size() == 0) { // No test selected
+            Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Disable start button
+        conformanceTestViewObject.startButton.setEnabled(false);
+        conformanceTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
+
+        // Set progress layout visible
+        conformanceTestViewObject.progressLayout.setVisibility(View.VISIBLE);
+
+        // Set result layout invisible
+        conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
+
+        conformanceTestResults = new ArrayList<ConformanceResultCase>();
+        conformanceCurrConfig = 0;
+        conformanceEndConfig = conformanceSelectedShaders.size();
+
+        // Start multi tuning test loop
+        conformanceTestLoop();
+    }
+
+    public void conformanceTestLoop()  {
+        String shaderName = conformanceSelectedShaders.get(conformanceCurrConfig);
+        currTestCase = findTestCaseWithConformanceShader(shaderName);
+        String[] testArgument = new String[4];
+
+        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
+
+        // Shader Name
+        testArgument[1] = shaderName; // Current selected shader
+
+        // Choosing result shader
+        String coherencyCheck = "coherency";
+        String barrierCheck = "barrier";
+        String rmwCheck = "rmw";
+        if(shaderName.contains(coherencyCheck)) {
+            testArgument[2] = currTestCase.resultNames[1]; // Coherency result shader
+        }
+        else {
+            testArgument[2] = currTestCase.resultNames[0]; // Default result Shader
+        }
+        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
+
+        // Update test name
+        if(shaderName.contains(coherencyCheck)) { // Weak memory Tests (single memory)
+            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (single)");
+        }
+        else if(shaderName.contains(barrierCheck)) { // Weak memory Tests (barrier)
+            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (barrier)");
+        }
+        else if(shaderName.contains(rmwCheck)) { // Coherency Tests (RMW)
+            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (RMW)");
+        }
+        else { // Coherency Tests (default)
+            conformanceTestViewObject.currentTestName.setText(currTestCase.testName);
+        }
+
+        // Write parameter
+        int paramPresetValue;
+        if(shaderName.contains(coherencyCheck)) {
+            paramPresetValue = this.getResources().getIdentifier(currTestCase.paramPresetNames[2], "raw", this.getPackageName());
+        }
+        else {
+            paramPresetValue = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());
+        }
+        writeParameters(currTestCase.testName, conformanceParameters, paramPresetValue);
+
+        // Run test in different thread
+        testThread = new TestThread(MainActivity.this, testArgument, false);
+        testThread.start();
     }
 
     public void testComplete() {
@@ -1381,7 +1518,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         multiExplorerTestLoop();
                     }
                 }
-                else { // Multi Tuning Test
+                else if (currTestType.equals("MultTuning")){ // Multi Tuning Test
                     // Save param value
                     String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
 
@@ -1539,6 +1676,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     else {
                         multiCurrIteration++;
                         multiTuningTestLoop();
+                    }
+                }
+                else { // Conformance
+                    // Save param value
+                    String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
+
+                    // Save result value
+                    String currResultValue = convertFileToString(currTestCase.outputNames[0] + ".txt");
+
+                    // Go through result and get number of weak behaviors
+                    String startIndexIndicator = "weak: ";
+                    String endIndexIndicator = "\nTotal elapsed time";
+                    String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
+                    // Transfer over the tuning result case
+                    ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue, Integer.parseInt(numWeakBehaviors));
+
+                    conformanceTestResults.add(currConformanceResult);
+
+                    if(conformanceCurrConfig == conformanceEndConfig-1) { // All test ended, update result
+
+                        Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
+
+                        // Enable start button
+                        conformanceTestViewObject.startButton.setEnabled(true);
+                        conformanceTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
+
+                        // Set progress layout invisible
+                        conformanceTestViewObject.progressLayout.setVisibility(View.GONE);
+
+                        // Set result layout visible
+                        conformanceTestViewObject.resultLayout.setVisibility(View.VISIBLE);
+
+                        // Update result
+                        ConformanceTestResultAdapter conformanceTestResultAdapter = new ConformanceTestResultAdapter(MainActivity.this, conformanceTestResults);
+                        conformanceTestRV.setAdapter(conformanceTestResultAdapter);
+                        conformanceTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                        conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
+                    }
+                    else {
+                        conformanceCurrConfig++;
+                        conformanceTestLoop();
                     }
                 }
             }

@@ -5,6 +5,7 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_message_passing_default",
+        "litmustest_message_passing_coherency",
         "litmustest_message_passing_barrier",
         "litmustest_message_passing_storage_workgroup",
         "litmustest_message_passing_storage_workgroup_barrier",
@@ -12,12 +13,20 @@
         "litmustest_message_passing_workgroup",
         "litmustest_message_passing_workgroup_barrier"
       ],
-      "result": "litmustest_message_passing_results",
+      "conformanceShaders": [
+        "litmustest_message_passing_coherency",
+        "litmustest_message_passing_barrier"
+      ],
+      "results": [
+        "litmustest_message_passing_results",
+        "litmustest_message_passing_coherency_results"
+      ],
       "outputs": ["litmustest_message_passing_output_explorer", "litmustest_message_passing_output_tuning"],
       "parameter": "litmustest_message_passing_parameters",
       "parameter_presets": [
         "parameters_basic",
-        "parameters_stress"
+        "parameters_stress",
+        "parameters_basic_coherence"
       ]
     },
     {
@@ -25,18 +34,27 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_store_default",
+        "litmustest_store_coherency",
         "litmustest_store_barrier",
         "litmustest_store_storage_workgroup",
         "litmustest_store_storage_workgroup_barrier",
         "litmustest_store_workgroup",
         "litmustest_store_workgroup_barrier"
       ],
-      "result": "litmustest_store_results",
+      "conformanceShaders": [
+        "litmustest_store_coherency",
+        "litmustest_store_barrier"
+      ],
+      "results": [
+        "litmustest_store_results",
+        "litmustest_store_coherency_results"
+      ],
       "outputs": ["litmustest_store_output_explorer", "litmustest_store_output_tuning"],
       "parameter": "litmustest_store_parameters",
       "parameter_presets": [
         "parameters_basic",
-        "parameters_stress"
+        "parameters_stress",
+        "parameters_basic_coherence"
       ]
     },
     {
@@ -44,18 +62,28 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_read_default",
+        "litmustest_read_coherency",
+        "litmustest_read_barrier",
         "litmustest_read_rmw_barrier",
         "litmustest_read_storage_workgroup",
         "litmustest_read_storage_workgroup_rmw_barrier",
         "litmustest_read_workgroup",
         "litmustest_read_workgroup_rmw_barrier"
       ],
-      "result": "litmustest_read_results",
+      "conformanceShaders": [
+        "litmustest_read_coherency",
+        "litmustest_read_barrier"
+      ],
+      "results": [
+        "litmustest_read_results",
+        "litmustest_read_coherency_results"
+      ],
       "outputs": ["litmustest_read_output_explorer", "litmustest_read_output_tuning"],
       "parameter": "litmustest_read_parameters",
       "parameter_presets": [
         "parameters_basic",
-        "parameters_stress"
+        "parameters_stress",
+        "parameters_basic_coherence"
       ]
     },
     {
@@ -63,18 +91,27 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_load_buffer_default",
+        "litmustest_load_buffer_coherency",
         "litmustest_load_buffer_barrier",
         "litmustest_load_buffer_storage_workgroup",
         "litmustest_load_buffer_storage_workgroup_barrier",
         "litmustest_load_buffer_workgroup",
         "litmustest_load_buffer_workgroup_barrier"
       ],
-      "result": "litmustest_load_buffer_results",
+      "conformanceShaders": [
+        "litmustest_load_buffer_coherency",
+        "litmustest_load_buffer_barrier"
+      ],
+      "results": [
+        "litmustest_load_buffer_results",
+        "litmustest_load_buffer_coherency_results"
+      ],
       "outputs": ["litmustest_load_buffer_output_explorer", "litmustest_load_buffer_output_tuning"],
       "parameter": "litmustest_load_buffer_parameters",
       "parameter_presets": [
         "parameters_basic",
-        "parameters_stress"
+        "parameters_stress",
+        "parameters_basic_coherence"
       ]
     },
     {
@@ -82,18 +119,28 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_store_buffer_default",
+        "litmustest_store_buffer_coherency",
+        "litmustest_store_buffer_barrier",
         "litmustest_store_buffer_rmw_barrier",
         "litmustest_store_buffer_storage_workgroup",
         "litmustest_store_buffer_storage_workgroup_rmw_barrier",
         "litmustest_store_buffer_workgroup",
         "litmustest_store_buffer_workgroup_rmw_barrier"
       ],
-      "result": "litmustest_store_buffer_results",
+      "conformanceShaders": [
+        "litmustest_store_buffer_coherency",
+        "litmustest_store_buffer_barrier"
+      ],
+      "results": [
+        "litmustest_store_buffer_results",
+        "litmustest_store_buffer_coherency_results"
+      ],
       "outputs": ["litmustest_store_buffer_output_explorer", "litmustest_store_buffer_output_tuning"],
       "parameter": "litmustest_store_buffer_parameters",
       "parameter_presets": [
         "parameters_basic",
-        "parameters_stress"
+        "parameters_stress",
+        "parameters_basic_coherence"
       ]
     },
     {
@@ -101,18 +148,28 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_write_22_default",
+        "litmustest_write_22_coherency",
+        "litmustest_write_22_barrier",
         "litmustest_write_22_rmw_barrier",
         "litmustest_write_22_storage_workgroup",
         "litmustest_write_22_storage_workgroup_rmw_barrier",
         "litmustest_write_22_workgroup",
         "litmustest_write_22_workgroup_rmw_barrier"
       ],
-      "result": "litmustest_write_22_results",
+      "conformanceShaders": [
+        "litmustest_write_22_coherency",
+        "litmustest_write_22_barrier"
+      ],
+      "results": [
+        "litmustest_write_22_results",
+        "litmustest_write_22_coherency_results"
+      ],
       "outputs": ["litmustest_write_22_output_explorer", "litmustest_write_22_output_tuning"],
       "parameter": "litmustest_write_22_parameters",
       "parameter_presets": [
         "parameters_basic",
-        "parameters_stress"
+        "parameters_stress",
+        "parameters_basic_coherence"
       ]
     },
     {
@@ -130,7 +187,11 @@
         "litmustest_corr_storage_workgroup",
         "litmustest_corr_workgroup"
       ],
-      "result": "litmustest_corr_results",
+      "conformanceShaders": [
+        "litmustest_corr_default",
+        "litmustest_corr_rmw"
+      ],
+      "results": ["litmustest_corr_results"],
       "outputs": ["litmustest_corr_output_explorer", "litmustest_corr_output_tuning"],
       "parameter": "litmustest_corr_parameters",
       "parameter_presets": [
@@ -146,7 +207,8 @@
         "litmustest_corw1_storage_workgroup",
         "litmustest_corw1_workgroup"
       ],
-      "result": "litmustest_corw1_results",
+      "conformanceShaders": [],
+      "results": ["litmustest_corw1_results"],
       "outputs": ["litmustest_corw1_output_explorer", "litmustest_corw1_output_tuning"],
       "parameter": "litmustest_corw1_parameters",
       "parameter_presets": [
@@ -165,7 +227,11 @@
         "litmustest_corw2_storage_workgroup",
         "litmustest_corw2_workgroup"
       ],
-      "result": "litmustest_corw2_results",
+      "conformanceShaders": [
+        "litmustest_corw2_default",
+        "litmustest_corw2_rmw"
+      ],
+      "results": ["litmustest_corw2_results"],
       "outputs": ["litmustest_corw2_output_explorer", "litmustest_corw2_output_tuning"],
       "parameter": "litmustest_corw2_parameters",
       "parameter_presets": [
@@ -185,7 +251,11 @@
         "litmustest_cowr_storage_workgroup",
         "litmustest_cowr_workgroup"
       ],
-      "result": "litmustest_cowr_results",
+      "conformanceShaders": [
+        "litmustest_cowr_default",
+        "litmustest_cowr_rmw"
+      ],
+      "results": ["litmustest_cowr_results"],
       "outputs": ["litmustest_cowr_output_explorer", "litmustest_cowr_output_tuning"],
       "parameter": "litmustest_cowr_parameters",
       "parameter_presets": [
@@ -202,7 +272,11 @@
         "litmustest_coww_storage_workgroup",
         "litmustest_coww_workgroup"
       ],
-      "result": "litmustest_coww_results",
+      "conformanceShaders": [
+        "litmustest_coww_default",
+        "litmustest_coww_rmw"
+      ],
+      "results": ["litmustest_coww_results"],
       "outputs": ["litmustest_coww_output_explorer", "litmustest_coww_output_tuning"],
       "parameter": "litmustest_coww_parameters",
       "parameter_presets": [
@@ -218,7 +292,8 @@
         "litmustest_atomicity_storage_workgroup",
         "litmustest_atomicity_workgroup"
       ],
-      "result": "litmustest_atomicity_results",
+      "conformanceShaders": [],
+      "results": ["litmustest_atomicity_results"],
       "outputs": ["litmustest_atomicity_output_explorer", "litmustest_atomicity_output_tuning"],
       "parameter": "litmustest_atomicity_parameters",
       "parameter_presets": [
@@ -233,7 +308,8 @@
         "litmustest_barrier_store_load_storage_workgroup",
         "litmustest_barrier_store_load_workgroup"
       ],
-      "result": "litmustest_barrier_store_load_results",
+      "conformanceShaders": [],
+      "results": ["litmustest_barrier_store_load_results"],
       "outputs": ["litmustest_barrier_store_load_output_explorer", "litmustest_barrier_store_load_output_tuning"],
       "parameter": "litmustest_barrier_store_load_parameters",
       "parameter_presets": [
@@ -248,7 +324,8 @@
         "litmustest_barrier_load_store_storage_workgroup",
         "litmustest_barrier_load_store_workgroup"
       ],
-      "result": "litmustest_barrier_load_store_results",
+      "conformanceShaders": [],
+      "results": ["litmustest_barrier_load_store_results"],
       "outputs": ["litmustest_barrier_load_store_output_explorer", "litmustest_barrier_load_store_output_tuning"],
       "parameter": "litmustest_barrier_load_store_parameters",
       "parameter_presets": [
@@ -263,7 +340,8 @@
         "litmustest_barrier_store_store_storage_workgroup",
         "litmustest_barrier_store_store_workgroup"
       ],
-      "result": "litmustest_barrier_store_store_results",
+      "conformanceShaders": [],
+      "results": ["litmustest_barrier_store_store_results"],
       "outputs": ["litmustest_barrier_store_store_output_explorer", "litmustest_barrier_store_store_output_tuning"],
       "parameter": "litmustest_barrier_store_store_parameters",
       "parameter_presets": [

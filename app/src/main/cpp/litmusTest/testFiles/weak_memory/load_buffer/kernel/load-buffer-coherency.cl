@@ -70,9 +70,9 @@ __kernel void litmus_test (
       spin(barrier, get_local_size(0) * stress_params[9]);
     }
     uint r0 = atomic_load_explicit(&test_locations[y_0], memory_order_relaxed);
-    atomic_store_explicit(&test_locations[x_0], 1, memory_order_release);
-    uint r1 = atomic_load_explicit(&test_locations[x_1], memory_order_acquire);
-    atomic_store_explicit(&test_locations[y_1], 1, memory_order_relaxed);
+    atomic_store_explicit(&test_locations[x_0], 1, memory_order_relaxed);
+    uint r1 = atomic_load_explicit(&test_locations[x_1], memory_order_relaxed);
+    atomic_store_explicit(&test_locations[y_1], 2, memory_order_relaxed);
     atomic_store(&read_results[id_0 * 2], r0);
     atomic_store(&read_results[id_1 * 2 + 1], r1);
   } else if (stress_params[1]) {

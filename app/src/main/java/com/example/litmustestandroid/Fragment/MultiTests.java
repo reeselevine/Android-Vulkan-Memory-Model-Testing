@@ -58,7 +58,7 @@ public class MultiTests extends Fragment {
         multiTestViewObject.explorerResultLayout = fragmentView.findViewById(R.id.multiTestExplorerResultLayout);
         multiTestViewObject.explorerResultLayout.setVisibility(View.GONE);
 
-        // Set explorer result layout to be invisible in default
+        // Set tuning result layout to be invisible in default
         multiTestViewObject.tuningResultLayout = fragmentView.findViewById(R.id.multiTestTuningResultLayout);
         multiTestViewObject.tuningResultLayout.setVisibility(View.GONE);
 

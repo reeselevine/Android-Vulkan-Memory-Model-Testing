@@ -8,7 +8,9 @@ public class TestCase {
 
     public String[] shaderNames;
 
-    public String resultName; // Shader file that checks for number of behaviors
+    public String[] conformanceShaderNames;
+
+    public String[] resultNames; // Shader file that checks for number of behaviors
 
     public String[] outputNames; // Output text file that will store the test output
 
@@ -25,10 +27,12 @@ public class TestCase {
         }
     }
 
-    public void setResultName(String newResultName, ArrayList<String> totalResultNames) {
-        this.resultName = newResultName;
-        if(!totalResultNames.contains(newResultName)) {
-            totalResultNames.add(newResultName);
+    public void setResultNames(String[] newResultNames, ArrayList<String> totalResultNames) {
+        this.resultNames = newResultNames;
+        for(int i = 0; i < newResultNames.length; i++) {
+            if(!totalResultNames.contains(newResultNames[i])) {
+                totalResultNames.add(newResultNames[i]);
+            }
         }
     }
 

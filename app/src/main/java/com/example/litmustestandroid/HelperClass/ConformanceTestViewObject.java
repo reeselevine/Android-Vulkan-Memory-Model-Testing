@@ -12,6 +12,5 @@ public class ConformanceTestViewObject {
     public TextView currentTestName;
     public TextView currentIterationNumber;
 
-    //public LinearLayout explorerResultLayout;
-    //public LinearLayout tuningResultLayout;
+    public LinearLayout resultLayout;
 }

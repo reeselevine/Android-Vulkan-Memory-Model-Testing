@@ -33,6 +33,394 @@
                 android:hint="Description"/>
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/conformanceTestList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Test List"
+                    android:textSize="@dimen/_17sdp"
+                    android:textStyle="bold"
+                    android:background="?android:attr/selectableItemBackground"/>
+
+                <LinearLayout
+                    android:id="@+id/conformanceTestListLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Weak Memory Tests (Single Memory)"
+                        android:textSize="@dimen/_11sdp"
+                        android:textColor="@color/gray"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:id="@+id/message_passing_coherency_checkBox"
+                                android:tag="litmustest_message_passing_coherency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Message Passing"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/store_coherency_checkBox"
+                                android:tag="litmustest_store_coherency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Store"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/read_coherency_checkBox"
+                                android:tag="litmustest_read_coherency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Read"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:id="@+id/load_buffer_coherency_checkBox"
+                                android:tag="litmustest_load_buffer_coherency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Load Buffer"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/store_buffer_coherency_checkBox"
+                                android:tag="litmustest_store_buffer_coherency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Store Buffer"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/write_22_coherency_checkBox"
+                                android:tag="litmustest_write_22_coherency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="2+2 Write"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Weak Memory Tests (Barrier)"
+                        android:textSize="@dimen/_11sdp"
+                        android:textColor="@color/gray"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:id="@+id/message_passing_barrier_checkBox"
+                                android:tag="litmustest_message_passing_barrier"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Message Passing"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/store_barrier_checkBox"
+                                android:tag="litmustest_store_barrier"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Store"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/read_barrier_checkBox"
+                                android:tag="litmustest_read_barrier"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Read"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:id="@+id/load_buffer_barrier_checkBox"
+                                android:tag="litmustest_load_buffer_barrier"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Load Buffer"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/store_buffer_barrier_checkBox"
+                                android:tag="litmustest_store_buffer_barrier"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Store Buffer"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/write_22_barrier_checkBox"
+                                android:tag="litmustest_write_22_barrier"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="2+2 Write"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Coherence Tests"
+                        android:textSize="@dimen/_11sdp"
+                        android:textColor="@color/gray"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:id="@+id/corr_default_checkBox"
+                                android:tag="litmustest_corr_default"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="CoRR"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/coww_default_checkBox"
+                                android:tag="litmustest_coww_default"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="CoWW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:id="@+id/cowr_default_checkBox"
+                                android:tag="litmustest_cowr_default"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="CoWR"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/corw2_default_checkBox"
+                                android:tag="litmustest_corw2_default"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="CoRW2"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Coherence Tests (RMW)"
+                        android:textSize="@dimen/_11sdp"
+                        android:textColor="@color/gray"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:id="@+id/corr_rmw_checkBox"
+                                android:tag="litmustest_corr_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="CoRR"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/coww_rmw_checkBox"
+                                android:tag="litmustest_coww_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="CoWW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:id="@+id/cowr_rmw_checkBox"
+                                android:tag="litmustest_cowr_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="CoWR"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/corw2_rmw_checkBox"
+                                android:tag="litmustest_corw2_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="CoRW2"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <CheckBox
+                        android:id="@+id/selectAllCheckBox"
+                        android:tag="selectAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:text="Select All Tests"
+                        android:textSize="@dimen/_11sdp"
+                        android:onClick="conformanceTestCheckBoxesListener"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/conformanceTestParameterLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -588,6 +976,30 @@
                         android:textSize="@dimen/_15sdp"
                         android:textStyle="bold" />
                 </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/conformance_test_resultLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Conformance Test Result"
+                    android:textSize="@dimen/_17sdp"
+                    android:textStyle="bold"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/conformanceTestResultRV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_5sdp"/>
+
             </LinearLayout>
 
         </LinearLayout>

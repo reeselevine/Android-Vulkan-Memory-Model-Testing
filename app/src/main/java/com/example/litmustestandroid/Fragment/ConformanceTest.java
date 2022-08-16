@@ -1,10 +1,12 @@
 package com.example.litmustestandroid.Fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.litmustestandroid.HelperClass.ConformanceTestViewObject;
 import com.example.litmustestandroid.HelperClass.MultiTestViewObject;
@@ -40,6 +43,26 @@ public class ConformanceTest  extends Fragment {
         conformanceTestViewObject.progressLayout = fragmentView.findViewById(R.id.conformance_test_progressLayout);
         conformanceTestViewObject.progressLayout.setVisibility(View.GONE);
 
+        // Set result layout to be invisible in default
+        conformanceTestViewObject.resultLayout = fragmentView.findViewById(R.id.conformance_test_resultLayout);
+        conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
+
+        RecyclerView resultRV = fragmentView.findViewById(R.id.conformanceTestResultRV);
+
+        TextView testList = fragmentView.findViewById(R.id.conformanceTestList);
+        LinearLayout testListLayout = fragmentView.findViewById(R.id.conformanceTestListLayout);
+        testList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(testListLayout.getVisibility() == View.GONE) {
+                    testListLayout.setVisibility(View.VISIBLE);
+                }
+                else {
+                    testListLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+
         TextView parameterList = fragmentView.findViewById(R.id.conformanceTestParameter);
         LinearLayout parameterItemLayout = fragmentView.findViewById(R.id.conformanceTestParameterItemLayout);
         parameterList.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +77,48 @@ public class ConformanceTest  extends Fragment {
             }
         });
 
-        TestCase currTest = ((MainActivity)getActivity()).findTestCase("message_passing");
+        View[] testCheckBoxViews = new View[20];
+        testCheckBoxViews[0] = fragmentView.findViewById(R.id.message_passing_coherency_checkBox);
+        testCheckBoxViews[1] = fragmentView.findViewById(R.id.store_coherency_checkBox);
+        testCheckBoxViews[2] = fragmentView.findViewById(R.id.read_coherency_checkBox);
+        testCheckBoxViews[3] = fragmentView.findViewById(R.id.load_buffer_coherency_checkBox);
+        testCheckBoxViews[4] = fragmentView.findViewById(R.id.store_buffer_coherency_checkBox);
+        testCheckBoxViews[5] = fragmentView.findViewById(R.id.write_22_coherency_checkBox);
+        testCheckBoxViews[6] = fragmentView.findViewById(R.id.message_passing_barrier_checkBox);
+        testCheckBoxViews[7] = fragmentView.findViewById(R.id.store_barrier_checkBox);
+        testCheckBoxViews[8] = fragmentView.findViewById(R.id.read_barrier_checkBox);
+        testCheckBoxViews[9] = fragmentView.findViewById(R.id.load_buffer_barrier_checkBox);
+        testCheckBoxViews[10] = fragmentView.findViewById(R.id.store_buffer_barrier_checkBox);
+        testCheckBoxViews[11] = fragmentView.findViewById(R.id.write_22_barrier_checkBox);
+        testCheckBoxViews[12] = fragmentView.findViewById(R.id.corr_default_checkBox);
+        testCheckBoxViews[13] = fragmentView.findViewById(R.id.coww_default_checkBox);
+        testCheckBoxViews[14] = fragmentView.findViewById(R.id.cowr_default_checkBox);
+        testCheckBoxViews[15] = fragmentView.findViewById(R.id.corw2_default_checkBox);
+        testCheckBoxViews[16] = fragmentView.findViewById(R.id.corr_rmw_checkBox);
+        testCheckBoxViews[17] = fragmentView.findViewById(R.id.coww_rmw_checkBox);
+        testCheckBoxViews[18] = fragmentView.findViewById(R.id.cowr_rmw_checkBox);
+        testCheckBoxViews[19] = fragmentView.findViewById(R.id.corw2_rmw_checkBox);
+
+        CheckBox selectAllCheckBox = fragmentView.findViewById((R.id.selectAllCheckBox));
+        selectAllCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(selectAllCheckBox.isChecked()) {
+                    for(int i = 0; i < testCheckBoxViews.length; i++) {
+                        ((CheckBox)testCheckBoxViews[i]).setChecked(true);
+                        ((MainActivity)getActivity()).conformanceTestCheckBoxesListener(testCheckBoxViews[i]);
+                    }
+                }
+                else {
+                    for(int i = 0; i < testCheckBoxViews.length; i++) {
+                        ((CheckBox)testCheckBoxViews[i]).setChecked(false);
+                        ((MainActivity)getActivity()).conformanceTestCheckBoxesListener(testCheckBoxViews[i]);
+                    }
+                }
+            }
+        });
+
+        TestCase currTest = ((MainActivity)getActivity()).findTestCase("corr");
         int basic_parameters = getResources().getIdentifier(currTest.paramPresetNames[0], "raw", getActivity().getPackageName());
         int stress_parameters = getResources().getIdentifier(currTest.paramPresetNames[1], "raw", getActivity().getPackageName());
 
@@ -108,7 +172,7 @@ public class ConformanceTest  extends Fragment {
         conformanceTestViewObject.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //((MainActivity)getActivity()).multiTuningTestBegin(multiTestTuningParameters,  multiTestViewObject, multiTestTuningResultRV);
+                ((MainActivity)getActivity()).conformanceTestBegin(testParameters,  conformanceTestViewObject, resultRV);
             }
         });
 
