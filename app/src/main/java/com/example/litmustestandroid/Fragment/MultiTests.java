@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class MultiTests extends Fragment {
 
@@ -40,6 +41,11 @@ public class MultiTests extends Fragment {
     @Override
     public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_multi_tests, container, false);
+
+        // Reset MainActivity's multiTestCase
+        for(int i = 0; i < ((MainActivity)getActivity()).multiTestCases.size(); i++) {
+            ((MainActivity)getActivity()).multiTestCases.replaceAll((k, v) -> v = false);
+        }
 
         TextView description = fragmentView.findViewById(R.id.multi_tests_description);
         description.setText(getResources().getString(R.string.multi_tests_description));

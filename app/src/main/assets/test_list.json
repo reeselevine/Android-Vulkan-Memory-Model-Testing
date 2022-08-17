@@ -5,7 +5,6 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_message_passing_default",
-        "litmustest_message_passing_coherency",
         "litmustest_message_passing_barrier",
         "litmustest_message_passing_storage_workgroup",
         "litmustest_message_passing_storage_workgroup_barrier",
@@ -34,7 +33,6 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_store_default",
-        "litmustest_store_coherency",
         "litmustest_store_barrier",
         "litmustest_store_storage_workgroup",
         "litmustest_store_storage_workgroup_barrier",
@@ -62,7 +60,6 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_read_default",
-        "litmustest_read_coherency",
         "litmustest_read_barrier",
         "litmustest_read_rmw_barrier",
         "litmustest_read_storage_workgroup",
@@ -91,7 +88,6 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_load_buffer_default",
-        "litmustest_load_buffer_coherency",
         "litmustest_load_buffer_barrier",
         "litmustest_load_buffer_storage_workgroup",
         "litmustest_load_buffer_storage_workgroup_barrier",
@@ -119,7 +115,6 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_store_buffer_default",
-        "litmustest_store_buffer_coherency",
         "litmustest_store_buffer_barrier",
         "litmustest_store_buffer_rmw_barrier",
         "litmustest_store_buffer_storage_workgroup",
@@ -148,7 +143,6 @@
       "type": "weakMemory",
       "shaders": [
         "litmustest_write_22_default",
-        "litmustest_write_22_coherency",
         "litmustest_write_22_barrier",
         "litmustest_write_22_rmw_barrier",
         "litmustest_write_22_storage_workgroup",

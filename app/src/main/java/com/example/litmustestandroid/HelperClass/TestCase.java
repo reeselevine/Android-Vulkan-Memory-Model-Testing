@@ -27,6 +27,15 @@ public class TestCase {
         }
     }
 
+    public void setConformanceShaderNames(String[] newConformanceShaderNames, ArrayList<String> totalShaderNames) {
+        this.conformanceShaderNames = newConformanceShaderNames;
+        for(int i = 0; i < newConformanceShaderNames.length; i++) {
+            if(!totalShaderNames.contains(newConformanceShaderNames[i])) {
+                totalShaderNames.add(newConformanceShaderNames[i]);
+            }
+        }
+    }
+
     public void setResultNames(String[] newResultNames, ArrayList<String> totalResultNames) {
         this.resultNames = newResultNames;
         for(int i = 0; i < newResultNames.length; i++) {

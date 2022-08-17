@@ -128,9 +128,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String shaderType = "";
 
     private ArrayList<TestCase> testCases = new ArrayList<>();
-    private LinkedHashMap<String, Boolean> multiTestCases = new LinkedHashMap<String, Boolean>();
-
-    private LinkedHashMap<String, Boolean> conformanceShaders = new LinkedHashMap<String, Boolean>();
+    public LinkedHashMap<String, Boolean> multiTestCases = new LinkedHashMap<String, Boolean>();
+    public LinkedHashMap<String, Boolean> conformanceShaders = new LinkedHashMap<String, Boolean>();
 
     public ArrayList<String> totalShaderNames = new ArrayList<String>();
     public ArrayList<String> totalResultNames = new ArrayList<String>();
@@ -301,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     conformanceShaderNames[j] = conformanceShaderArray.getString(j);
                     conformanceShaders.put(conformanceShaderArray.getString(j), false);
                 }
-                newTest.conformanceShaderNames = conformanceShaderNames;
+                newTest.setConformanceShaderNames(conformanceShaderNames, totalShaderNames);
 
                 JSONArray resultArray = testData.getJSONArray("results");
                 String[] resultNames = new String[resultArray.length()];
@@ -518,26 +517,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int memStride = randomGenerator(1, 7);
         Map<String, String> parameterFormat = new TreeMap<String, String>();
 
-        for(int i = 0; i < testCases.size(); i++) {
-            int paramPresetValue = this.getResources().getIdentifier(testCases.get(i).paramPresetNames[0], "raw", this.getPackageName());
-            InputStream inputStream = getResources().openRawResource(paramPresetValue);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        int paramPresetValue = this.getResources().getIdentifier(testCases.get(0).paramPresetNames[0], "raw", this.getPackageName());
+        InputStream inputStream = getResources().openRawResource(paramPresetValue);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
-            // Get parameter format by reading preset file
-            try {
-                String line = bufferedReader.readLine();
-                while (line != null) {
-                    String[] words = line.split("=");
-                    parameterFormat.put(words[0], words[1]);
-                    line = bufferedReader.readLine();
-                }
-                inputStream.close();
-                bufferedReader.close();
+        // Get parameter format by reading preset file
+        try {
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                String[] words = line.split("=");
+                parameterFormat.put(words[0], words[1]);
+                line = bufferedReader.readLine();
             }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            inputStream.close();
+            bufferedReader.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
 
         // Now randomize certain parmeter values
@@ -617,7 +614,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
 
                 for (String key: parameterFormat.keySet()) {
-                    fos.write((key + "=" + parameterFormat.get(key) + "\n").getBytes());
+                    if(key.equals("permuteSecond") || key.equals("aliasedMemory")) {
+                        if(testCases.get(i).testType.equals("coherence")) {
+                            fos.write((key + "=1\n").getBytes());
+                        }
+                        else {
+                            if(key.equals("permuteSecond")) {
+                                fos.write((key + "=419\n").getBytes());
+                            }
+                            else {
+                                fos.write((key + "=0\n").getBytes());
+                            }
+                        }
+                    }
+                    else {
+                        fos.write((key + "=" + parameterFormat.get(key) + "\n").getBytes());
+                    }
                 }
             }
             catch (FileNotFoundException e)
@@ -1522,7 +1534,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         multiExplorerTestLoop();
                     }
                 }
-                else if (currTestType.equals("MultTuning")){ // Multi Tuning Test
+                else if (currTestType.equals("MultiTuning")){ // Multi Tuning Test
                     // Save param value
                     String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
 

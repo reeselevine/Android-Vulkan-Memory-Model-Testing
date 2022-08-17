@@ -24,6 +24,8 @@ import com.example.litmustestandroid.R;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 public class ConformanceTest  extends Fragment {
 
     private Button defaultParamButton, stressParamButton, sendResultButton;
@@ -33,6 +35,11 @@ public class ConformanceTest  extends Fragment {
     @Override
     public View onCreateView(@NonNull @NotNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_conformance_test, container, false);
+
+        // Reset MainActivity's conformanceShaders
+        for(int i = 0; i < ((MainActivity)getActivity()).conformanceShaders.size(); i++) {
+            ((MainActivity)getActivity()).conformanceShaders.replaceAll((k, v) -> v = false);
+        }
 
         TextView description = fragmentView.findViewById(R.id.conformance_test_description);
         description.setText(getResources().getString(R.string.conformance_test_description));
