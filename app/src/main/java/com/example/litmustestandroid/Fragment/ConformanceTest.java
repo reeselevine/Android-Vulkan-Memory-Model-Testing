@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ConformanceTest  extends Fragment {
 
-    private Button defaultParamButton, stressParamButton;
+    private Button defaultParamButton, stressParamButton, sendResultButton;
 
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -146,6 +146,7 @@ public class ConformanceTest  extends Fragment {
 
         defaultParamButton = fragmentView.findViewById(R.id.conformanceTestDefaultParamButton);
         stressParamButton = fragmentView.findViewById(R.id.conformanceTestStressParamButton);
+        sendResultButton = fragmentView.findViewById(R.id.conformanceTestSendResultButton);
 
         conformanceTestViewObject.startButton = fragmentView.findViewById(R.id.conformance_test_startButton);
         conformanceTestViewObject.currentTestName = fragmentView.findViewById(R.id.conformance_test_currentTestName);
@@ -166,6 +167,14 @@ public class ConformanceTest  extends Fragment {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 ((MainActivity)getActivity()).loadParameters(testParameters, stress_parameters);
+            }
+        });
+
+        sendResultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open dialog for sending result
+                ((MainActivity)getActivity()).sendResultEmail("Conformance");
             }
         });
 

@@ -1000,6 +1000,18 @@
                     android:layout_marginHorizontal="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_5sdp"/>
 
+                <Button
+                    android:id="@+id/conformanceTestSendResultButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/_13sdp"
+                    android:backgroundTint="@color/purple_500"
+                    android:text="Send Result"
+                    android:textSize="@dimen/_13sdp"
+                    android:textColor="@color/white"/>
+
             </LinearLayout>
 
         </LinearLayout>

@@ -1205,7 +1205,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i(TAG, gpuName);
     }
 
-    public void multiTestSendResult(String testMode) {
+    public void sendResultEmail(String testMode) {
         Log.i(TAG, "Sending result via email");
 
         String recipient[] = {"mingun0108@gmail.com"};
@@ -1220,6 +1220,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else if (testMode.equals("Tuning")) {
             subject += " MultiTest Tuning Result";
             fileName = "litmustest_multitest_tuning_result.json";
+        }
+        else if (testMode.equals("Conformance")) {
+            subject += " Conformance Test Result";
+            fileName = "litmustest_conformance_result.json";
         }
         else { // Shouldn't be here
             Log.e(TAG, "multiTestSendResult invalid currTestType!: " + currTestType);
@@ -1686,18 +1690,108 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String currResultValue = convertFileToString(currTestCase.outputNames[0] + ".txt");
 
                     // Go through result and get number of weak behaviors
-                    String startIndexIndicator = "Weak: ";
-                    String endIndexIndicator = "\nTotal elapsed time";
+                    String startIndexIndicator = "Non-weak: ";
+                    String endIndexIndicator = "\nWeak:";
+                    String numNonWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+
+
+                    // Go through result and get number of weak behaviors
+                    startIndexIndicator = "Weak: ";
+                    endIndexIndicator = "\nTotal elapsed time";
                     String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
 
                     // Transfer over the tuning result case
-                    ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue, Integer.parseInt(numWeakBehaviors));
+                    ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue,
+                            Integer.parseInt(numNonWeakBehaviors), Integer.parseInt(numWeakBehaviors));
 
                     conformanceTestResults.add(currConformanceResult);
 
                     if(conformanceCurrConfig == conformanceEndConfig-1) { // All test ended, update result
 
                         Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
+
+                        // Write a json file
+                        try {
+                            String outputFileName = "litmustest_conformance_result.json";
+                            FileOutputStream conformanceFOS = openFileOutput(outputFileName, Context.MODE_PRIVATE);
+                            JsonWriter conformanceResultWriter = new JsonWriter(new OutputStreamWriter(conformanceFOS, "UTF-8"));
+                            conformanceResultWriter.setIndent("  ");
+                            conformanceResultWriter.beginArray();
+                            conformanceResultWriter.beginObject();
+                            conformanceResultWriter.name("0");
+                            conformanceResultWriter.beginObject();
+
+                            // Result
+                            for(int i = 0; i < conformanceTestResults.size(); i++) {
+                                ConformanceResultCase resultCase = conformanceTestResults.get(i);
+
+                                String resultName = resultCase.testName;
+
+                                conformanceResultWriter.name(resultName);
+                                conformanceResultWriter.beginObject();
+                                conformanceResultWriter.name("Non-weak").value(resultCase.numNonWeakBehaviors);
+                                conformanceResultWriter.name("Weak").value(resultCase.numWeakBehaviors);
+                                conformanceResultWriter.endObject();
+                            }
+
+                            // Parameter
+                            conformanceResultWriter.name("Test Parameters");
+                            conformanceResultWriter.beginObject();
+
+                            FileInputStream fis = openFileInput(currTestCase.testParamName + ".txt");
+                            InputStreamReader isr = new InputStreamReader(fis);
+                            BufferedReader br = new BufferedReader(isr);
+
+                            String line = br.readLine();
+                            while (line != null) {
+                                String[] words = line.split("=");
+                                if(!words[0].equals("numMemLocations") && !words[0].equals("numOutputs")
+                                        && !words[0].equals("permuteFirst") && !words[0].equals("permuteSecond")
+                                        && !words[0].equals("aliasedMemory") && !words[0].equals("gpuDeviceId")) {
+                                    conformanceResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
+                                }
+                                line = br.readLine();
+                            }
+                            fis.close();
+                            isr.close();
+                            br.close();
+                            conformanceResultWriter.endObject();
+                            conformanceResultWriter.endObject();
+
+                            conformanceResultWriter.name("gpu").value(GPUName);
+                            conformanceResultWriter.name("testCount").value(conformanceEndConfig);
+
+                            conformanceResultWriter.endObject();
+                            conformanceResultWriter.endArray();
+                            conformanceResultWriter.close();
+                            conformanceFOS.close();
+
+                        }
+                        catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        // Write to external storage
+                        String fileName = "litmustest_conformance_result.json";
+                        try {
+                            FileInputStream fis = openFileInput(fileName);
+                            FileChannel inChannel = fis.getChannel();
+                            File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName);
+                            FileChannel outChannel =  new FileOutputStream(output).getChannel();
+
+                            inChannel.transferTo(0, inChannel.size(), outChannel);
+                            fis.close();
+                            inChannel.close();
+                            outChannel.close();
+                        }
+                        catch (FileNotFoundException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
 
                         // Enable start button
                         conformanceTestViewObject.startButton.setEnabled(true);

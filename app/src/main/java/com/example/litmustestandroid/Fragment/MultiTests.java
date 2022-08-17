@@ -216,7 +216,7 @@ public class MultiTests extends Fragment {
             @Override
             public void onClick(View v) {
                 // Open dialog for sending result
-                ((MainActivity)getActivity()).multiTestSendResult(testMode);
+                ((MainActivity)getActivity()).sendResultEmail(testMode);
             }
         });
 
@@ -224,7 +224,7 @@ public class MultiTests extends Fragment {
             @Override
             public void onClick(View v) {
                 // Open dialog for sending result
-                ((MainActivity)getActivity()).multiTestSendResult(testMode);
+                ((MainActivity)getActivity()).sendResultEmail(testMode);
             }
         });
 
