@@ -22,7 +22,7 @@ __kernel void litmus_test (
   if (mem_x_0 == 2) {
     atomic_fetch_add(&test_results[0], 1);
   } else if (mem_x_0 == 1) {
-    atomic_fetch_add(&test_results[1], 1);
+    atomic_fetch_add(&test_results[3], 1);
   }
 }
     

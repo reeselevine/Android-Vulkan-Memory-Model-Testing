@@ -19,6 +19,7 @@ const int size = 4;
 constexpr char *TAG = "Main";
 
 bool tuningMode = false;
+bool conformanceMode = false;
 
 /** Returns the GPU to use for this test run. Users can specify the specific GPU to use
  *  with the 'gpuDeviceId' parameter. If gpuDeviceId is not included in the parameters or the specified
@@ -241,16 +242,24 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         numInter += testResults.load(2);
         numWeak += testResults.load(3);
 
-        LOGD("readResults[0]: %d, readResults[1]: %d", readResults.load(0), readResults.load(1));
+        //LOGD("readResults[0]: %d, readResults[1]: %d", readResults.load(0), readResults.load(1));
 
         program.teardown();
         resultProgram.teardown();
     }
 
-    outputFile << "Total Result:\n";
-    outputFile << "seq: " << numSeq << "\n";
-    outputFile << "interleaved: " << numInter << "\n";
-    outputFile << "weak: " << numWeak << "\n";
+    if(conformanceMode) {
+        outputFile << "Total Result:\n";
+        outputFile << "Non-weak: " << numSeq + numInter << "\n";
+        outputFile << "Weak: " << numWeak << "\n";
+    }
+    else {
+        outputFile << "Total Result:\n";
+        outputFile << "seq: " << numSeq << "\n";
+        outputFile << "interleaved: " << numInter << "\n";
+        outputFile << "weak: " << numWeak << "\n";
+    }
+
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
@@ -371,7 +380,8 @@ Java_com_example_litmustestandroid_TestThread_main(
         jobject obj,
         jobject mainObj,
         jobjectArray testArray,
-        jboolean tuningModeEnabled) {
+        jboolean tuningModeEnabled,
+        jboolean conformanceModeEnabled) {
 
     // Convert string array to individual string
     jstring jTestName = (jstring) (env)->GetObjectArrayElement(testArray, 0);
@@ -395,6 +405,7 @@ Java_com_example_litmustestandroid_TestThread_main(
     std::string filePath = getFileDirFromJava(env, mainObj);
 
     tuningMode = tuningModeEnabled;
+    conformanceMode = conformanceModeEnabled;
 
     runTest(env, mainObj, testName, shaderFile, resultShaderFile, configFile, filePath);
 

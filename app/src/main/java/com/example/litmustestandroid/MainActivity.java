@@ -793,7 +793,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         testArgument[2] = currTestCase.resultNames[0]; // Result Shader
                         testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
 
-                        testThread = new TestThread(MainActivity.this, testArgument, false);
+                        testThread = new TestThread(MainActivity.this, testArgument, false, false);
                         testThread.start();
                     }
                 }, 500);
@@ -973,7 +973,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         writeTuningParameters(testCase, generator);
 
         // Run test in different thread
-        testThread = new TestThread(MainActivity.this, tuningTestArgument, true);
+        testThread = new TestThread(MainActivity.this, tuningTestArgument, true, false);
         testThread.start();
     }
 
@@ -1071,7 +1071,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currMultiTestViewObject.currentTestName.setText(currTestCase.testName);
 
         // Run test in different thread
-        testThread = new TestThread(MainActivity.this, testArgument, false);
+        testThread = new TestThread(MainActivity.this, testArgument, false, false);
         testThread.start();
     }
 
@@ -1168,7 +1168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // Run test in different thread
-        testThread = new TestThread(MainActivity.this, testArgument, true);
+        testThread = new TestThread(MainActivity.this, testArgument, true, false);
         testThread.start();
     }
 
@@ -1349,7 +1349,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         writeParameters(currTestCase.testName, conformanceParameters, paramPresetValue);
 
         // Run test in different thread
-        testThread = new TestThread(MainActivity.this, testArgument, false);
+        testThread = new TestThread(MainActivity.this, testArgument, false, true);
         testThread.start();
     }
 
@@ -1686,7 +1686,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String currResultValue = convertFileToString(currTestCase.outputNames[0] + ".txt");
 
                     // Go through result and get number of weak behaviors
-                    String startIndexIndicator = "weak: ";
+                    String startIndexIndicator = "Weak: ";
                     String endIndexIndicator = "\nTotal elapsed time";
                     String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
 
