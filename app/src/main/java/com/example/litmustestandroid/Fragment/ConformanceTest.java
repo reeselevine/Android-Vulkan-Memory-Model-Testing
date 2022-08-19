@@ -41,6 +41,9 @@ public class ConformanceTest  extends Fragment {
             ((MainActivity)getActivity()).conformanceShaders.replaceAll((k, v) -> v = false);
         }
 
+        TextView note = fragmentView.findViewById(R.id.conformance_test_note);
+        note.setText(getResources().getString(R.string.conformance_test_note));
+
         TextView description = fragmentView.findViewById(R.id.conformance_test_description);
         description.setText(getResources().getString(R.string.conformance_test_description));
 
