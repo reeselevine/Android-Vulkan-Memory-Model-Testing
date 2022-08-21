@@ -70,7 +70,21 @@ public class ConformanceTestResultAdapter extends RecyclerView.Adapter<Conforman
             }
         }
         else {
-            holder.testResult.setText(" ");
+            ArrayList<ConformanceResultCase> resultCases = ((MainActivity)context).conformanceTuningResultCases.get(currentTestName);
+            int numTestViolated = 0;
+            for(int i = 0; i < resultCases.size(); i++) {
+                if(resultCases.get(i).violated) {
+                    numTestViolated++;
+                }
+            }
+            if(numTestViolated > 0) {
+                holder.testResult.setText("Failed");
+                holder.testResult.setTextColor(Color.RED);
+            }
+            else {
+                holder.testResult.setText("Passed");
+                holder.testResult.setTextColor(Color.GREEN);
+            }
         }
 
         holder.resultButton.setOnClickListener(new View.OnClickListener() {

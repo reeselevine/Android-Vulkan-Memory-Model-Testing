@@ -2135,7 +2135,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             // Get string array of test names
                             String[] testNumbers = new String[tuningEndConfig];
                             for(int i = 0; i < tuningEndConfig; i++) {
-                                Log.i(TAG, "TESTNUMBERS: " + i);
                                 testNumbers[i] = Integer.toString(i);
                             }
 
