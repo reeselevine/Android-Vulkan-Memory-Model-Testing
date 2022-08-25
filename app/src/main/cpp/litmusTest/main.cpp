@@ -218,8 +218,6 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         resultProgram.setWorkgroupSize(workgroupSize);
         program.prepare();
 
-        //LOGD("numWorkgroups: %d, workgroupSize: %d", numWorkgroups, workgroupSize);
-
         itStart = chrono::system_clock::now();
         program.run();
         itEnd = chrono::system_clock::now();
@@ -227,22 +225,9 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         resultProgram.prepare();
         resultProgram.run();
 
-        /*if(!tuningMode) {
-            outputFile << "Iteration " << i << "\n";
-            outputFile << "seq: " << testResults.load(0) + testResults.load(1) << "\n";
-            outputFile << "interleaved: " << testResults.load(2) << "\n";
-            outputFile << "weak: " << testResults.load(3) << "\n";
-
-            std::chrono::duration<double> itDuration = itEnd - itStart;
-            outputFile << "durationSeconds: " << itDuration.count() << "s\n";
-            outputFile << "\n";
-        }*/
-
         numSeq += testResults.load(0) + testResults.load(1);
         numInter += testResults.load(2);
         numWeak += testResults.load(3);
-
-        //LOGD("readResults[0]: %d, readResults[1]: %d", readResults.load(0), readResults.load(1));
 
         program.teardown();
         resultProgram.teardown();
@@ -365,7 +350,6 @@ int runTest(JNIEnv* env, jobject obj, string testName, string shaderFile, string
 
 std::string getFileDirFromJava(JNIEnv *env, jobject obj) {
     jclass clazz = env->GetObjectClass(obj);
-    //jclass clazz = env->FindClass("com/example/litmustestandroid/MainActivity");
     jmethodID method = env->GetMethodID(clazz, "getFileDir", "()Ljava/lang/String;");
     jobject ret = env->CallObjectMethod(obj, method);
 
