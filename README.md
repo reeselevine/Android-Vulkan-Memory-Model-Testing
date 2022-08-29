@@ -71,7 +71,9 @@ Some Android devices may run into issue with sending result feature due to Googl
 2. Select 6 of the weak memory tests. (Message Passing, Store, Read, Load Buffer, Store Buffer, and 2+2 Write)
 3. Click "Tuning" as Test Type.
 4. Set tuning test parameters as following screenshot:
-[tuning_test_parameter]()
+
+![tuning_test_parameter](https://raw.githubusercontent.com/MangoShip/Android-Vulkan-Memory-Model-Testing/main/screenshot/screenshot1.PNG)
+
 5. Click "Start" button to start the test.
 6. Once the test has finished running, click "Send Result" to send the result to the developer.
 
