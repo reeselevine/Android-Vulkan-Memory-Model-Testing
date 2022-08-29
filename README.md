@@ -65,3 +65,14 @@ After using the "Running Multiple Tests" function, you can send the result to th
 
 #### Issues with sending result
 Some Android devices may run into issue with sending result feature due to Google Play being disabled, unable to open "Gmail" application through another app, and etc. If this happens, there is an alternative way for you to retrieve the result file. Download [X-plore](https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en_US&gl=US) or any application that lets you look into the devices' storage. After downloading X-plore, head over to  `"/storage/emulated/0/Android/data/com.example.litmusandroid/files/DCIM/"` where you will find a json file called `"litmustest_multitest_explorer_result.json"` (result file for explorer) or `"litmustest_multitest_tuning_result.json"` (result file for tuning). You can transfer this file to somewhere else like Google Drive then email to `mingun0108@gmail.com` with the file attached to send the result file to the developer.
+
+## Instruction for Testing
+1. Navigate to "Running Multiple Tests" page in the app.
+2. Select 6 of the weak memory tests. (Message Passing, Store, Read, Load Buffer, Store Buffer, and 2+2 Write)
+3. Click "Tuning" as Test Type.
+4. Set tuning test parameters as following screenshot:
+[tuning_test_parameter]()
+5. Click "Start" button to start the test.
+6. Once the test has finished running, click "Send Result" to send the result to the developer.
+
+Thank you so much for helping us with collecting the results! 
