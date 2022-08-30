@@ -198,7 +198,12 @@ namespace easyvk {
 			// Define device info
 			VkDeviceCreateInfo deviceCreateInfo{
 				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-				nullptr,
+				new VkPhysicalDeviceVulkanMemoryModelFeaturesKHR {
+				        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR,
+				        nullptr,
+				        true,
+				        true
+				    },
 				VkDeviceCreateFlags {},
 				1,
 				queues.data()
