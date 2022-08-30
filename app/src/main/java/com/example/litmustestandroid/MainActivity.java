@@ -71,10 +71,6 @@ import static android.os.Environment.getExternalStorageDirectory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    static {
-        System.loadLibrary("litmusTest-main-lib");
-    }
-
     private ActivityMainBinding binding;
 
     private DrawerLayout drawer;
@@ -85,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TestViewObject currTestViewObject;
     private MultiTestViewObject currMultiTestViewObject;
     private ConformanceTestViewObject conformanceTestViewObject;
+    private LockTestViewObject lockTestViewObject;
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog exploreDialog;
@@ -129,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TestCase currTestCase;
     private String GPUName = "";
     private TestThread testThread;
+    private LockTestThread lockTestThread;
 
     private Handler handler = new Handler();
 
@@ -187,6 +185,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_conformance_test:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new ConformanceTest()).commit();
+                break;
+            case R.id.nav_lock_test:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new LockTest()).commit();
                 break;
             case R.id.nav_message_passing:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -334,6 +336,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 testCases.add(newTest);
                 multiTestCases.put(newTest.testName, false);
+            }
+            // Add lock tests
+            testArray = testJsonObject.getJSONArray("lockTests");
+            for (int i = 0; i < testArray.length(); i++) {
+                JSONObject testData = testArray.getJSONObject(i);
+
+                LockTestCase newTest = new LockTestCase();
+                newTest.testName = testData.getString("name");
+                newTest.testType = testData.getString("type");
+
+                JSONArray shaderArray = testData.getJSONArray("shaders");
+                String[] shaderNames = new String[shaderArray.length()];
+                for(int j = 0; j < shaderArray.length(); j++) {
+                    shaderNames[j] = shaderArray.getString(j);
+                }
+                newTest.setShaderNames(shaderNames, totalShaderNames);
+
+                JSONArray outputArray = testData.getJSONArray("outputs");
+                String[] outputNames = new String[outputArray.length()];
+                for(int j = 0; j < outputArray.length(); j++) {
+                    outputNames[j] = outputArray.getString(j);
+                }
+                newTest.setOutputName(outputNames, totalOutputNames);
             }
 
         } catch (JSONException e) {
@@ -665,9 +690,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void handleButtons(boolean testBegin, Button[] buttons, ResultButton[] resultButtons) {
         // button[0] = currently running test's button
-        // button[1] = currently not running test's button
+        // button[1+] = currently not running test's buttons
         // resultButton[0] = currently running test's result button
-        // resultButton[1] = currently not running test's result button
+        // resultButton[1+] = currently not running test's result buttons
         if(testBegin) { // Test starting
             for(int i = 0; i < buttons.length; i++) {
                 buttons[i].setEnabled(false);
@@ -683,18 +708,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         else { // Test ended
-            buttons[0].setEnabled(true);
-            buttons[0].setBackgroundColor(getResources().getColor(R.color.lightblue));
-            buttons[1].setEnabled(true);
-            buttons[1].setBackgroundColor(getResources().getColor(R.color.lightblue));
+            for(int i = 0; i < buttons.length; i++) {
+                buttons[i].setEnabled(true);
+                buttons[i].setBackgroundColor(getResources().getColor(R.color.lightblue));
+            }
 
             resultButtons[0].button.setEnabled(true);
             resultButtons[0].button.setBackgroundColor(getResources().getColor(R.color.red));
             resultButtons[0].isNew = false;
 
-            if(!resultButtons[1].isNew) {
-                resultButtons[1].button.setEnabled(true);
-                resultButtons[1].button.setBackgroundColor(getResources().getColor(R.color.red));
+            for(int i = 0; i < resultButtons.length; i++) {
+                if(!resultButtons[i].isNew) {
+                    resultButtons[i].button.setEnabled(true);
+                    resultButtons[i].button.setBackgroundColor(getResources().getColor(R.color.red));
+                }
             }
         }
     }
@@ -874,6 +901,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
+        dialog.show(getSupportFragmentManager(), "TestResultDialog");
+    }
+
+    public void displayLockTestResult(String shaderName) {
+        TestResultDialogFragment dialog = new TestResultDialogFragment();
+        try
+        {
+            FileInputStream fis = openFileInput(shaderName + "_output.txt");
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+
+            while ((text = br.readLine()) != null) {
+                sb.append(text).append("\n");
+            }
+            dialog.setText(sb);
+            Log.d(TAG, sb.toString());
+
+            fis.close();
+            isr.close();
+            br.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
         dialog.show(getSupportFragmentManager(), "TestResultDialog");
     }
 
@@ -1227,8 +1285,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else if (currTestType.equals("ConformanceExplorer")){ // Conformance Explorer
                     conformanceTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
-                else { // Conformance Tuning
+                else if (currTestType.equals("ConformanceTuning")){ // Conformance Explorer
                     conformanceTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
+                }
+                else { // Lock Test
+                    lockTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
             }
         });
@@ -1535,11 +1596,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         testThread.start();
     }
 
+    public void lockTestBegin(LockTestViewObject viewObject, String shaderName, boolean checkCorrect) {
+        currTestType = "LockTest";
+        lockTestViewObject = viewObject;
+
+        handleButtons(true, viewObject.buttons, viewObject.resultButtons);
+
+        // Set progress layout visible
+        lockTestViewObject.progressLayout.setVisibility(View.VISIBLE);
+
+        currTestIterations = "1000";
+
+        // Start multi tuning test loop
+        String[] testArgument = new String[2];
+        testArgument[0] = "lockTest"; // Test Name
+        testArgument[1] = shaderName; // Shader Name
+
+        // Run test in different thread
+        lockTestThread = new LockTestThread(MainActivity.this, testArgument, checkCorrect);
+        lockTestThread.start();
+
+    }
+
     public void testComplete() {
-        testThread.interrupt();
-        testThread = null;
-        Log.i(TAG, "Thread Count: " + Thread.activeCount());
-        Log.i(TAG, "Thread Name: " + Thread.currentThread().getName());
+        if(testThread != null) {
+            testThread.interrupt();
+            testThread = null;
+        }
+        if(lockTestThread != null) {
+            lockTestThread.interrupt();
+            lockTestThread = null;
+        }
+
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -1995,7 +2083,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         conformanceExplorerTestLoop();
                     }
                 }
-                else { // Conformance Tuning
+                else if (currTestType.equals("ConformanceTuning")) { // Conformance Tuning
                     // Save param value
                     String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
 
@@ -2152,6 +2240,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         conformanceCurrIteration++;
                         conformanceTuningTestLoop();
                     }
+                }
+                else { // Lock Test
+                    // Enable buttons and change their color
+                    handleButtons(false, lockTestViewObject.buttons, lockTestViewObject.resultButtons);
+
+                    lockTestViewObject.progressLayout.setVisibility(View.GONE);
                 }
             }
         });

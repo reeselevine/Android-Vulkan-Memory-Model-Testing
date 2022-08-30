@@ -343,5 +343,23 @@
         "parameters_stress"
       ]
     }
+  ],
+  "lockTests": [
+    {
+      "name": "lockTest",
+      "type": "lockTest",
+      "shaders": [
+        "locktest_speed",
+        "locktest_speedrelaxed",
+        "locktest_correct"
+      ],
+      "outputs": [
+        "locktest_speed_output",
+        "locktest_speedrelaxed_output",
+        "locktest_correct_output"
+      ]
+    }
   ]
+
+
 }

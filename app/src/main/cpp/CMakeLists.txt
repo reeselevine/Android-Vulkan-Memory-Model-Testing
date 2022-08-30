@@ -23,7 +23,7 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
         litmusTest/main.cpp easyvk/easyvk.cpp)
 
-#add_library(testRunner-main-lib SHARED litmusTest/test_runner.cpp easyvk/easyvk.cpp)
+add_library(lockTest-main-lib SHARED lockTest/lockMain.cpp easyvk/easyvk.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -49,4 +49,4 @@ target_link_libraries( # Specifies the target library.
                        # included in the NDK.
                        ${log-lib} vulkan)
 
-#target_link_libraries(testRunner-main-lib ${log-lib} vulkan)
+target_link_libraries(lockTest-main-lib ${log-lib} vulkan)
