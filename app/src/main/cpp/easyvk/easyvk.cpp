@@ -24,6 +24,9 @@ inline void vulkanAssert(VkResult result, const char *file, int line, bool abort
 		std::ofstream outputFile("/data/data/com.example.litmustestandroid/files/output.txt");
 		outputFile << "vulkanAssert: ERROR " << result << "\n" << file << "\nline: " << line;
 		outputFile.close();
+		std::ofstream externalOutputFile("/storage/emulated/0/Android/data/com.example.litmustestandroid/files/output.txt");
+		externalOutputFile << "vulkanAssert: ERROR " << result << "\n" << file << "\nline: " << line;
+		externalOutputFile.close();
 		LOGD("vulkanAssert: ERROR %d \n File: %s \n Line: %d", result, file, line);
 		exit(1);
 	}
@@ -99,7 +102,7 @@ namespace easyvk {
 			}
 		}
 
-		// List out device's enabled extensions
+		// List out instance's enabled extensions
 		uint32_t count;
 		vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);
 		std::vector<VkExtensionProperties> extensions(count);
@@ -195,19 +198,46 @@ namespace easyvk {
 				&priority
 			};
 
+			// Get device's enabled extensions
+			uint32_t count;
+			vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &count, nullptr);
+			std::vector<VkExtensionProperties> extensions(count);
+			vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &count, extensions.data());
+			bool vulkan_memory_model_supported = false;
+
+			for (auto& extension : extensions) {
+				std::string name(extension.extensionName);
+				if(name == "VK_KHR_vulkan_memory_model") {
+					LOGD("Device supports vulkan memory model");
+					vulkan_memory_model_supported = true;
+				}
+			}
+
 			// Define device info
-			VkDeviceCreateInfo deviceCreateInfo{
-				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-				new VkPhysicalDeviceVulkanMemoryModelFeaturesKHR {
-				        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR,
-				        nullptr,
-				        true,
-				        true
-				    },
-				VkDeviceCreateFlags {},
-				1,
-				queues.data()
-			};
+			VkDeviceCreateInfo deviceCreateInfo;
+			if(vulkan_memory_model_supported) {
+				deviceCreateInfo = {
+					VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+					new VkPhysicalDeviceVulkanMemoryModelFeaturesKHR {
+						VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR,
+						nullptr,
+						true,
+						true,
+					},
+					VkDeviceCreateFlags {},
+					1,
+					queues.data()
+				};
+			}
+			else {
+				deviceCreateInfo = {
+					VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+					nullptr,
+					VkDeviceCreateFlags{},
+					1,
+					queues.data()
+				};
+			}
 
 			// Create device
 			vulkanCheck(vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device));
