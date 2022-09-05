@@ -34,6 +34,10 @@ public class LockTest extends Fragment {
 
         testViewObject.testName = "lockTest";
 
+        testViewObject.testIteration = fragmentView.findViewById(R.id.lockTestTestIteration);
+        testViewObject.workgroupNumber = fragmentView.findViewById(R.id.lockTestWorkgroupNumber);
+        testViewObject.workgroupSize = fragmentView.findViewById(R.id.lockTestWorkgroupSize);
+
         testViewObject.progressLayout = fragmentView.findViewById(R.id.lockTest_progressLayout);
         testViewObject.currentIterationNumber = fragmentView.findViewById(R.id.lockTest_currentIterationNumber);
         testViewObject.progressLayout.setVisibility(View.GONE);

@@ -1608,9 +1608,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currTestIterations = "1000";
 
         // Start multi tuning test loop
-        String[] testArgument = new String[2];
+        String[] testArgument = new String[5];
         testArgument[0] = "lockTest"; // Test Name
         testArgument[1] = shaderName; // Shader Name
+        testArgument[2] = lockTestViewObject.testIteration.getText().toString();// Test Iteration
+        testArgument[3] = lockTestViewObject.workgroupNumber.getText().toString();// Workgroup Number
+        testArgument[4] = lockTestViewObject.workgroupSize.getText().toString();// Workgroup Size
 
         // Run test in different thread
         lockTestThread = new LockTestThread(MainActivity.this, testArgument, checkCorrect);

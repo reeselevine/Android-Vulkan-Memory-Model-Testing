@@ -21,10 +21,10 @@ bool printDeviceInfo = false;
 #define vulkanCheck(result) { vulkanAssert((result), __FILE__, __LINE__); }
 inline void vulkanAssert(VkResult result, const char *file, int line, bool abort = true){
 	if (result != VK_SUCCESS) {
-		std::ofstream outputFile("/data/data/com.example.litmustestandroid/files/output.txt");
+		std::ofstream outputFile("/data/data/com.example.litmustestandroid/files/litmustest_message_passing_coherency_dis.txt");
 		outputFile << "vulkanAssert: ERROR " << result << "\n" << file << "\nline: " << line;
 		outputFile.close();
-		std::ofstream externalOutputFile("/storage/emulated/0/Android/data/com.example.litmustestandroid/files/output.txt");
+		std::ofstream externalOutputFile("/storage/emulated/0/Android/data/com.example.litmustestandroid/files/litmustest_message_passing_coherency_dis.txt");
 		externalOutputFile << "vulkanAssert: ERROR " << result << "\n" << file << "\nline: " << line;
 		externalOutputFile.close();
 		LOGD("vulkanAssert: ERROR %d \n File: %s \n Line: %d", result, file, line);
