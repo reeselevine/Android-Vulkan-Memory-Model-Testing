@@ -19,10 +19,12 @@ public class LockTestViewObject {
     public Button speedButton;
     public Button speedRelaxedButton;
     public Button correctButton;
+    public Button correctRelaxedButton;
     public Button[] buttons;
 
     public ResultButton speedResultButton;
     public ResultButton speedRelaxedResultButton;
     public ResultButton correctResultButton;
+    public ResultButton correctRelaxedResultButton;
     public ResultButton[] resultButtons;
 }

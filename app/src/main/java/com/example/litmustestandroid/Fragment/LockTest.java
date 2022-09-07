@@ -45,24 +45,28 @@ public class LockTest extends Fragment {
         testViewObject.speedButton = fragmentView.findViewById(R.id.lockTest_speedStartButton);
         testViewObject.speedRelaxedButton = fragmentView.findViewById(R.id.lockTest_speedRelaxedStartButton);
         testViewObject.correctButton = fragmentView.findViewById(R.id.lockTest_correctStartButton);
+        testViewObject.correctRelaxedButton = fragmentView.findViewById(R.id.lockTest_correctRelaxedStartButton);
 
         testViewObject.speedResultButton = new ResultButton(fragmentView.findViewById(R.id.lockTest_speedResultButton));
         testViewObject.speedRelaxedResultButton = new ResultButton(fragmentView.findViewById(R.id.lockTest_speedRelaxedResultButton));
         testViewObject.correctResultButton = new ResultButton(fragmentView.findViewById(R.id.lockTest_correctResultButton));
+        testViewObject.correctRelaxedResultButton = new ResultButton(fragmentView.findViewById(R.id.lockTest_correctRelaxedResultButton));
 
         // Initial button state
         testViewObject.speedResultButton.button.setEnabled(false);
         testViewObject.speedRelaxedResultButton.button.setEnabled(false);
         testViewObject.correctResultButton.button.setEnabled(false);
+        testViewObject.correctRelaxedResultButton.button.setEnabled(false);
         testViewObject.speedResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
         testViewObject.speedRelaxedResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
         testViewObject.correctResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
+        testViewObject.correctRelaxedResultButton.button.setBackgroundColor(getResources().getColor(R.color.lightgray));
 
         testViewObject.speedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                testViewObject.buttons = new Button[]{testViewObject.speedButton, testViewObject.speedRelaxedButton, testViewObject.correctButton};
-                testViewObject.resultButtons = new ResultButton[]{testViewObject.speedResultButton, testViewObject.speedRelaxedResultButton, testViewObject.correctResultButton};
+                testViewObject.buttons = new Button[]{testViewObject.speedButton, testViewObject.speedRelaxedButton, testViewObject.correctButton, testViewObject.correctRelaxedButton};
+                testViewObject.resultButtons = new ResultButton[]{testViewObject.speedResultButton, testViewObject.speedRelaxedResultButton, testViewObject.correctResultButton, testViewObject.correctRelaxedResultButton};
                 ((MainActivity)getActivity()).lockTestBegin(testViewObject, "locktest_speed", false);
             }
         });
@@ -75,8 +79,8 @@ public class LockTest extends Fragment {
         testViewObject.speedRelaxedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                testViewObject.buttons = new Button[]{testViewObject.speedRelaxedButton, testViewObject.speedButton, testViewObject.correctButton};
-                testViewObject.resultButtons = new ResultButton[]{testViewObject.speedRelaxedResultButton, testViewObject.speedResultButton, testViewObject.correctResultButton};
+                testViewObject.buttons = new Button[]{testViewObject.speedRelaxedButton, testViewObject.speedButton, testViewObject.correctButton, testViewObject.correctRelaxedButton};
+                testViewObject.resultButtons = new ResultButton[]{testViewObject.speedRelaxedResultButton, testViewObject.speedResultButton, testViewObject.correctResultButton, testViewObject.correctRelaxedResultButton};
                 ((MainActivity)getActivity()).lockTestBegin(testViewObject, "locktest_speedrelaxed", false);
             }
         });
@@ -89,8 +93,8 @@ public class LockTest extends Fragment {
         testViewObject.correctButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                testViewObject.buttons = new Button[]{testViewObject.correctButton, testViewObject.speedRelaxedButton, testViewObject.speedButton};
-                testViewObject.resultButtons = new ResultButton[]{testViewObject.correctResultButton, testViewObject.speedRelaxedResultButton, testViewObject.speedResultButton};
+                testViewObject.buttons = new Button[]{testViewObject.correctButton, testViewObject.speedRelaxedButton, testViewObject.speedButton, testViewObject.correctRelaxedButton};
+                testViewObject.resultButtons = new ResultButton[]{testViewObject.correctResultButton, testViewObject.speedRelaxedResultButton, testViewObject.speedResultButton, testViewObject.correctRelaxedResultButton};
                 ((MainActivity)getActivity()).lockTestBegin(testViewObject, "locktest_correct", true);
             }
         });
@@ -98,6 +102,20 @@ public class LockTest extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MainActivity)getActivity()).displayLockTestResult("locktest_correct");
+            }
+        });
+        testViewObject.correctRelaxedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testViewObject.buttons = new Button[]{testViewObject.correctRelaxedButton, testViewObject.correctButton, testViewObject.speedRelaxedButton, testViewObject.speedButton};
+                testViewObject.resultButtons = new ResultButton[]{testViewObject.correctRelaxedResultButton, testViewObject.correctResultButton, testViewObject.speedRelaxedResultButton, testViewObject.speedResultButton};
+                ((MainActivity)getActivity()).lockTestBegin(testViewObject, "locktest_correctrelaxed", true);
+            }
+        });
+        testViewObject.correctRelaxedResultButton.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).displayLockTestResult("locktest_correctrelaxed");
             }
         });
 

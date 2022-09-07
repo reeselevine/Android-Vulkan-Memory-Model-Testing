@@ -351,12 +351,14 @@
       "shaders": [
         "locktest_speed",
         "locktest_speedrelaxed",
-        "locktest_correct"
+        "locktest_correct",
+        "locktest_correctrelaxed"
       ],
       "outputs": [
         "locktest_speed_output",
         "locktest_speedrelaxed_output",
-        "locktest_correct_output"
+        "locktest_correct_output",
+        "locktest_correctrelaxed_output"
       ]
     }
   ]

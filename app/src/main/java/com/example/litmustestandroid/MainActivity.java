@@ -1605,7 +1605,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set progress layout visible
         lockTestViewObject.progressLayout.setVisibility(View.VISIBLE);
 
-        currTestIterations = "1000";
+        currTestIterations = lockTestViewObject.testIteration.getText().toString();
 
         // Start multi tuning test loop
         String[] testArgument = new String[5];

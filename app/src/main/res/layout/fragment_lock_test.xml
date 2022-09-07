@@ -211,7 +211,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_10sdp"
                 android:layout_marginVertical="@dimen/_5sdp"
-                android:text="Correctness Test"
+                android:text="Correctness Test (acq_rel)"
                 android:textSize="@dimen/_15sdp"
                 android:textStyle="bold"/>
 
@@ -237,6 +237,50 @@
 
                 <Button
                     android:id="@+id/lockTest_correctResultButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="@dimen/_20sdp"
+                    android:padding="@dimen/_15sdp"
+                    android:gravity="center"
+                    android:backgroundTint="@color/red"
+                    android:text="Result"
+                    android:textSize="@dimen/_13sdp"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:text="Correctness Test (relaxed)"
+                android:textSize="@dimen/_15sdp"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/lockTest_correctRelaxedStartButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="@dimen/_20sdp"
+                    android:padding="@dimen/_15sdp"
+                    android:gravity="center"
+                    android:backgroundTint="@color/lightblue"
+                    android:text="Start"
+                    android:textSize="@dimen/_13sdp"
+                    android:textColor="@color/white"/>
+
+                <Button
+                    android:id="@+id/lockTest_correctRelaxedResultButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

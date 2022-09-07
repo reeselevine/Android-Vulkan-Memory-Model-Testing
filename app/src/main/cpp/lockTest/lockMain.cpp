@@ -95,7 +95,9 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &testIterationStr
             }
             else {
                 outputFile << "Wrong output = " << readResults.load(0) << "\n";
+
             }
+            outputFile << "Correct output = " << workgroupNum * testIteration << "\n";
             allTestsCorrect = false;
         }
         else {

@@ -13,7 +13,7 @@ static void unlock(__global atomic_uint* m) {
 
 __kernel void litmus_test(
   __global atomic_uint* test_locations,
-  __global atomic_uint* read_results,
+  __global uint* read_results,
   __global uint* test_iterations) {
   if (get_local_id(0) == 0) {
     for(uint i = 0; i < test_iterations[0]; i++) {
