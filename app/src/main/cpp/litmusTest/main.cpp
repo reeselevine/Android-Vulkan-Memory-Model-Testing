@@ -162,8 +162,7 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
     // initialize settings
     auto instance = Instance(true);
     auto device = getDevice(instance, params, outputFile);
-    int workgroupSize = setBetween(params["minWorkgroupSize"], params["maxWorkgroupSize"]);
-    int testingThreads = workgroupSize * params["testingWorkgroups"];
+    int testingThreads = params["workgroupSize"] * params["testingWorkgroups"];
     int testLocSize = testingThreads * params["numMemLocations"] * params["memStride"];
 
     int numSeq = 0;
@@ -214,8 +213,8 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         setDynamicStressParams(stressParams, params);
         program.setWorkgroups(numWorkgroups);
         resultProgram.setWorkgroups(params["testingWorkgroups"]);
-        program.setWorkgroupSize(workgroupSize);
-        resultProgram.setWorkgroupSize(workgroupSize);
+        program.setWorkgroupSize(params["workgroupSize"]);
+        resultProgram.setWorkgroupSize(params["workgroupSize"]);
         program.prepare();
 
         itStart = chrono::system_clock::now();

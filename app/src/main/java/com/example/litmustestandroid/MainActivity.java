@@ -91,13 +91,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private AlertDialog tuningDialog;
     private TextView tuningTestName;
-    private EditText[] tuningParameters = new EditText[7];
+    private EditText[] tuningParameters = new EditText[6];
     private Button tuningStartButton, tuningCloseButton;
     private Random tuningRandom;
     private String tuningRandomSeed;
     private String[] tuningTestArgument = new String[4];
     private Map<String, String> tuningParameter;
-    private int tuningCurrConfig, tuningEndConfig, tuningTestWorkgroups, tuningMaxWorkgroups, tuningMinWorkgroupSize, tuningMaxWorkgroupSize;
+    private int tuningCurrConfig, tuningEndConfig, tuningTestWorkgroups, tuningMaxWorkgroups, tuningWorkgroupSize;
     private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
     public HashMap<String, ArrayList<ConformanceResultCase>> conformanceTuningResultCases = new HashMap<>();
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FileOutputStream multiTuningFOS;
     private JsonWriter multiTuningResultWriter;
 
-    private EditText[] conformanceParameters = new EditText[18];
+    private EditText[] conformanceParameters = new EditText[17];
     private ArrayList<String> conformanceSelectedShaders = new ArrayList<String>();
     private ArrayList<TestCase> conformanceSelectedTestCases = new ArrayList<TestCase>();
     private int conformanceCurrIteration;
@@ -573,8 +573,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             tuningParameter.put("testingWorkgroups", Integer.toString(testingWorkgroups));
             tuningParameter.put("maxWorkgroups", Integer.toString(tuningMaxWorkgroups));
-            tuningParameter.put("minWorkgroupSize", Integer.toString(tuningMinWorkgroupSize));
-            tuningParameter.put("maxWorkgroupSize", Integer.toString(tuningMaxWorkgroupSize));
+            tuningParameter.put("workgroupSize", Integer.toString(tuningWorkgroupSize));
             tuningParameter.put("shufflePct", Integer.toString(getPercentage(smoothedParameters)));
             tuningParameter.put("barrierPct", Integer.toString(getPercentage(smoothedParameters)));
             tuningParameter.put("scratchMemorySize", Integer.toString(32 * stressLineSize * stressTargetLines));
@@ -764,25 +763,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreTestName = (TextView) exploreMenuView.findViewById(R.id.testExploreTestName);
         exploreTestName.setText(testName);
 
-        EditText[] exploreParameters = new EditText[18];
+        EditText[] exploreParameters = new EditText[17];
         exploreParameters[0] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestIteration); // testIteration
         exploreParameters[1] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestingWorkgroups); // testingWorkgroups
         exploreParameters[2] = (EditText) exploreMenuView.findViewById(R.id.testExploreMaxWorkgroups); // maxWorkgroups
-        exploreParameters[3] = (EditText) exploreMenuView.findViewById(R.id.testExploreMinWorkgroupSize); // minWorkgroupSize
-        exploreParameters[4] = (EditText) exploreMenuView.findViewById(R.id.testExploreMaxWorkgroupSize); // maxWorkgroupSize
-        exploreParameters[5] = (EditText) exploreMenuView.findViewById(R.id.testExploreShufflePct); // shufflePct
-        exploreParameters[6] = (EditText) exploreMenuView.findViewById(R.id.testExploreBarrierPct); // barrierPct
-        exploreParameters[7] = (EditText) exploreMenuView.findViewById(R.id.testExploreScratchMemorySize); // scratchMemorySize
-        exploreParameters[8] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStride); // memStride
-        exploreParameters[9] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressPct); // memStressPct
-        exploreParameters[10] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressIterations); // memStressIterations
-        exploreParameters[11] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemOryStressPattern); // memStressPattern
-        exploreParameters[12] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPct); // preStressPct
-        exploreParameters[13] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressIterations); // preStressIterations
-        exploreParameters[14] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPattern); // preStressPattern
-        exploreParameters[15] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressLineSize); // stressLineSize
-        exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
-        exploreParameters[17] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressAssignmentStrategy); // stressAssignmentStrategy
+        exploreParameters[3] = (EditText) exploreMenuView.findViewById(R.id.testExploreWorkgroupSize); // workgroupSize
+        exploreParameters[4] = (EditText) exploreMenuView.findViewById(R.id.testExploreShufflePct); // shufflePct
+        exploreParameters[5] = (EditText) exploreMenuView.findViewById(R.id.testExploreBarrierPct); // barrierPct
+        exploreParameters[6] = (EditText) exploreMenuView.findViewById(R.id.testExploreScratchMemorySize); // scratchMemorySize
+        exploreParameters[7] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStride); // memStride
+        exploreParameters[8] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressPct); // memStressPct
+        exploreParameters[9] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressIterations); // memStressIterations
+        exploreParameters[10] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemOryStressPattern); // memStressPattern
+        exploreParameters[11] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPct); // preStressPct
+        exploreParameters[12] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressIterations); // preStressIterations
+        exploreParameters[13] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPattern); // preStressPattern
+        exploreParameters[14] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressLineSize); // stressLineSize
+        exploreParameters[15] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
+        exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressAssignmentStrategy); // stressAssignmentStrategy
 
         currTestCase = findTestCase(testName);
         int basic_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());
@@ -983,8 +981,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tuningParameters[2] = (EditText) tuningMenuView.findViewById(R.id.testTuningRandomSeed); // randomSeed
         tuningParameters[3] = (EditText) tuningMenuView.findViewById(R.id.testTuningTestingWorkgroups); // testingWorkgroups
         tuningParameters[4] = (EditText) tuningMenuView.findViewById(R.id.testTuningMaxWorkgroups); // maxWorkgroups
-        tuningParameters[5] = (EditText) tuningMenuView.findViewById(R.id.testTuningMinWorkgroupSize); // minWorkgroupSize
-        tuningParameters[6] = (EditText) tuningMenuView.findViewById(R.id.testTuningMaxWorkgroupSize); // maxWorkgroupSize
+        tuningParameters[5] = (EditText) tuningMenuView.findViewById(R.id.testTuningWorkgroupSize); // workgroupSize
 
         tuningStartButton = (Button) tuningMenuView.findViewById(R.id.testTuningStartButton);
         tuningCloseButton = (Button) tuningMenuView.findViewById(R.id.testTuningCloseButton);
@@ -1007,8 +1004,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 tuningRandomSeed = tuningParameters[2].getText().toString();
                 tuningTestWorkgroups = Integer.parseInt(tuningParameters[3].getText().toString());
                 tuningMaxWorkgroups = Integer.parseInt(tuningParameters[4].getText().toString());
-                tuningMinWorkgroupSize =  Integer.parseInt(tuningParameters[5].getText().toString());
-                tuningMaxWorkgroupSize =  Integer.parseInt(tuningParameters[6].getText().toString());
+                tuningWorkgroupSize =  Integer.parseInt(tuningParameters[5].getText().toString());
 
                 tuningDialog.dismiss();
 
@@ -1197,8 +1193,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tuningRandomSeed = parameters[2].getText().toString();
         tuningTestWorkgroups = Integer.parseInt(parameters[3].getText().toString());
         tuningMaxWorkgroups = Integer.parseInt(parameters[4].getText().toString());
-        tuningMinWorkgroupSize = Integer.parseInt(parameters[5].getText().toString());
-        tuningMaxWorkgroupSize = Integer.parseInt(parameters[6].getText().toString());
+        tuningWorkgroupSize = Integer.parseInt(parameters[5].getText().toString());
 
         tuningCurrConfig = 0;
         tuningEndConfig = tuningConfigNum;
@@ -1504,8 +1499,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tuningRandomSeed = parameters[2].getText().toString();
         tuningTestWorkgroups = Integer.parseInt(parameters[3].getText().toString());
         tuningMaxWorkgroups = Integer.parseInt(parameters[4].getText().toString());
-        tuningMinWorkgroupSize = Integer.parseInt(parameters[5].getText().toString());
-        tuningMaxWorkgroupSize = Integer.parseInt(parameters[6].getText().toString());
+        tuningWorkgroupSize = Integer.parseInt(parameters[5].getText().toString());
 
         tuningCurrConfig = 0;
         tuningEndConfig = tuningConfigNum;

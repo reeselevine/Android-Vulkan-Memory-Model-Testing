@@ -196,34 +196,32 @@ public class ConformanceTest  extends Fragment {
         int basic_parameters = getResources().getIdentifier(currTest.paramPresetNames[0], "raw", getActivity().getPackageName());
         int stress_parameters = getResources().getIdentifier(currTest.paramPresetNames[1], "raw", getActivity().getPackageName());
 
-        EditText[] conformanceTestExplorerParameters = new EditText[18];
+        EditText[] conformanceTestExplorerParameters = new EditText[17];
         conformanceTestExplorerParameters[0] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerTestIteration); // testIteration
         conformanceTestExplorerParameters[1] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerTestingWorkgroups); // testingWorkgroups
         conformanceTestExplorerParameters[2] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMaxWorkgroups); // maxWorkgroups
-        conformanceTestExplorerParameters[3] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMinWorkgroupSize); // minWorkgroupSize
-        conformanceTestExplorerParameters[4] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMaxWorkgroupSize); // maxWorkgroupSize
-        conformanceTestExplorerParameters[5] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerShufflePct); // shufflePct
-        conformanceTestExplorerParameters[6] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerBarrierPct); // barrierPct
-        conformanceTestExplorerParameters[7] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize); // scratchMemorySize
-        conformanceTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStride); // memStride
-        conformanceTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPct); // memStressPct
-        conformanceTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressIterations); // memStressIterations
-        conformanceTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPattern); // memStressPattern
-        conformanceTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPct); // preStressPct
-        conformanceTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressIterations); // preStressIterations
-        conformanceTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPattern); // preStressPattern
-        conformanceTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize); // stressLineSize
-        conformanceTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines); // stressTargetLines
-        conformanceTestExplorerParameters[17] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressAssignmentStrategy); // stressAssignmentStrategy
+        conformanceTestExplorerParameters[3] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerWorkgroupSize); // workgroupSize
+        conformanceTestExplorerParameters[4] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerShufflePct); // shufflePct
+        conformanceTestExplorerParameters[5] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerBarrierPct); // barrierPct
+        conformanceTestExplorerParameters[6] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize); // scratchMemorySize
+        conformanceTestExplorerParameters[7] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStride); // memStride
+        conformanceTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPct); // memStressPct
+        conformanceTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressIterations); // memStressIterations
+        conformanceTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPattern); // memStressPattern
+        conformanceTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPct); // preStressPct
+        conformanceTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressIterations); // preStressIterations
+        conformanceTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPattern); // preStressPattern
+        conformanceTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize); // stressLineSize
+        conformanceTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines); // stressTargetLines
+        conformanceTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressAssignmentStrategy); // stressAssignmentStrategy
 
-        EditText[] conformanceTestTuningParameters = new EditText[7];
+        EditText[] conformanceTestTuningParameters = new EditText[6];
         conformanceTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningConfigNum); // testConfigNum
         conformanceTestTuningParameters [1] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningTestIteration); // testIteration
         conformanceTestTuningParameters [2] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningRandomSeed); // randomSeed
         conformanceTestTuningParameters [3] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningTestingWorkgroups); // testingWorkgroups
         conformanceTestTuningParameters [4] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningMaxWorkgroups); // maxWorkgroups
-        conformanceTestTuningParameters [5] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningMinWorkgroupSize); // minWorkgroupSize
-        conformanceTestTuningParameters [6] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningMaxWorkgroupSize); // maxWorkgroupSize
+        conformanceTestTuningParameters [5] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningWorkgroupSize); // workgroupSize
 
         ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParameters, basic_parameters);
 

@@ -159,34 +159,32 @@ public class MultiTests extends Fragment {
         int basic_parameters = getResources().getIdentifier(currTest.paramPresetNames[0], "raw", getActivity().getPackageName());
         int stress_parameters = getResources().getIdentifier(currTest.paramPresetNames[1], "raw", getActivity().getPackageName());
 
-        EditText[] multiTestExplorerParameters = new EditText[18];
+        EditText[] multiTestExplorerParameters = new EditText[17];
         multiTestExplorerParameters[0] = (EditText) fragmentView.findViewById(R.id.multiTestExploreTestIteration); // testIteration
         multiTestExplorerParameters[1] = (EditText) fragmentView.findViewById(R.id.multiTestExploreTestingWorkgroups); // testingWorkgroups
         multiTestExplorerParameters[2] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMaxWorkgroups); // maxWorkgroups
-        multiTestExplorerParameters[3] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMinWorkgroupSize); // minWorkgroupSize
-        multiTestExplorerParameters[4] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMaxWorkgroupSize); // maxWorkgroupSize
-        multiTestExplorerParameters[5] = (EditText) fragmentView.findViewById(R.id.multiTestExploreShufflePct); // shufflePct
-        multiTestExplorerParameters[6] = (EditText) fragmentView.findViewById(R.id.multiTestExploreBarrierPct); // barrierPct
-        multiTestExplorerParameters[7] = (EditText) fragmentView.findViewById(R.id.multiTestExploreScratchMemorySize); // scratchMemorySize
-        multiTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStride); // memStride
-        multiTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPct); // memStressPct
-        multiTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressIterations); // memStressIterations
-        multiTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPattern); // memStressPattern
-        multiTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPct); // preStressPct
-        multiTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressIterations); // preStressIterations
-        multiTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPattern); // preStressPattern
-        multiTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressLineSize); // stressLineSize
-        multiTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressTargetLines); // stressTargetLines
-        multiTestExplorerParameters[17] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressAssignmentStrategy); // stressAssignmentStrategy
+        multiTestExplorerParameters[3] = (EditText) fragmentView.findViewById(R.id.multiTestExploreWorkgroupSize); // WorkgroupSize
+        multiTestExplorerParameters[4] = (EditText) fragmentView.findViewById(R.id.multiTestExploreShufflePct); // shufflePct
+        multiTestExplorerParameters[5] = (EditText) fragmentView.findViewById(R.id.multiTestExploreBarrierPct); // barrierPct
+        multiTestExplorerParameters[6] = (EditText) fragmentView.findViewById(R.id.multiTestExploreScratchMemorySize); // scratchMemorySize
+        multiTestExplorerParameters[7] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStride); // memStride
+        multiTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPct); // memStressPct
+        multiTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressIterations); // memStressIterations
+        multiTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPattern); // memStressPattern
+        multiTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPct); // preStressPct
+        multiTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressIterations); // preStressIterations
+        multiTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPattern); // preStressPattern
+        multiTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressLineSize); // stressLineSize
+        multiTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressTargetLines); // stressTargetLines
+        multiTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressAssignmentStrategy); // stressAssignmentStrategy
 
-        EditText[] multiTestTuningParameters = new EditText[7];
+        EditText[] multiTestTuningParameters = new EditText[6];
         multiTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.multiTestTuningConfigNum); // testConfigNum
         multiTestTuningParameters [1] = (EditText) fragmentView.findViewById(R.id.multiTestTuningTestIteration); // testIteration
         multiTestTuningParameters [2] = (EditText) fragmentView.findViewById(R.id.multiTestTuningRandomSeed); // randomSeed
         multiTestTuningParameters [3] = (EditText) fragmentView.findViewById(R.id.multiTestTuningTestingWorkgroups); // testingWorkgroups
         multiTestTuningParameters [4] = (EditText) fragmentView.findViewById(R.id.multiTestTuningMaxWorkgroups); // maxWorkgroups
-        multiTestTuningParameters [5] = (EditText) fragmentView.findViewById(R.id.multiTestTuningMinWorkgroupSize); // minWorkgroupSize
-        multiTestTuningParameters [6] = (EditText) fragmentView.findViewById(R.id.multiTestTuningMaxWorkgroupSize); // maxWorkgroupSize
+        multiTestTuningParameters [5] = (EditText) fragmentView.findViewById(R.id.multiTestTuningWorkgroupSize); // WorkgroupSize
 
         ((MainActivity)getActivity()).loadParameters(multiTestExplorerParameters, basic_parameters);
 

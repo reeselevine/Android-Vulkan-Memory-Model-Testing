@@ -454,35 +454,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:hint="Minimum Workgroup Size:"
+                                android:hint="Workgroup Size:"
                                 android:textSize="@dimen/_12sdp"
                                 android:textStyle="bold" />
 
                             <EditText
-                                android:id="@+id/multiTestExploreMinWorkgroupSize"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="5"
-                                android:gravity="center_horizontal"
-                                android:inputType="number"/>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:hint="Max Workgroup Size:"
-                                android:textSize="@dimen/_12sdp"
-                                android:textStyle="bold" />
-
-                            <EditText
-                                android:id="@+id/multiTestExploreMaxWorkgroupSize"
+                                android:id="@+id/multiTestExploreWorkgroupSize"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="5"
@@ -987,37 +964,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:hint="Minimum Workgroup Size:"
+                                android:hint="Workgroup Size:"
                                 android:textSize="@dimen/_12sdp"
                                 android:textStyle="bold" />
 
                             <EditText
-                                android:id="@+id/multiTestTuningMinWorkgroupSize"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="5"
-                                android:gravity="center_horizontal"
-                                android:inputType="number"
-                                android:text="256"/>
-
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:hint="Max Workgroup Size:"
-                                android:textSize="@dimen/_12sdp"
-                                android:textStyle="bold" />
-
-                            <EditText
-                                android:id="@+id/multiTestTuningMaxWorkgroupSize"
+                                android:id="@+id/multiTestTuningWorkgroupSize"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="5"
