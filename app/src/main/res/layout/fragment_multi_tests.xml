@@ -753,12 +753,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:hint="Stress Assignment Strategy:"
+                                android:hint="Stress Strategy Balance Pct:"
                                 android:textSize="@dimen/_12sdp"
                                 android:textStyle="bold" />
 
                             <EditText
-                                android:id="@+id/multiTestExploreStressAssignmentStrategy"
+                                android:id="@+id/multiTestExploreStressStrategyBalancePct"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="5"

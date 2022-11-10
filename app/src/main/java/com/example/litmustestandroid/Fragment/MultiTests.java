@@ -176,7 +176,7 @@ public class MultiTests extends Fragment {
         multiTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPattern); // preStressPattern
         multiTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressLineSize); // stressLineSize
         multiTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressTargetLines); // stressTargetLines
-        multiTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressAssignmentStrategy); // stressAssignmentStrategy
+        multiTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressStrategyBalancePct); // stressAssignmentStrategy
 
         EditText[] multiTestTuningParameters = new EditText[6];
         multiTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.multiTestTuningConfigNum); // testConfigNum

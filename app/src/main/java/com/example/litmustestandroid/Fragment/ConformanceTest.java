@@ -213,7 +213,7 @@ public class ConformanceTest  extends Fragment {
         conformanceTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPattern); // preStressPattern
         conformanceTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize); // stressLineSize
         conformanceTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines); // stressTargetLines
-        conformanceTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressAssignmentStrategy); // stressAssignmentStrategy
+        conformanceTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressStrategyBalancePct); // stressAssignmentStrategy
 
         EditText[] conformanceTestTuningParameters = new EditText[6];
         conformanceTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningConfigNum); // testConfigNum

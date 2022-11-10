@@ -491,10 +491,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if(words[0].equals("numMemLocations") || words[0].equals("numOutputs")
                 || words[0].equals("permuteFirst") || words[0].equals("permuteSecond")
-                || words[0].equals("aliasedMemory") || words[0].equals("gpuDeviceId")) {
-                    if(words[0].equals("gpuDeviceId")) {
-                        newLine = "";
-                    }
+                || words[0].equals("aliasedMemory")) {
                     outputNumber = words[1];
                 }
                 else {
@@ -535,13 +532,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return roundedPercentage();
         }
         else {
-            return randomGenerator(0, 1) * 100;
+            return randomGenerator(0, 100);
         }
     }
 
     public void writeTuningParameters(TestCase testCase, boolean reset) {
         if (reset) {
-            boolean smoothedParameters = true;
+            boolean smoothedParameters = false;
             int workgroupLimiter = tuningMaxWorkgroups;
 
             int testingWorkgroups = randomGenerator(tuningTestWorkgroups, workgroupLimiter);
@@ -568,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 e.printStackTrace();
             }
 
-            // Now randomize certain parmeter values
+            // Now randomize certain parameter values
             tuningParameter.put("testIterations", currTestIterations);
 
             tuningParameter.put("testingWorkgroups", Integer.toString(testingWorkgroups));
@@ -584,15 +581,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tuningParameter.put("preStressIterations", Integer.toString(randomGenerator(0, 128)));
             tuningParameter.put("stressLineSize", Integer.toString(stressLineSize));
             tuningParameter.put("stressTargetLines", Integer.toString(stressTargetLines));
-
-            boolean stressStrategyBalance = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
-            int stressAssignmentStrategy;
-            if (stressStrategyBalance) {
-                stressAssignmentStrategy = 1;
-            } else {
-                stressAssignmentStrategy = 0;
-            }
-            tuningParameter.put("stressAssignmentStrategy", Integer.toString(stressAssignmentStrategy));
+            tuningParameter.put("stressStrategyBalancePct", Integer.toString(getPercentage(smoothedParameters)));
 
             boolean memStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
             boolean memStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
@@ -641,7 +630,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         fos.write((key + "=1\n").getBytes());
                     } else {
                         if (key.equals("permuteSecond")) {
-                            fos.write((key + "=419\n").getBytes());
+                            fos.write((key + "=1031\n").getBytes());
                         } else {
                             fos.write((key + "=0\n").getBytes());
                         }
@@ -780,7 +769,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreParameters[13] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPattern); // preStressPattern
         exploreParameters[14] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressLineSize); // stressLineSize
         exploreParameters[15] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
-        exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressAssignmentStrategy); // stressAssignmentStrategy
+        exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressStrategyBalancePct); // stressAssignmentStrategy
 
         currTestCase = findTestCase(testName);
         int basic_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());
@@ -2010,7 +1999,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 String[] words = line.split("=");
                                 if(!words[0].equals("numMemLocations") && !words[0].equals("numOutputs")
                                         && !words[0].equals("permuteFirst") && !words[0].equals("permuteSecond")
-                                        && !words[0].equals("aliasedMemory") && !words[0].equals("gpuDeviceId")) {
+                                        && !words[0].equals("aliasedMemory")) {
                                     conformanceResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
                                 }
                                 line = br.readLine();
@@ -2138,7 +2127,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 String[] words = line.split("=");
                                 if(!words[0].equals("numMemLocations") && !words[0].equals("numOutputs")
                                         && !words[0].equals("permuteFirst") && !words[0].equals("permuteSecond")
-                                        && !words[0].equals("aliasedMemory") && !words[0].equals("gpuDeviceId")) {
+                                        && !words[0].equals("aliasedMemory")) {
                                     conformanceTuningResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
                                 }
                                 line = br.readLine();

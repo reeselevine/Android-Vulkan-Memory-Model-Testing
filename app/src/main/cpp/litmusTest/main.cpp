@@ -21,25 +21,9 @@ constexpr char *TAG = "Main";
 bool tuningMode = false;
 bool conformanceMode = false;
 
-/** Returns the GPU to use for this test run. Users can specify the specific GPU to use
- *  with the 'gpuDeviceId' parameter. If gpuDeviceId is not included in the parameters or the specified
- *  device cannot be found, the first device is used.
- */
+/** Returns the GPU to use for this test run. */
 Device getDevice(Instance &instance, map<string, int> params, ofstream &outputFile) {
-    int idx = 0;
-    if (params.find("gpuDeviceId") != params.end()) {
-        int j = 0;
-        for (Device _device : instance.devices()) {
-            if (_device.properties().deviceID == params["gpuDeviceId"]) {
-                idx = j;
-                _device.teardown();
-                break;
-            }
-            j++;
-            _device.teardown();
-        }
-    }
-    Device device = instance.devices().at(idx);
+    Device device = instance.devices().at(0);
     if(!tuningMode) {
         outputFile << "Using device " << device.properties().deviceName << "\n";
         outputFile << "\n";
@@ -84,28 +68,26 @@ void setShuffledWorkgroups(Buffer &shuffledWorkgroups, int numWorkgroups, int sh
 void setScratchLocations(Buffer &locations, int numWorkgroups, map<string, int> params) {
     set <int> usedRegions;
     int numRegions = params["scratchMemorySize"] / params["stressLineSize"];
+    bool roundRobinAssignStrategy = percentageCheck(params["stressStrategyBalancePct"]);
     for (int i = 0; i < params["stressTargetLines"]; i++) {
         int region = rand() % numRegions;
         while(usedRegions.count(region))
             region = rand() % numRegions;
         int locInRegion = rand() % (params["stressLineSize"]);
-        switch (params["stressAssignmentStrategy"]) {
-            case 0:
-                for (int j = i; j < numWorkgroups; j += params["stressTargetLines"]) {
-                    locations.store(j, (region * params["stressLineSize"]) + locInRegion);
+        if (roundRobinAssignStrategy) {
+            for (int j = i; j < numWorkgroups; j += params["stressTargetLines"]) {
+                locations.store(j, (region * params["stressLineSize"]) + locInRegion);
+            }
+        } else {
+            int workgroupsPerLocation = numWorkgroups/params["stressTargetLines"];
+            for (int j = 0; j < workgroupsPerLocation; j++) {
+                locations.store(i*workgroupsPerLocation + j, (region * params["stressLineSize"]) + locInRegion);
+            }
+            if (i == params["stressTargetLines"] - 1 && numWorkgroups % params["stressTargetLines"] != 0) {
+                for (int j = 0; j < numWorkgroups % params["stressTargetLines"]; j++) {
+                    locations.store(numWorkgroups - j - 1, (region * params["stressLineSize"]) + locInRegion);
                 }
-                break;
-            case 1:
-                int workgroupsPerLocation = numWorkgroups/params["stressTargetLines"];
-                for (int j = 0; j < workgroupsPerLocation; j++) {
-                    locations.store(i*workgroupsPerLocation + j, (region * params["stressLineSize"]) + locInRegion);
-                }
-                if (i == params["stressTargetLines"] - 1 && numWorkgroups % params["stressTargetLines"] != 0) {
-                    for (int j = 0; j < numWorkgroups % params["stressTargetLines"]; j++) {
-                        locations.store(numWorkgroups - j - 1, (region * params["stressLineSize"]) + locInRegion);
-                    }
-                }
-                break;
+            }
         }
     }
 }
