@@ -104,19 +104,43 @@ void setDynamicStressParams(Buffer &stressParams, map<string, int> params) {
     } else {
         stressParams.store(1, 0);
     }
+    bool memStressStoreFirst = percentageCheck(params["memStressStoreFirstPct"]);
+    bool memStressStoreSecond = percentageCheck(params["memStressStoreSecondPct"]);
+    int memStressPattern;
+    if (memStressStoreFirst && memStressStoreSecond) {
+        memStressPattern = 0;
+    } else if (memStressStoreFirst) {
+        memStressPattern = 1;
+    } else if (memStressStoreSecond) {
+        memStressPattern = 2;
+    } else {
+        memStressPattern = 3;
+    }
+    stressParams.store(3, memStressPattern);
     if (percentageCheck(params["preStressPct"])) {
         stressParams.store(4, 1);
     } else {
         stressParams.store(4, 0);
     }
+    bool preStressStoreFirst = percentageCheck(params["preStressStoreFirstPct"]);
+    bool preStressStoreSecond = percentageCheck(params["preStressStoreSecondPct"]);
+    int preStressPattern;
+    if (preStressStoreFirst && preStressStoreSecond) {
+        preStressPattern = 0;
+    } else if (preStressStoreFirst) {
+        preStressPattern = 1;
+    } else if (preStressStoreSecond) {
+        preStressPattern = 2;
+    } else {
+        preStressPattern = 3;
+    }
+    stressParams.store(6, preStressPattern);
 }
 
 /** These parameters are static for all iterations of the test. Aliased memory is used for coherence tests. */
 void setStaticStressParams(Buffer &stressParams, map<string, int> params) {
     stressParams.store(2, params["memStressIterations"]);
-    stressParams.store(3, params["memStressPattern"]);
     stressParams.store(5, params["preStressIterations"]);
-    stressParams.store(6, params["preStressPattern"]);
     stressParams.store(7, params["permuteFirst"]);
     stressParams.store(8, params["permuteSecond"]);
     stressParams.store(9, params["testingWorkgroups"]);
@@ -176,7 +200,7 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
     // run iterations
     chrono::time_point<std::chrono::system_clock> start, end, itStart, itEnd;
     start = chrono::system_clock::now();
-    for (int i = 0; i < params["testIterations"]; i++) {
+    for (int i = 0; i < params["iterations"]; i++) {
         // Update iteration number if explorer mode
         string iterationStr = to_string(i+1);
         const char* iterationChar = iterationStr.c_str();

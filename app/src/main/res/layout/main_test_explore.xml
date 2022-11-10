@@ -274,12 +274,35 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:hint="Memory Stress Pattern:"
+                        android:hint="Memory Stress Store First Pct:"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testExploreMemOryStressPattern"
+                        android:id="@+id/testExploreMemoryStressStoreFirstPct"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:gravity="center_horizontal"
+                        android:inputType="number"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Memory Stress Store Second Pct:"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/testExploreMemoryStressStoreSecondPct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -343,12 +366,35 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:hint="Pre Stress Pattern:"
+                        android:hint="Pre Stress Store First Pct:"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/testExplorePreStressPattern"
+                        android:id="@+id/testExplorePreStressStoreFirstPct"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:gravity="center_horizontal"
+                        android:inputType="number"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Pre Stress Store Second Pct:"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/testExplorePreStressStoreSecondPct"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"

@@ -615,12 +615,35 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:hint="Memory Stress Pattern:"
+                                android:hint="Memory Stress Store First Pct:"
                                 android:textSize="@dimen/_12sdp"
                                 android:textStyle="bold" />
 
                             <EditText
-                                android:id="@+id/multiTestExploreMemoryStressPattern"
+                                android:id="@+id/multiTestExploreMemoryStressStoreFirstPct"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="5"
+                                android:gravity="center_horizontal"
+                                android:inputType="number"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="Memory Stress Store Second Pct:"
+                                android:textSize="@dimen/_12sdp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/multiTestExploreMemoryStressStoreSecondPct"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="5"
@@ -684,12 +707,35 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:hint="Pre Stress Pattern:"
+                                android:hint="Pre Stress Store First Pct:"
                                 android:textSize="@dimen/_12sdp"
                                 android:textStyle="bold" />
 
                             <EditText
-                                android:id="@+id/multiTestExplorePreStressPattern"
+                                android:id="@+id/multiTestExplorePreStressStoreFirstPct"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="5"
+                                android:gravity="center_horizontal"
+                                android:inputType="number"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="Pre Stress Store Second Pct:"
+                                android:textSize="@dimen/_12sdp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/multiTestExplorePreStressStoreSecondPct"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="5"

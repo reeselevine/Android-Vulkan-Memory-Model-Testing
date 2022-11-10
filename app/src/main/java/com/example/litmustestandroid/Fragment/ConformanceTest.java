@@ -196,7 +196,7 @@ public class ConformanceTest  extends Fragment {
         int basic_parameters = getResources().getIdentifier(currTest.paramPresetNames[0], "raw", getActivity().getPackageName());
         int stress_parameters = getResources().getIdentifier(currTest.paramPresetNames[1], "raw", getActivity().getPackageName());
 
-        EditText[] conformanceTestExplorerParameters = new EditText[17];
+        EditText[] conformanceTestExplorerParameters = new EditText[19];
         conformanceTestExplorerParameters[0] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerTestIteration); // testIteration
         conformanceTestExplorerParameters[1] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerTestingWorkgroups); // testingWorkgroups
         conformanceTestExplorerParameters[2] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMaxWorkgroups); // maxWorkgroups
@@ -207,13 +207,15 @@ public class ConformanceTest  extends Fragment {
         conformanceTestExplorerParameters[7] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStride); // memStride
         conformanceTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPct); // memStressPct
         conformanceTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressIterations); // memStressIterations
-        conformanceTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPattern); // memStressPattern
-        conformanceTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPct); // preStressPct
-        conformanceTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressIterations); // preStressIterations
-        conformanceTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPattern); // preStressPattern
-        conformanceTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize); // stressLineSize
-        conformanceTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines); // stressTargetLines
-        conformanceTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressStrategyBalancePct); // stressAssignmentStrategy
+        conformanceTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreFirstPct); // memStressPattern
+        conformanceTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreSecondPct); // memStressPattern
+        conformanceTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPct); // preStressPct
+        conformanceTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressIterations); // preStressIterations
+        conformanceTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreFirstPct); // preStressPattern
+        conformanceTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreSecondPct); // preStressPattern
+        conformanceTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize); // stressLineSize
+        conformanceTestExplorerParameters[17] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines); // stressTargetLines
+        conformanceTestExplorerParameters[18] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressStrategyBalancePct); // stressAssignmentStrategy
 
         EditText[] conformanceTestTuningParameters = new EditText[6];
         conformanceTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningConfigNum); // testConfigNum

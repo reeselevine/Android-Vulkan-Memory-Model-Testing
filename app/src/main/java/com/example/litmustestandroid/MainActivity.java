@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FileOutputStream multiTuningFOS;
     private JsonWriter multiTuningResultWriter;
 
-    private EditText[] conformanceParameters = new EditText[17];
+    private EditText[] conformanceParameters = new EditText[19];
     private ArrayList<String> conformanceSelectedShaders = new ArrayList<String>();
     private ArrayList<TestCase> conformanceSelectedTestCases = new ArrayList<TestCase>();
     private int conformanceCurrIteration;
@@ -495,7 +495,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     outputNumber = words[1];
                 }
                 else {
-                    if(words[0].equals("testIterations")) {
+                    if(words[0].equals("iterations")) {
                         currTestIterations = parameters[index].getText().toString();
                     }
                     outputNumber = parameters[index].getText().toString();
@@ -566,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             // Now randomize certain parameter values
-            tuningParameter.put("testIterations", currTestIterations);
+            tuningParameter.put("iterations", currTestIterations);
 
             tuningParameter.put("testingWorkgroups", Integer.toString(testingWorkgroups));
             tuningParameter.put("maxWorkgroups", Integer.toString(tuningMaxWorkgroups));
@@ -582,42 +582,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tuningParameter.put("stressLineSize", Integer.toString(stressLineSize));
             tuningParameter.put("stressTargetLines", Integer.toString(stressTargetLines));
             tuningParameter.put("stressStrategyBalancePct", Integer.toString(getPercentage(smoothedParameters)));
-
-            boolean memStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
-            boolean memStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
-            int memStressPattern;
-            if (memStressStoreFirst) {
-                if (memStressStoreSecond) {
-                    memStressPattern = 0;
-                } else {
-                    memStressPattern = 1;
-                }
-            } else {
-                if (memStressStoreSecond) {
-                    memStressPattern = 2;
-                } else {
-                    memStressPattern = 3;
-                }
-            }
-            tuningParameter.put("memStressPattern", Integer.toString(memStressPattern));
-
-            boolean preStressStoreFirst = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
-            boolean preStressStoreSecond = Math.floor(Math.random() * 100) < getPercentage(smoothedParameters);
-            int preStressPattern;
-            if (preStressStoreFirst) {
-                if (preStressStoreSecond) {
-                    preStressPattern = 0;
-                } else {
-                    preStressPattern = 1;
-                }
-            } else {
-                if (preStressStoreSecond) {
-                    preStressPattern = 2;
-                } else {
-                    preStressPattern = 3;
-                }
-            }
-            tuningParameter.put("preStressPattern", Integer.toString(preStressPattern));
+            tuningParameter.put("memStressStoreFirstPct", Integer.toString(getPercentage(smoothedParameters)));
+            tuningParameter.put("memStressStoreSecondPct", Integer.toString(getPercentage(smoothedParameters)));
+            tuningParameter.put("preStressStoreFirstPct", Integer.toString(getPercentage(smoothedParameters)));
+            tuningParameter.put("preStressStoreSecondPct", Integer.toString(getPercentage(smoothedParameters)));
         }
         // Now insert the parameter values to text file that will be used during test
         try {
@@ -752,7 +720,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreTestName = (TextView) exploreMenuView.findViewById(R.id.testExploreTestName);
         exploreTestName.setText(testName);
 
-        EditText[] exploreParameters = new EditText[17];
+        EditText[] exploreParameters = new EditText[19];
         exploreParameters[0] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestIteration); // testIteration
         exploreParameters[1] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestingWorkgroups); // testingWorkgroups
         exploreParameters[2] = (EditText) exploreMenuView.findViewById(R.id.testExploreMaxWorkgroups); // maxWorkgroups
@@ -763,13 +731,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreParameters[7] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStride); // memStride
         exploreParameters[8] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressPct); // memStressPct
         exploreParameters[9] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressIterations); // memStressIterations
-        exploreParameters[10] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemOryStressPattern); // memStressPattern
-        exploreParameters[11] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPct); // preStressPct
-        exploreParameters[12] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressIterations); // preStressIterations
-        exploreParameters[13] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPattern); // preStressPattern
-        exploreParameters[14] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressLineSize); // stressLineSize
-        exploreParameters[15] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
-        exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressStrategyBalancePct); // stressAssignmentStrategy
+        exploreParameters[10] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressStoreFirstPct); // memStressPattern
+        exploreParameters[11] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressStoreSecondPct); // memStressPattern
+        exploreParameters[12] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPct); // preStressPct
+        exploreParameters[13] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressIterations); // preStressIterations
+        exploreParameters[14] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressStoreFirstPct); // preStressPattern
+        exploreParameters[15] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressStoreSecondPct); // preStressPattern
+        exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressLineSize); // stressLineSize
+        exploreParameters[17] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
+        exploreParameters[18] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressStrategyBalancePct); // stressAssignmentStrategy
 
         currTestCase = findTestCase(testName);
         int basic_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());

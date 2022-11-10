@@ -159,7 +159,7 @@ public class MultiTests extends Fragment {
         int basic_parameters = getResources().getIdentifier(currTest.paramPresetNames[0], "raw", getActivity().getPackageName());
         int stress_parameters = getResources().getIdentifier(currTest.paramPresetNames[1], "raw", getActivity().getPackageName());
 
-        EditText[] multiTestExplorerParameters = new EditText[17];
+        EditText[] multiTestExplorerParameters = new EditText[19];
         multiTestExplorerParameters[0] = (EditText) fragmentView.findViewById(R.id.multiTestExploreTestIteration); // testIteration
         multiTestExplorerParameters[1] = (EditText) fragmentView.findViewById(R.id.multiTestExploreTestingWorkgroups); // testingWorkgroups
         multiTestExplorerParameters[2] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMaxWorkgroups); // maxWorkgroups
@@ -170,13 +170,15 @@ public class MultiTests extends Fragment {
         multiTestExplorerParameters[7] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStride); // memStride
         multiTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPct); // memStressPct
         multiTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressIterations); // memStressIterations
-        multiTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressPattern); // memStressPattern
-        multiTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPct); // preStressPct
-        multiTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressIterations); // preStressIterations
-        multiTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPattern); // preStressPattern
-        multiTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressLineSize); // stressLineSize
-        multiTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressTargetLines); // stressTargetLines
-        multiTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressStrategyBalancePct); // stressAssignmentStrategy
+        multiTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressStoreFirstPct); // memStressPattern
+        multiTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.multiTestExploreMemoryStressStoreSecondPct); // memStressPattern
+        multiTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressPct); // preStressPct
+        multiTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressIterations); // preStressIterations
+        multiTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressStoreFirstPct); // preStressPattern
+        multiTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.multiTestExplorePreStressStoreSecondPct); // preStressPattern
+        multiTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressLineSize); // stressLineSize
+        multiTestExplorerParameters[17] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressTargetLines); // stressTargetLines
+        multiTestExplorerParameters[18] = (EditText) fragmentView.findViewById(R.id.multiTestExploreStressStrategyBalancePct); // stressAssignmentStrategy
 
         EditText[] multiTestTuningParameters = new EditText[6];
         multiTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.multiTestTuningConfigNum); // testConfigNum
