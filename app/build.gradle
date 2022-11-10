@@ -3,6 +3,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file(STORE_FILE)
+            storePassword STORE_PASSWORD
+            keyAlias KEY_ALIAS
+            keyPassword KEY_PASSWORD
+        }
+    }
     compileSdkVersion 31
     buildToolsVersion "31.0.0"
 
@@ -19,9 +27,9 @@ android {
                 cppFlags ''
             }
         }
-        ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a'
-        }
+   //     ndk {
+   //         abiFilters 'armeabi-v7a', 'arm64-v8a'
+   //     }
     }
 
     buildTypes {
@@ -44,6 +52,7 @@ android {
         viewBinding true
     }
     ndkVersion '21.4.7075529'
+    namespace 'com.example.litmustestandroid'
 }
 
 dependencies {

@@ -1303,7 +1303,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void sendResultEmail(String testMode) {
         Log.i(TAG, "Sending result via email");
 
-        String recipient[] = {"mingun0108@gmail.com"};
+        String recipient[] = {"reeselevine@ucsc.edu"};
         String subject = "Android Vulkan Memory Model Testing";
         String message = "GPU: " + GPUName;
         String fileName = "";

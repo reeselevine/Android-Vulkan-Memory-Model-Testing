@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/app/src/main/assets/files/test/vect-add.spv" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/cpp/old_litmusTest/testFiles/vect_add_non.spv" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/raw/vect_add.spv" charset="windows-1252" />
-    <file url="file://$USER_HOME$/Documents/AndroidStudio/DeviceExplorer/LitmusTest [emulator-5554]/data/data/com.example.litmustestandroid/files/vect-add.spv" charset="windows-1252" />
-  </component>
-</project>
