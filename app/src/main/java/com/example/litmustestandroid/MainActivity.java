@@ -1257,7 +1257,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void sendResultEmail(String testMode) {
         Log.i(TAG, "Sending result via email");
 
-        String recipient[] = {"reeselevine@ucsc.edu"};
         String subject = "Android Vulkan Memory Model Testing";
         String message = "GPU: " + GPUName;
         String fileName = "";
@@ -1287,7 +1286,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
 
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, recipient);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         emailIntent.putExtra(Intent.EXTRA_TEXT, message);
         emailIntent.putExtra(Intent.EXTRA_STREAM, path);
