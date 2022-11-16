@@ -1,6 +1,4 @@
 package com.example.litmustestandroid;
-import android.app.Activity;
-import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,7 +19,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +30,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,8 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-
-import static android.os.Environment.getExternalStorageDirectory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -520,11 +514,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public int randomGenerator(int min, int max) {
-        return (int) Math.floor(tuningRandom.nextDouble() * (max - min + 1) + min);
+        return tuningRandom.nextInt() % (max - min + 1) + min;
     }
 
     public int roundedPercentage() {
-        return (int) Math.floor(randomGenerator(0, 100) / 5) * 5;
+        return (randomGenerator(0, 100) / 5) * 5;
     }
 
     public int getPercentage(boolean smoothedParameters) {
@@ -542,6 +536,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int workgroupLimiter = tuningMaxWorkgroups;
 
             int testingWorkgroups = randomGenerator(tuningTestWorkgroups, workgroupLimiter);
+            int workgroupSize = randomGenerator(1, tuningWorkgroupSize);
+            int maxWorkgroups = randomGenerator(testingWorkgroups, workgroupLimiter);
             int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10));
             int stressTargetLines = randomGenerator(1, 16);
             int memStride = randomGenerator(1, 7);
@@ -569,15 +565,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tuningParameter.put("iterations", currTestIterations);
 
             tuningParameter.put("testingWorkgroups", Integer.toString(testingWorkgroups));
-            tuningParameter.put("maxWorkgroups", Integer.toString(tuningMaxWorkgroups));
-            tuningParameter.put("workgroupSize", Integer.toString(tuningWorkgroupSize));
+            tuningParameter.put("maxWorkgroups", Integer.toString(maxWorkgroups));
+            tuningParameter.put("workgroupSize", Integer.toString(workgroupSize));
             tuningParameter.put("shufflePct", Integer.toString(getPercentage(smoothedParameters)));
             tuningParameter.put("barrierPct", Integer.toString(getPercentage(smoothedParameters)));
             tuningParameter.put("scratchMemorySize", Integer.toString(32 * stressLineSize * stressTargetLines));
             tuningParameter.put("memStride", Integer.toString(memStride));
             tuningParameter.put("memStressPct", Integer.toString(getPercentage(smoothedParameters)));
-            tuningParameter.put("memStressIterations", Integer.toString(randomGenerator(0, 1024)));
             tuningParameter.put("preStressPct", Integer.toString(getPercentage(smoothedParameters)));
+            tuningParameter.put("memStressIterations", Integer.toString(randomGenerator(0, 1024)));
             tuningParameter.put("preStressIterations", Integer.toString(randomGenerator(0, 128)));
             tuningParameter.put("stressLineSize", Integer.toString(stressLineSize));
             tuningParameter.put("stressTargetLines", Integer.toString(stressTargetLines));
@@ -986,10 +982,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 tuningEndConfig = tuningConfigNum;
 
                 if(tuningRandomSeed.length() == 0) {
-                    tuningRandom = new Random();
+                    tuningRandom = new PRNG(new Random().nextInt());
                 }
                 else {
-                    tuningRandom = new Random(tuningRandomSeed.hashCode());
+                    tuningRandom = new PRNG(tuningRandomSeed);
                 }
 
                 tuningTestLoop();
@@ -1009,8 +1005,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void tuningTestLoop() {
 
         currTestViewObject.tuningCurrentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
-
-        double generator = tuningRandom.nextDouble();
 
         writeTuningParameters(currTestCase, true);
 
@@ -1160,10 +1154,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         multiCurrIteration = 0;
 
         if(tuningRandomSeed.length() == 0) {
-            tuningRandom = new Random();
+            tuningRandom = new PRNG(new Random().nextInt());
         }
         else {
-            tuningRandom = new Random(tuningRandomSeed.hashCode());
+            tuningRandom = new PRNG(tuningRandomSeed);
         }
 
         // Initialize result writer
@@ -1200,9 +1194,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currMultiTestViewObject.currentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
 
         if(multiCurrIteration == 0) {
-            // Get generator
-            double generator = tuningRandom.nextDouble();
-
             // Write tuning parameter to current test case
             writeTuningParameters(currTestCase, true);
         }
@@ -1464,10 +1455,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         conformanceCurrIteration = 0;
 
         if(tuningRandomSeed.length() == 0) {
-            tuningRandom = new Random();
+            tuningRandom = new PRNG(new Random().nextInt());
         }
         else {
-            tuningRandom = new Random(tuningRandomSeed.hashCode());
+            tuningRandom = new PRNG(tuningRandomSeed);
         }
 
         // Initialize result writer
@@ -1532,9 +1523,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i(TAG, "TestName: " + currTestCase.testName + " Shader: " + currShader);
 
         if(conformanceCurrIteration == 0) {
-            // Get generator
-            double generator = tuningRandom.nextDouble();
-
             // Write tuning parameter to current test case
             writeTuningParameters(currTestCase, true);
         }
