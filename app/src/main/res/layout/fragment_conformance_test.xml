@@ -577,7 +577,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:hint="Workgroup Size:"
+                            android:hint="Max Workgroup Size:"
                             android:textSize="@dimen/_12sdp"
                             android:textStyle="bold" />
 

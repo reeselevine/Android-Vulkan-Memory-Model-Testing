@@ -6,8 +6,6 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_introduction"
               android:title="Introduction"/>
-        <item android:id="@+id/nav_multi_tests"
-              android:title="Running Multiple Tests"/>
         <item android:id="@+id/nav_conformance_test"
             android:title="Conformance Test Suite"/>
         <item android:id="@+id/nav_lock_test"

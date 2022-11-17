@@ -79,7 +79,7 @@ public class Read extends Fragment {
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("read", "Single");
+                ((MainActivity)getActivity()).tuningTestResult("read");
             }
         });
 

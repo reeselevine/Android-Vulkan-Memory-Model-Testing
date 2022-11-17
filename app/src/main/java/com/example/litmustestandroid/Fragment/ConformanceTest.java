@@ -1,7 +1,9 @@
 package com.example.litmustestandroid.Fragment;
 
+import static com.example.litmustestandroid.HelperClass.FileConstants.*;
+import static com.example.litmustestandroid.HelperClass.ParameterConstants.*;
+
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +19,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.litmustestandroid.HelperClass.ConformanceTestViewObject;
-import com.example.litmustestandroid.HelperClass.TestCase;
 import com.example.litmustestandroid.MainActivity;
 import com.example.litmustestandroid.R;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ConformanceTest  extends Fragment {
 
@@ -192,30 +193,29 @@ public class ConformanceTest  extends Fragment {
             }
         });
 
-        TestCase currTest = ((MainActivity)getActivity()).findTestCase("corr");
-        int basic_parameters = getResources().getIdentifier(currTest.paramPresetNames[0], "raw", getActivity().getPackageName());
-        int stress_parameters = getResources().getIdentifier(currTest.paramPresetNames[1], "raw", getActivity().getPackageName());
+        int basic_parameters = getResources().getIdentifier(BASIC_PARAM_FILE, "raw", getActivity().getPackageName());
+        int stress_parameters = getResources().getIdentifier(STRESS_PARAM_FILE, "raw", getActivity().getPackageName());
 
-        EditText[] conformanceTestExplorerParameters = new EditText[19];
-        conformanceTestExplorerParameters[0] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerTestIteration); // testIteration
-        conformanceTestExplorerParameters[1] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerTestingWorkgroups); // testingWorkgroups
-        conformanceTestExplorerParameters[2] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMaxWorkgroups); // maxWorkgroups
-        conformanceTestExplorerParameters[3] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerWorkgroupSize); // workgroupSize
-        conformanceTestExplorerParameters[4] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerShufflePct); // shufflePct
-        conformanceTestExplorerParameters[5] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerBarrierPct); // barrierPct
-        conformanceTestExplorerParameters[6] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize); // scratchMemorySize
-        conformanceTestExplorerParameters[7] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStride); // memStride
-        conformanceTestExplorerParameters[8] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPct); // memStressPct
-        conformanceTestExplorerParameters[9] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressIterations); // memStressIterations
-        conformanceTestExplorerParameters[10] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreFirstPct); // memStressPattern
-        conformanceTestExplorerParameters[11] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreSecondPct); // memStressPattern
-        conformanceTestExplorerParameters[12] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPct); // preStressPct
-        conformanceTestExplorerParameters[13] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressIterations); // preStressIterations
-        conformanceTestExplorerParameters[14] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreFirstPct); // preStressPattern
-        conformanceTestExplorerParameters[15] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreSecondPct); // preStressPattern
-        conformanceTestExplorerParameters[16] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize); // stressLineSize
-        conformanceTestExplorerParameters[17] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines); // stressTargetLines
-        conformanceTestExplorerParameters[18] = (EditText) fragmentView.findViewById(R.id.conformanceTestExplorerStressStrategyBalancePct); // stressAssignmentStrategy
+        HashMap<String, EditText> conformanceTestExplorerParamMap = new HashMap<>();
+        conformanceTestExplorerParamMap.put(ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerTestIteration));
+        conformanceTestExplorerParamMap.put(TESTING_WORKGROUPS, fragmentView.findViewById(R.id.conformanceTestExplorerTestingWorkgroups));
+        conformanceTestExplorerParamMap.put(MAX_WORKGROUPS, fragmentView.findViewById(R.id.conformanceTestExplorerMaxWorkgroups));
+        conformanceTestExplorerParamMap.put(WORKGROUP_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerWorkgroupSize));
+        conformanceTestExplorerParamMap.put(SHUFFLE_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerShufflePct));
+        conformanceTestExplorerParamMap.put(BARRIER_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerBarrierPct));
+        conformanceTestExplorerParamMap.put(SCRATCH_MEMORY_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize));
+        conformanceTestExplorerParamMap.put(MEM_STRIDE, fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize));
+        conformanceTestExplorerParamMap.put(MEM_STRESS_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPct));
+        conformanceTestExplorerParamMap.put(MEM_STRESS_ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressIterations));
+        conformanceTestExplorerParamMap.put(MEM_STRESS_STORE_FIRST_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreFirstPct));
+        conformanceTestExplorerParamMap.put(MEM_STRESS_STORE_SECOND_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreSecondPct));
+        conformanceTestExplorerParamMap.put(PRE_STRESS_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPct));
+        conformanceTestExplorerParamMap.put(PRE_STRESS_ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressIterations));
+        conformanceTestExplorerParamMap.put(PRE_STRESS_STORE_FIRST_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreFirstPct));
+        conformanceTestExplorerParamMap.put(PRE_STRESS_STORE_SECOND_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreSecondPct));
+        conformanceTestExplorerParamMap.put(STRESS_LINE_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize));
+        conformanceTestExplorerParamMap.put(STRESS_TARGET_LINES, fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines));
+        conformanceTestExplorerParamMap.put(STRESS_STRATEGY_BALANCE_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerStressStrategyBalancePct));
 
         EditText[] conformanceTestTuningParameters = new EditText[6];
         conformanceTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningConfigNum); // testConfigNum
@@ -225,7 +225,7 @@ public class ConformanceTest  extends Fragment {
         conformanceTestTuningParameters [4] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningMaxWorkgroups); // maxWorkgroups
         conformanceTestTuningParameters [5] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningWorkgroupSize); // workgroupSize
 
-        ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParameters, basic_parameters);
+        ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParamMap, basic_parameters);
 
         defaultParamButton = fragmentView.findViewById(R.id.conformanceTestDefaultParamButton);
         stressParamButton = fragmentView.findViewById(R.id.conformanceTestStressParamButton);
@@ -242,7 +242,7 @@ public class ConformanceTest  extends Fragment {
             public void onClick(View v) {
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParameters, basic_parameters);
+                ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParamMap, basic_parameters);
             }
         });
 
@@ -251,7 +251,7 @@ public class ConformanceTest  extends Fragment {
             public void onClick(View v) {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParameters, stress_parameters);
+                ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParamMap, stress_parameters);
             }
         });
 

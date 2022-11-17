@@ -1,0 +1,8 @@
+[
+  {
+    "type": "WEAK_MEMORY",
+    "name": "message_passing",
+    "shader": "litmustest_message_passing_default",
+    "resultShader": "litmustest_message_passing_results"
+  }
+]

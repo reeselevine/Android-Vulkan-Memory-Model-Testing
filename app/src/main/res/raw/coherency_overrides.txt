@@ -1,0 +1,2 @@
+permuteSecond=1
+aliasedMemory=1

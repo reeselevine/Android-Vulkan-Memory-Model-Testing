@@ -1,4 +1,7 @@
 package com.example.litmustestandroid;
+import static com.example.litmustestandroid.HelperClass.FileConstants.*;
+import static com.example.litmustestandroid.HelperClass.ParameterConstants.*;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -57,10 +60,12 @@ import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -73,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayAdapter<String> adapterItems;
 
     private TestViewObject currTestViewObject;
-    private MultiTestViewObject currMultiTestViewObject;
     private ConformanceTestViewObject conformanceTestViewObject;
     private LockTestViewObject lockTestViewObject;
 
@@ -95,12 +99,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
     public HashMap<String, ArrayList<ConformanceResultCase>> conformanceTuningResultCases = new HashMap<>();
-
-    private ArrayList<TestCase> multiSelectedTestCases = new ArrayList<TestCase>();
-    private int multiCurrIteration;
-    private RecyclerView currMultiTestRV;
-    private FileOutputStream multiTuningFOS;
-    private JsonWriter multiTuningResultWriter;
 
     private EditText[] conformanceParameters = new EditText[19];
     private ArrayList<String> conformanceSelectedShaders = new ArrayList<String>();
@@ -127,14 +125,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String shaderType = "";
 
     private ArrayList<TestCase> testCases = new ArrayList<>();
-    public LinkedHashMap<String, Boolean> multiTestCases = new LinkedHashMap<String, Boolean>();
     public LinkedHashMap<String, Boolean> conformanceShaders = new LinkedHashMap<String, Boolean>();
 
-    public ArrayList<String> totalShaderNames = new ArrayList<String>();
-    public ArrayList<String> totalResultNames = new ArrayList<String>();
-    public ArrayList<String> totalOutputNames = new ArrayList<String>();
-    public ArrayList<String> totalTestParamNames = new ArrayList<String>();
-    public ArrayList<String> totalParamPresetNames = new ArrayList<String>();
+    /*** New stuff for test lists ***/
+    private static final String CONFORMANCE_TEST_LIST = "conformance_tests.json";
+    private static final String TUNING_TEST_LIST = "tuning_tests.json";
+    private static final String MISC_TEST_LIST = "misc_tests.json";
+
+    private HashMap<String, NewTestCase> tuningTests = new HashMap<>();
+    private HashMap<String, NewTestCase> conformanceTests = new HashMap<>();
+    private HashMap<String, NewTestCase> allTests = new HashMap<>();
+
+    private ArrayList<String> selectedTests = new ArrayList<>();
+
+    /*** End new stuff ***/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,10 +175,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_introduction:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new Introduction()).commit();
-                break;
-            case R.id.nav_multi_tests:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new MultiTests()).commit();
                 break;
             case R.id.nav_conformance_test:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -263,10 +263,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private String JsonDataFromAsset() {
+    private String JsonDataFromAsset(String name) {
         String json = null;
         try {
-            InputStream inputStream = getAssets().open("test_list.json");
+            InputStream inputStream = getAssets().open(name);
             int sizeOfFile = inputStream.available();
             byte[] bufferData = new byte[sizeOfFile];
             inputStream.read(bufferData);
@@ -279,85 +279,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return json;
     }
 
-    private void registerTestCases() {
+    /** Loads tests from the specified file. */
+    private void loadTests(String testFile, HashMap<String, NewTestCase> testList) {
         try {
-            JSONObject testJsonObject = new JSONObject(JsonDataFromAsset());
-            JSONArray testArray = testJsonObject.getJSONArray("tests");
+            JSONArray testArray = new JSONArray(JsonDataFromAsset(testFile));
             for (int i = 0; i < testArray.length(); i++) {
                 JSONObject testData = testArray.getJSONObject(i);
 
-                TestCase newTest = new TestCase();
-                newTest.testName = testData.getString("name");
-                newTest.testType = testData.getString("type");
-
-                JSONArray shaderArray = testData.getJSONArray("shaders");
-                String[] shaderNames = new String[shaderArray.length()];
-                for(int j = 0; j < shaderArray.length(); j++) {
-                    shaderNames[j] = shaderArray.getString(j);
-                }
-                newTest.setShaderNames(shaderNames, totalShaderNames);
-
-                JSONArray conformanceShaderArray = testData.getJSONArray("conformanceShaders");
-                String[] conformanceShaderNames = new String[conformanceShaderArray.length()];
-                for(int j = 0; j < conformanceShaderArray.length(); j++) {
-                    conformanceShaderNames[j] = conformanceShaderArray.getString(j);
-                    conformanceShaders.put(conformanceShaderArray.getString(j), false);
-                }
-                newTest.setConformanceShaderNames(conformanceShaderNames, totalShaderNames);
-
-                JSONArray resultArray = testData.getJSONArray("results");
-                String[] resultNames = new String[resultArray.length()];
-                for(int j = 0; j < resultArray.length(); j++) {
-                    resultNames[j] = resultArray.getString(j);
-                }
-                newTest.setResultNames(resultNames, totalResultNames);
-
-                JSONArray outputArray = testData.getJSONArray("outputs");
-                String[] outputNames = new String[outputArray.length()];
-                for(int j = 0; j < outputArray.length(); j++) {
-                    outputNames[j] = outputArray.getString(j);
-                }
-                newTest.setOutputName(outputNames, totalOutputNames);
-
-                newTest.setTestParamName(testData.getString("parameter"), totalTestParamNames);
-
-                JSONArray paramPresetArray = testData.getJSONArray("parameter_presets");
-                String[] paramPresetNames = new String[paramPresetArray.length()];
-                for(int j = 0; j < paramPresetArray.length(); j++) {
-                    paramPresetNames[j] = paramPresetArray.getString(j);
-                }
-                newTest.setParamPresetNames(paramPresetNames, totalParamPresetNames);
-
-                testCases.add(newTest);
-                multiTestCases.put(newTest.testName, false);
+                String testName = testData.getString("name");
+                NewTestCase testCase = new NewTestCase(
+                        testName,
+                        testData.getString("shader"),
+                        testData.getString("resultShader"),
+                        NewTestCase.TestType.valueOf(testData.getString("type"))
+                );
+                testList.put(testName, testCase);
             }
-            // Add lock tests
-            testArray = testJsonObject.getJSONArray("lockTests");
-            for (int i = 0; i < testArray.length(); i++) {
-                JSONObject testData = testArray.getJSONObject(i);
-
-                LockTestCase newTest = new LockTestCase();
-                newTest.testName = testData.getString("name");
-                newTest.testType = testData.getString("type");
-
-                JSONArray shaderArray = testData.getJSONArray("shaders");
-                String[] shaderNames = new String[shaderArray.length()];
-                for(int j = 0; j < shaderArray.length(); j++) {
-                    shaderNames[j] = shaderArray.getString(j);
-                }
-                newTest.setShaderNames(shaderNames, totalShaderNames);
-
-                JSONArray outputArray = testData.getJSONArray("outputs");
-                String[] outputNames = new String[outputArray.length()];
-                for(int j = 0; j < outputArray.length(); j++) {
-                    outputNames[j] = outputArray.getString(j);
-                }
-                newTest.setOutputName(outputNames, totalOutputNames);
-            }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    /** Loads conformance, tuning, and misc tests. */
+    private void registerTestCases() {
+        loadTests(CONFORMANCE_TEST_LIST, conformanceTests);
+        allTests.putAll(conformanceTests);
+        loadTests(TUNING_TEST_LIST, tuningTests);
+        allTests.putAll(tuningTests);
+        loadTests(MISC_TEST_LIST, allTests);
     }
 
     public TestCase findTestCase(String testName) {
@@ -407,55 +356,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initFileConfig() {
-        // Transfer shader files
-        for(int i = 0; i < totalShaderNames.size(); i++) {
-            int shaderId = this.getResources().getIdentifier(totalShaderNames.get(i), "raw", this.getPackageName());
-            copyFile(shaderId, totalShaderNames.get(i) + ".spv");
-            Log.d(TAG, "File: " + totalShaderNames.get(i) + ".spv copied to " + getFilesDir().toString());
+        // some shaders use the same result file, so keep track of which ones we've already copied
+        Set<String> seenResultFiles = new HashSet<>();
+        for (NewTestCase testCase : allTests.values()) {
+            // copy shader file
+            int shaderId = this.getResources().getIdentifier(testCase.getShaderFile(), "raw", this.getPackageName());
+            copyFile(shaderId, testCase.getShaderFile() + ".spv");
+            Log.d(TAG, "File: " + testCase.getShaderFile() + ".spv copied to " + getFilesDir().toString());
+            if (!seenResultFiles.contains(testCase.getResultFile())) {
+                seenResultFiles.add(testCase.getResultFile());
+                // copy result file
+                int resultShaderId = this.getResources().getIdentifier(testCase.getResultFile(), "raw", this.getPackageName());
+                copyFile(resultShaderId, testCase.getResultFile() + ".spv");
+                Log.d(TAG, "File: " + testCase.getResultFile() + ".spv copied to " + getFilesDir().toString());
+            }
         }
-
-        // Transfer result files
-        for(int i = 0; i < totalResultNames.size(); i++) {
-            int resultId = this.getResources().getIdentifier(totalResultNames.get(i), "raw", this.getPackageName());
-            copyFile(resultId, totalResultNames.get(i) + ".spv");
-            Log.d(TAG, "File: " + totalResultNames.get(i) + ".spv copied to " + getFilesDir().toString());
-        }
-
-        // Transfer output files
-        for(int i = 0; i < totalOutputNames.size(); i++) {
-            int outputId = this.getResources().getIdentifier(totalOutputNames.get(i), "raw", this.getPackageName());
-            copyFile(outputId, totalOutputNames.get(i) + ".txt");
-            Log.d(TAG, "File: " + totalOutputNames.get(i) + ".txt copied to " + getFilesDir().toString());
-        }
-
-        // Transfer test param files
-        for(int i = 0; i < totalTestParamNames.size(); i++) {
-            int testParamId = this.getResources().getIdentifier(totalTestParamNames.get(i), "raw", this.getPackageName());
-            copyFile(testParamId, totalTestParamNames.get(i) + ".txt");
-            Log.d(TAG, "File: " + totalTestParamNames.get(i) + ".txt copied to " + getFilesDir().toString());
-        }
-
-        // Transfer param files
-        for(int i = 0; i < totalParamPresetNames.size(); i++) {
-            int paramPresetId = this.getResources().getIdentifier(totalParamPresetNames.get(i), "raw", this.getPackageName());
-            copyFile(paramPresetId, totalParamPresetNames.get(i) + ".txt");
-            Log.d(TAG, "File: " + totalParamPresetNames.get(i) + ".txt copied to " + getFilesDir().toString());
+        // Transfer the other files
+        for (String file : allFiles) {
+            int fileId = this.getResources().getIdentifier(file, "raw", this.getPackageName());
+            copyFile(fileId, file + ".txt");
+            Log.d(TAG, "File: " + file + ".txt copied to " + getFilesDir().toString());
         }
     }
 
     // Automatically fill parameters with basic values
-    public void loadParameters(EditText[] parameters, int paramValue){
+    public void loadParameters(Map<String, EditText> parameters, int paramValue){
         InputStream inputStream = getResources().openRawResource(paramValue);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        int index = 0;
+        Set<String> keys = parameters.keySet();
 
         try {
             String line = bufferedReader.readLine();
             while (line != null) {
                 String[] words = line.split("=");
-                if((!words[0].equals("numMemLocations") && !words[0].equals("numOutputs")) && index < parameters.length) {
-                    parameters[index].setText(words[1]);
-                    index++;
+                if((!words[0].equals(NUM_MEM_LOCATIONS) && !words[0].equals(NUM_OUTPUTS)) && keys.contains(words[0])) {
+                    parameters.get(words[0]).setText(words[1]);
                 }
                 line = bufferedReader.readLine();
             }
@@ -716,6 +651,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreTestName = (TextView) exploreMenuView.findViewById(R.id.testExploreTestName);
         exploreTestName.setText(testName);
 
+        HashMap<String, EditText> exploreParamMap = new HashMap<>();
+        exploreParamMap.put(ITERATIONS, exploreMenuView.findViewById(R.id.testExploreTestIteration));
+        exploreParamMap.put(TESTING_WORKGROUPS, exploreMenuView.findViewById(R.id.testExploreTestingWorkgroups));
+        exploreParamMap.put(MAX_WORKGROUPS, exploreMenuView.findViewById(R.id.testExploreMaxWorkgroups));
+        exploreParamMap.put(WORKGROUP_SIZE, exploreMenuView.findViewById(R.id.testExploreWorkgroupSize));
+        exploreParamMap.put(SHUFFLE_PCT, exploreMenuView.findViewById(R.id.testExploreShufflePct));
+        exploreParamMap.put(BARRIER_PCT, exploreMenuView.findViewById(R.id.testExploreBarrierPct));
+        exploreParamMap.put(SCRATCH_MEMORY_SIZE, exploreMenuView.findViewById(R.id.testExploreScratchMemorySize));
+        exploreParamMap.put(MEM_STRIDE, exploreMenuView.findViewById(R.id.testExploreScratchMemorySize));
+        exploreParamMap.put(MEM_STRESS_PCT, exploreMenuView.findViewById(R.id.testExploreMemoryStressPct));
+        exploreParamMap.put(MEM_STRESS_ITERATIONS, exploreMenuView.findViewById(R.id.testExploreMemoryStressIterations));
+        exploreParamMap.put(MEM_STRESS_STORE_FIRST_PCT, exploreMenuView.findViewById(R.id.testExploreMemoryStressStoreFirstPct));
+        exploreParamMap.put(MEM_STRESS_STORE_SECOND_PCT, exploreMenuView.findViewById(R.id.testExploreMemoryStressStoreSecondPct));
+        exploreParamMap.put(PRE_STRESS_PCT, exploreMenuView.findViewById(R.id.testExplorePreStressPct));
+        exploreParamMap.put(PRE_STRESS_ITERATIONS, exploreMenuView.findViewById(R.id.testExplorePreStressIterations));
+        exploreParamMap.put(PRE_STRESS_STORE_FIRST_PCT, exploreMenuView.findViewById(R.id.testExplorePreStressStoreFirstPct));
+        exploreParamMap.put(PRE_STRESS_STORE_SECOND_PCT, exploreMenuView.findViewById(R.id.testExplorePreStressStoreSecondPct));
+        exploreParamMap.put(STRESS_LINE_SIZE, exploreMenuView.findViewById(R.id.testExploreStressLineSize));
+        exploreParamMap.put(STRESS_TARGET_LINES, exploreMenuView.findViewById(R.id.testExploreStressTargetLines));
+        exploreParamMap.put(STRESS_STRATEGY_BALANCE_PCT, exploreMenuView.findViewById(R.id.testExploreStressStrategyBalancePct));
+
         EditText[] exploreParameters = new EditText[19];
         exploreParameters[0] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestIteration); // testIteration
         exploreParameters[1] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestingWorkgroups); // testingWorkgroups
@@ -738,10 +694,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreParameters[18] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressStrategyBalancePct); // stressAssignmentStrategy
 
         currTestCase = findTestCase(testName);
-        int basic_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());
-        int stress_parameters = this.getResources().getIdentifier(currTestCase.paramPresetNames[1], "raw", this.getPackageName());
+        int basic_parameters = getResources().getIdentifier(BASIC_PARAM_FILE, "raw", this.getPackageName());
+        int stress_parameters = getResources().getIdentifier(STRESS_PARAM_FILE, "raw", this.getPackageName());
 
-        loadParameters(exploreParameters, basic_parameters);
+        loadParameters(exploreParamMap, basic_parameters);
 
         exploreStartButton = (Button) exploreMenuView.findViewById(R.id.testExploreStartButton);
         exploreCloseButton = (Button) exploreMenuView.findViewById(R.id.testExploreCloseButton);
@@ -764,7 +720,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                loadParameters(exploreParameters, basic_parameters);
+                loadParameters(exploreParamMap, basic_parameters);
             }
         });
 
@@ -774,7 +730,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                loadParameters(exploreParameters, stress_parameters);
+                loadParameters(exploreParamMap, stress_parameters);
             }
         });
 
@@ -1013,7 +969,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         testThread.start();
     }
 
-    public void tuningTestResult(String testName, String testType) {
+    public void tuningTestResult(String testName) {
         Log.i("TUNING RESULT", testName + " PRESSED");
 
         ArrayList<TuningResultCase> currTestList = tuningResultCases.get(testName);
@@ -1022,188 +978,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.e(TAG, testName + " cannot find result cases!");
         }
 
-        if(testType.equals("Single")) {
-            TuningResultDialogFragment dialog = new TuningResultDialogFragment(testName, currTestList, MainActivity.this);
-            dialog.show(getSupportFragmentManager(), "TuningResultDialog");
-        }
-        else { // Multi
-            String[] testNames = new String[multiSelectedTestCases.size()];
-            for(int i = 0; i < testNames.length; i++) {
-                testNames[i] = multiSelectedTestCases.get(i).testName;
-            }
-
-            MultiTuningResultDialogFragment dialog = new MultiTuningResultDialogFragment(testNames, currTestList, MainActivity.this);
-            dialog.show(getSupportFragmentManager(), "MultiTuningResultDialog");
-        }
-    }
-
-    public void multiTestCheckBoxesListener(View view) {
-        CheckBox currCheckBox = (CheckBox)view;
-        String testName = view.getTag().toString();
-        if(currCheckBox.isChecked()) { // Clicked
-            multiTestCases.put(testName, true);
-        }
-        else { // Un-clicked
-            multiTestCases.put(testName, false);
-        }
-     }
-
-    public void multiExplorerTestBegin(EditText[] parameters, MultiTestViewObject multiTestViewObject, RecyclerView multiTestRV) {
-        currTestType = "MultiExplorer";
-        currMultiTestViewObject = multiTestViewObject;
-        currMultiTestRV = multiTestRV;
-        multiSelectedTestCases = new ArrayList<TestCase>();
-
-        // Check if at least one test selected
-        for (LinkedHashMap.Entry<String, Boolean> entry : multiTestCases.entrySet()) {
-            if(entry.getValue() == true) {
-                multiSelectedTestCases.add(findTestCase(entry.getKey()));
-            }
-        }
-        if(multiSelectedTestCases.size() == 0) { // No test selected
-            Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        // Write parameters
-        for (int i = 0; i < multiSelectedTestCases.size(); i++) {
-            TestCase testCase = multiSelectedTestCases.get(i);
-            int basic_parameters = this.getResources().getIdentifier(testCase.paramPresetNames[0], "raw", this.getPackageName());
-            writeParameters(testCase.testName, parameters, basic_parameters);
-        }
-
-        // Disable start button
-        currMultiTestViewObject.startButton.setEnabled(false);
-        currMultiTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
-
-        // Set progress layout visible
-        currMultiTestViewObject.progressLayout.setVisibility(View.VISIBLE);
-
-        // Set config layout remain invisible
-        currMultiTestViewObject.configLayout.setVisibility(View.GONE);
-
-        // Set result layout invisible
-        currMultiTestViewObject.explorerResultLayout.setVisibility(View.GONE);
-
-        multiCurrIteration = 0;
-
-        // Start multi explorer test loop
-        multiExplorerTestLoop();
-    }
-
-    public void multiExplorerTestLoop() {
-        currTestCase = multiSelectedTestCases.get(multiCurrIteration);
-        String[] testArgument = new String[4];
-
-        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
-
-        // Shader Name
-        testArgument[1] = currTestCase.shaderNames[0]; // Current selected shader
-        testArgument[2] = currTestCase.resultNames[0]; // Result Shader
-        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
-
-        // Update test name
-        currMultiTestViewObject.currentTestName.setText(currTestCase.testName);
-
-        // Run test in different thread
-        testThread = new TestThread(MainActivity.this, testArgument, false, false);
-        testThread.start();
-    }
-
-    public void multiTuningTestBegin(EditText[] parameters, MultiTestViewObject multiTestViewObject, RecyclerView multiTestRV) {
-        currTestType = "MultiTuning";
-        currMultiTestViewObject = multiTestViewObject;
-        currMultiTestRV = multiTestRV;
-        multiSelectedTestCases = new ArrayList<TestCase>();
-
-        // Check if at least one test selected
-        for (LinkedHashMap.Entry<String, Boolean> entry : multiTestCases.entrySet()) {
-            if(entry.getValue() == true) {
-                multiSelectedTestCases.add(findTestCase(entry.getKey()));
-            }
-        }
-        if(multiSelectedTestCases.size() == 0) { // No test selected
-            Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        // Disable start button
-        currMultiTestViewObject.startButton.setEnabled(false);
-        currMultiTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
-
-        // Set progress layout visible
-        currMultiTestViewObject.progressLayout.setVisibility(View.VISIBLE);
-
-        // Set config layout visible
-        currMultiTestViewObject.configLayout.setVisibility(View.VISIBLE);
-
-        // Set result layout invisible
-        currMultiTestViewObject.tuningResultLayout.setVisibility(View.GONE);
-
-        int tuningConfigNum = Integer.parseInt(parameters[0].getText().toString());
-        currTuningResults = new ArrayList<TuningResultCase>();
-        currTestIterations = parameters[1].getText().toString();
-        tuningRandomSeed = parameters[2].getText().toString();
-        tuningTestWorkgroups = Integer.parseInt(parameters[3].getText().toString());
-        tuningMaxWorkgroups = Integer.parseInt(parameters[4].getText().toString());
-        tuningWorkgroupSize = Integer.parseInt(parameters[5].getText().toString());
-
-        tuningCurrConfig = 0;
-        tuningEndConfig = tuningConfigNum;
-
-        multiCurrIteration = 0;
-
-        if(tuningRandomSeed.length() == 0) {
-            tuningRandom = new PRNG(new Random().nextInt());
-        }
-        else {
-            tuningRandom = new PRNG(tuningRandomSeed);
-        }
-
-        // Initialize result writer
-        String outputFileName = "litmustest_multitest_tuning_result.json";
-        try {
-            multiTuningFOS = openFileOutput(outputFileName, Context.MODE_PRIVATE);
-            multiTuningResultWriter = new JsonWriter(new OutputStreamWriter(multiTuningFOS, "UTF-8"));
-            multiTuningResultWriter.setIndent("  ");
-            multiTuningResultWriter.beginArray();
-            multiTuningResultWriter.beginObject();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Start multi tuning test loop
-        multiTuningTestLoop();
-    }
-
-    public void multiTuningTestLoop() {
-        currTestCase = multiSelectedTestCases.get(multiCurrIteration);
-        String[] testArgument = new String[4];
-
-        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
-
-        // Shader Name
-        testArgument[1] = currTestCase.shaderNames[0]; // Current selected shader
-        testArgument[2] = currTestCase.resultNames[0]; // Result Shader
-        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
-
-        // Update test name
-        currMultiTestViewObject.currentTestName.setText(currTestCase.testName + " (" + (multiCurrIteration + 1) + "/" + multiSelectedTestCases.size() + ")");
-
-        // Update current config number
-        currMultiTestViewObject.currentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
-
-        if(multiCurrIteration == 0) {
-            // Write tuning parameter to current test case
-            writeTuningParameters(currTestCase, true);
-        }
-        else {
-            writeTuningParameters(currTestCase, false);
-        }
-
-        // Run test in different thread
-        testThread = new TestThread(MainActivity.this, testArgument, true, false);
-        testThread.start();
+        TuningResultDialogFragment dialog = new TuningResultDialogFragment(testName, currTestList, MainActivity.this);
+        dialog.show(getSupportFragmentManager(), "TuningResultDialog");
     }
 
     public String getFileDir() {
@@ -1220,12 +996,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else if (currTestType.equals("Tuning")) {
                     currTestViewObject.tuningCurrentIterationNumber.setText(iterationNum + "/" + currTestIterations);
-                }
-                else if (currTestType.equals("MultiExplorer")) {
-                    currMultiTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
-                }
-                else if (currTestType.equals("MultiTuning")){ // Multi Tuning test
-                    currMultiTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
                 else if (currTestType.equals("ConformanceExplorer")){ // Conformance Explorer
                     conformanceTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
@@ -1645,249 +1415,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     else {
                         tuningCurrConfig++;
                         tuningTestLoop();
-                    }
-                }
-                else if (currTestType.equals("MultiExplorer")){ // Multi Explorer test
-                    // Append to result file
-                    String outputFileName = "litmustest_multitest_explorer_result.txt";
-                    try
-                    {
-                        FileOutputStream fos;
-                        if(multiCurrIteration == 0) {
-                            fos = openFileOutput(outputFileName, Context.MODE_PRIVATE);
-                        }
-                        else {
-                            fos = openFileOutput(outputFileName, Context.MODE_APPEND);
-                        }
-
-                        String fileName = "litmustest_" + multiSelectedTestCases.get(multiCurrIteration).testName + "_output_explorer.txt";
-                        FileInputStream fis = openFileInput(fileName);
-                        InputStreamReader isr = new InputStreamReader(fis);
-                        BufferedReader br = new BufferedReader(isr);
-
-                        String line = br.readLine();
-                        while (line != null) {
-                            line += "\n";
-                            fos.write(line.getBytes());
-                            line = br.readLine();
-                        }
-
-                        String eof = "----------\n";
-                        fos.write(eof.getBytes());
-
-                        fis.close();
-                        isr.close();
-                        br.close();
-
-                        fos.close();
-
-                        // Write to external storage
-                        fis = openFileInput(fileName);
-                        FileChannel inChannel = fis.getChannel();
-                        File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM), fileName);
-                        FileChannel outChannel =  new FileOutputStream(output).getChannel();
-
-                        inChannel.transferTo(0, inChannel.size(), outChannel);
-                        fis.close();
-                        inChannel.close();
-                        outChannel.close();
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    if(multiCurrIteration == multiSelectedTestCases.size()-1) { // All test ended, update result
-
-                        Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
-
-                        // Enable start button
-                        currMultiTestViewObject.startButton.setEnabled(true);
-                        currMultiTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
-
-                        // Set progress layout invisible
-                        currMultiTestViewObject.progressLayout.setVisibility(View.GONE);
-
-                        // Set result layout visible
-                        currMultiTestViewObject.explorerResultLayout.setVisibility(View.VISIBLE);
-
-                        // Indicate that there is result to be displayed
-                        currMultiTestViewObject.newExplorer = false;
-
-                        // Get string array of test names
-                        String[] testNames = new String[multiSelectedTestCases.size()];
-                        for(int i = 0; i < multiSelectedTestCases.size(); i++) {
-                            testNames[i] = multiSelectedTestCases.get(i).testName;
-                        }
-
-                        // Update result
-                        MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNames, MainActivity.this, "Explorer");
-                        currMultiTestRV.setAdapter(multiTestResultAdapter);
-                        currMultiTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                        currMultiTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
-                    }
-                    else {
-                        multiCurrIteration++;
-                        multiExplorerTestLoop();
-                    }
-                }
-                else if (currTestType.equals("MultiTuning")){ // Multi Tuning Test
-                    // Save param value
-                    String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
-
-                    // Save result value
-                    String currResultValue = convertFileToString(currTestCase.outputNames[1] + ".txt");
-
-                    // Go through result and get number of sequential behaviors
-                    String startIndexIndicator = "seq: ";
-                    String endIndexIndicator = "\ninterleaved:";
-                    String numSeqBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-                    // Go through result and get number of interleaved behaviors
-                    startIndexIndicator = "interleaved: ";
-                    endIndexIndicator = "\nweak:";
-                    String numInterleavedBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-                    // Go through result and get number of weak behaviors
-                    startIndexIndicator = "weak: ";
-                    endIndexIndicator = "\nTotal elapsed time";
-                    String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-                    // Transfer over the tuning result case
-                    TuningResultCase currTuningResult = new TuningResultCase(currTestCase.testName, currParamValue, currResultValue,
-                            Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors));
-
-                    currTuningResults.add(currTuningResult);
-
-                    if(multiCurrIteration == multiSelectedTestCases.size() - 1) { // One tuning config test completed
-                        tuningResultCases.put(Integer.toString(tuningCurrConfig), currTuningResults);
-
-                        // Append to the result file
-                        try {
-                            multiTuningResultWriter.name(Integer.toString(tuningCurrConfig));
-                            multiTuningResultWriter.beginObject();
-
-                            // Result
-                            for(int i = 0; i < currTuningResults.size(); i++) {
-                                TuningResultCase resultCase = currTuningResults.get(i);
-
-                                String resultName = resultCase.testName + "_result_name";
-                                String suffix = " Default";
-                                int resultId = getResources().getIdentifier(resultName, "string", getPackageName());
-
-                                multiTuningResultWriter.name((getResources().getString(resultId)) + suffix);
-                                multiTuningResultWriter.beginObject();
-                                multiTuningResultWriter.name("seq").value(resultCase.numSeqBehaviors);
-                                multiTuningResultWriter.name("interleaved").value(resultCase.numInterleavedBehaviors);
-                                multiTuningResultWriter.name("weak").value(resultCase.numWeakBehaviors);
-                                multiTuningResultWriter.endObject();
-                            }
-
-                            // Parameter
-                            multiTuningResultWriter.name("Test Parameters");
-                            multiTuningResultWriter.beginObject();
-
-                            FileInputStream fis = openFileInput(currTestCase.testParamName + ".txt");
-                            InputStreamReader isr = new InputStreamReader(fis);
-                            BufferedReader br = new BufferedReader(isr);
-
-                            String line = br.readLine();
-                            while (line != null) {
-                                String[] words = line.split("=");
-                                multiTuningResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
-                                line = br.readLine();
-                            }
-                            fis.close();
-                            isr.close();
-                            br.close();
-                            multiTuningResultWriter.endObject();
-
-                            multiTuningResultWriter.endObject();
-
-                        }
-                        catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        // Reset currTuningResults for next test config
-                        currTuningResults = new ArrayList<TuningResultCase>();
-
-                        // Reset tuning config
-                        multiCurrIteration = 0;
-                        tuningCurrConfig++;
-
-                        if(tuningCurrConfig == tuningEndConfig) { // All tuning tests completed
-
-                            Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
-
-                            // Enable start button
-                            currMultiTestViewObject.startButton.setEnabled(true);
-                            currMultiTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
-
-                            // Set progress layout invisible
-                            currMultiTestViewObject.progressLayout.setVisibility(View.GONE);
-
-                            // Set result layout visible
-                            currMultiTestViewObject.tuningResultLayout.setVisibility(View.VISIBLE);
-
-                            // Indicate that there is result to be displayed
-                            currMultiTestViewObject.newTuning = false;
-
-                            // Close result writer
-                            try {
-                                multiTuningResultWriter.name("gpu").value(GPUName);
-                                multiTuningResultWriter.name("configurations").value(tuningEndConfig);
-                                multiTuningResultWriter.name("randomSeed").value(tuningRandomSeed);
-
-                                multiTuningResultWriter.endObject();
-                                multiTuningResultWriter.endArray();
-                                multiTuningResultWriter.close();
-                                multiTuningFOS.close();
-                            }
-                            catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            // Write to external storage
-                            String fileName = "litmustest_multitest_tuning_result.json";
-                            try {
-                                FileInputStream fis = openFileInput(fileName);
-                                FileChannel inChannel = fis.getChannel();
-                                File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName);
-                                FileChannel outChannel =  new FileOutputStream(output).getChannel();
-
-                                inChannel.transferTo(0, inChannel.size(), outChannel);
-                                fis.close();
-                                inChannel.close();
-                                outChannel.close();
-                            }
-                            catch (FileNotFoundException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            catch (IOException e)
-                            {
-                                e.printStackTrace();
-                            }
-
-                            // Get string array of test names
-                            String[] testNumbers = new String[tuningEndConfig];
-                            for(int i = 0; i < tuningEndConfig; i++) {
-                                testNumbers[i] = Integer.toString(i);
-                            }
-
-                            // Update Result
-                            MultiTestResultAdapter multiTestResultAdapter = new MultiTestResultAdapter(testNumbers, MainActivity.this, "Tuning");
-                            currMultiTestRV.setAdapter(multiTestResultAdapter);
-                            currMultiTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                            currMultiTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
-                        }
-                        else {
-                            multiTuningTestLoop();
-                        }
-                    }
-                    else {
-                        multiCurrIteration++;
-                        multiTuningTestLoop();
                     }
                 }
                 else if (currTestType.equals("ConformanceExplorer")) { // Conformance Explorer

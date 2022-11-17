@@ -79,7 +79,7 @@ public class CoRR extends Fragment {
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("corr", "Single");
+                ((MainActivity)getActivity()).tuningTestResult("corr");
             }
         });
 

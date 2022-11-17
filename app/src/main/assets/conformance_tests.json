@@ -1,0 +1,14 @@
+[
+  {
+    "testType": "COHERENCY",
+    "name": "message_passing_coherency",
+    "shader": "litmustest_message_passing_coherency",
+    "resultShader": "litmustest_message_passing_coherency_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "message_passing_fence",
+    "shader": "litmustest_message_passing_fence",
+    "resultShader": "litmustest_message_passing_results"
+  }
+]

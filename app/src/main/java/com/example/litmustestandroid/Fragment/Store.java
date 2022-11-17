@@ -79,7 +79,7 @@ public class Store extends Fragment {
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("store", "Single");
+                ((MainActivity)getActivity()).tuningTestResult("store");
             }
         });
 

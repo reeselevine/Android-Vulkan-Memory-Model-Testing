@@ -79,7 +79,7 @@ public class BarrierStoreLoad extends Fragment {
         testViewObject.tuningResultButton.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).tuningTestResult("barrier_store_load", "Single");
+                ((MainActivity)getActivity()).tuningTestResult("barrier_store_load");
             }
         });
 
