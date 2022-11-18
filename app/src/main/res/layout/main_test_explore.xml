@@ -512,32 +512,6 @@
 
                     </LinearLayout>
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Shader Option"
-                        android:textSize="20sp"
-                        android:textStyle="bold">
-                    </TextView>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-                        <AutoCompleteTextView
-                            android:id="@+id/shaderExploreAutoCompleteText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="none"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </LinearLayout>
 
             </LinearLayout>
         </ScrollView>

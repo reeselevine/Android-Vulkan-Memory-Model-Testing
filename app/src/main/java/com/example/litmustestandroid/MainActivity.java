@@ -1,6 +1,7 @@
 package com.example.litmustestandroid;
 import static com.example.litmustestandroid.HelperClass.FileConstants.*;
 import static com.example.litmustestandroid.HelperClass.ParameterConstants.*;
+import static com.example.litmustestandroid.HelperClass.NewTestCase.TestType;
 
 import android.content.Context;
 import android.content.Intent;
@@ -61,7 +62,6 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -73,9 +73,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActivityMainBinding binding;
 
     private DrawerLayout drawer;
-
-    private AutoCompleteTextView autoCompleteTextView;
-    private ArrayAdapter<String> adapterItems;
 
     private TestViewObject currTestViewObject;
     private ConformanceTestViewObject conformanceTestViewObject;
@@ -100,12 +97,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
     public HashMap<String, ArrayList<ConformanceResultCase>> conformanceTuningResultCases = new HashMap<>();
 
-    private EditText[] conformanceParameters = new EditText[19];
-    private ArrayList<String> conformanceSelectedShaders = new ArrayList<String>();
-    private ArrayList<TestCase> conformanceSelectedTestCases = new ArrayList<TestCase>();
-    private int conformanceCurrIteration;
-    private int conformanceCurrConfig;
-    private int conformanceEndConfig;
+    private Map<String, EditText> conformanceParamMap;
+    private int conformanceCurrTestIndex;
+    private int conformanceCurrConfigIndex;
+    private int conformanceNumConfig;
     private RecyclerView conformanceTestRV;
     private ArrayList<ConformanceResultCase> conformanceTestResults = new ArrayList<ConformanceResultCase>();
 
@@ -115,17 +110,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
 
     private String currTestType = "";
-    private TestCase currTestCase;
+    private NewTestCase currNewTestCase;
     private String GPUName = "";
     private TestThread testThread;
     private LockTestThread lockTestThread;
 
     private Handler handler = new Handler();
-
-    private String shaderType = "";
-
-    private ArrayList<TestCase> testCases = new ArrayList<>();
-    public LinkedHashMap<String, Boolean> conformanceShaders = new LinkedHashMap<String, Boolean>();
 
     /*** New stuff for test lists ***/
     private static final String CONFORMANCE_TEST_LIST = "conformance_tests.json";
@@ -136,7 +126,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private HashMap<String, NewTestCase> conformanceTests = new HashMap<>();
     private HashMap<String, NewTestCase> allTests = new HashMap<>();
 
-    private ArrayList<String> selectedTests = new ArrayList<>();
+    /** Keeps track of what tests the user has currently selected. */
+    public HashSet<String> selectedTests = new HashSet<>();
+    /** Keeps track of the list of tests when running. */
+    private ArrayList<String> runningTests = new ArrayList<>();
 
     /*** End new stuff ***/
 
@@ -272,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             inputStream.read(bufferData);
             inputStream.close();
             json = new String(bufferData, "UTF-8");
+            System.out.println(json);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -307,27 +301,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         loadTests(TUNING_TEST_LIST, tuningTests);
         allTests.putAll(tuningTests);
         loadTests(MISC_TEST_LIST, allTests);
-    }
-
-    public TestCase findTestCase(String testName) {
-        for (int i = 0; i < testCases.size(); i++) {
-            if(testCases.get(i).testName.equals(testName)) {
-                return testCases.get(i);
-            }
-        }
-        return null;
-    }
-
-    public TestCase findTestCaseWithConformanceShader(String shaderName) {
-        for (int i = 0; i < testCases.size(); i++) {
-            TestCase currentTestCase = testCases.get(i);
-            for (int j = 0; j < currentTestCase.conformanceShaderNames.length; j++) {
-                if(currentTestCase.conformanceShaderNames[j].equals(shaderName)) {
-                    return currentTestCase;
-                }
-            }
-        }
-        return null;
     }
 
     private void copyFile(int fromResId, String toFile) {
@@ -383,15 +356,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void loadParameters(Map<String, EditText> parameters, int paramValue){
         InputStream inputStream = getResources().openRawResource(paramValue);
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        Set<String> keys = parameters.keySet();
 
         try {
             String line = bufferedReader.readLine();
             while (line != null) {
                 String[] words = line.split("=");
-                if((!words[0].equals(NUM_MEM_LOCATIONS) && !words[0].equals(NUM_OUTPUTS)) && keys.contains(words[0])) {
-                    parameters.get(words[0]).setText(words[1]);
-                }
+                parameters.get(words[0]).setText(words[1]);
                 line = bufferedReader.readLine();
             }
             inputStream.close();
@@ -402,40 +372,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    // Read and write current parameters value for testing
-    public void writeParameters(String testName, EditText[] parameters, int paramValue) {
-        InputStream inputStream = getResources().openRawResource(paramValue);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+    public void writeNonOverrideableParams(FileOutputStream fos, TestType testType) throws IOException {
+        for (Map.Entry<String, Integer> entry : nonOverrideableParams.entrySet()) {
+            int value;
+            if (testType == TestType.COHERENCY && coherencyOverrides.containsKey(entry.getKey())) {
+                value = coherencyOverrides.get(entry.getKey());
+            } else {
+                value = entry.getValue();
+            }
+            String outputLine = entry.getKey() + "=" + value + "\n";
+            fos.write(outputLine.getBytes());
+        }
+    }
 
-        String fileName = "litmustest_" + testName + "_parameters.txt";
+    // Read and write current parameters value for testing
+    public void writeParameters(Map<String, EditText> parameters, TestType testType) {
+        String fileName = PARAMETERS_FILE + ".txt";
         try{
             FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
-            String line = bufferedReader.readLine();
-            int index = 0;
-
-            while (line != null) {
-                String[] words = line.split("=");
-                String outputNumber;
-                String newLine = "\n";
-
-                if(words[0].equals("numMemLocations") || words[0].equals("numOutputs")
-                || words[0].equals("permuteFirst") || words[0].equals("permuteSecond")
-                || words[0].equals("aliasedMemory")) {
-                    outputNumber = words[1];
+            // write user chosen parameters
+            for (Map.Entry<String, EditText> entry : parameters.entrySet()) {
+                if (entry.getKey() == ITERATIONS) {
+                    currTestIterations = entry.getValue().getText().toString();
                 }
-                else {
-                    if(words[0].equals("iterations")) {
-                        currTestIterations = parameters[index].getText().toString();
-                    }
-                    outputNumber = parameters[index].getText().toString();
-                    index++;
-                }
-                String outputLine = words[0] + "=" + outputNumber + newLine;
+                String outputLine = entry.getKey() + "=" + entry.getValue().getText().toString() + "\n";
                 fos.write(outputLine.getBytes());
-
-                line = bufferedReader.readLine();
             }
-            inputStream.close();
+            // write non overrideable parameters and coherency params, if they apply
+            writeNonOverrideableParams(fos, testType);
             fos.close();
         }
         catch (FileNotFoundException e)
@@ -465,7 +429,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void writeTuningParameters(TestCase testCase, boolean reset) {
+    public void writeTuningParameters(TestType testType, boolean reset) {
         if (reset) {
             boolean smoothedParameters = false;
             int workgroupLimiter = tuningMaxWorkgroups;
@@ -476,29 +440,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int stressLineSize = (int) Math.pow(2, randomGenerator(2, 10));
             int stressTargetLines = randomGenerator(1, 16);
             int memStride = randomGenerator(1, 7);
-            tuningParameter = new TreeMap<String, String>();
-
-            int paramPresetValue = this.getResources().getIdentifier(testCase.paramPresetNames[0], "raw", this.getPackageName());
-            InputStream inputStream = getResources().openRawResource(paramPresetValue);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-            // Get parameter format by reading preset file
-            try {
-                String line = bufferedReader.readLine();
-                while (line != null) {
-                    String[] words = line.split("=");
-                    tuningParameter.put(words[0], words[1]);
-                    line = bufferedReader.readLine();
-                }
-                inputStream.close();
-                bufferedReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // Now randomize certain parameter values
+            tuningParameter = new TreeMap<>();
             tuningParameter.put("iterations", currTestIterations);
-
             tuningParameter.put("testingWorkgroups", Integer.toString(testingWorkgroups));
             tuningParameter.put("maxWorkgroups", Integer.toString(maxWorkgroups));
             tuningParameter.put("workgroupSize", Integer.toString(workgroupSize));
@@ -520,24 +463,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         // Now insert the parameter values to text file that will be used during test
         try {
-            String fileName = "litmustest_" + testCase.testName + "_parameters.txt";
-            FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
-
+            FileOutputStream fos = openFileOutput(PARAMETERS_FILE + ".txt", Context.MODE_PRIVATE);
             for (String key : tuningParameter.keySet()) {
-                if (key.equals("permuteSecond") || key.equals("aliasedMemory")) {
-                    if (testCase.testType.equals("coherence") || testCase.testType.equals("weakMemory_coherence")) {
-                        fos.write((key + "=1\n").getBytes());
-                    } else {
-                        if (key.equals("permuteSecond")) {
-                            fos.write((key + "=1031\n").getBytes());
-                        } else {
-                            fos.write((key + "=0\n").getBytes());
-                        }
-                    }
-                } else {
-                    fos.write((key + "=" + tuningParameter.get(key) + "\n").getBytes());
-                }
+                fos.write((key + "=" + tuningParameter.get(key) + "\n").getBytes());
             }
+            writeNonOverrideableParams(fos, testType);
         }
         catch (FileNotFoundException e)
         {
@@ -548,11 +478,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
         try {
-            String fileName = "litmustest_" + testCase.testName + "_parameters.txt";
-            FileInputStream fis = openFileInput(fileName);
+            FileInputStream fis = openFileInput(PARAMETERS_FILE + ".txt");
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
 
             String text;
             while ((text = br.readLine()) != null) {
@@ -613,32 +541,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void initializeShaderMenu(String testName, View exploreMenuView) {
-        autoCompleteTextView = exploreMenuView.findViewById(R.id.shaderExploreAutoCompleteText);
-
-        TestCase currTestCase = findTestCase(testName);
-        String[] shortShaderNames = new String[currTestCase.shaderNames.length];
-        for (int i = 0; i < currTestCase.shaderNames.length; i++) {
-            shortShaderNames[i] = currTestCase.shaderNames[i].substring(testName.length() + 12);
-        }
-
-        if(currTestCase != null) {
-            adapterItems = new ArrayAdapter<String>(this, R.layout.shader_explore_list_item, shortShaderNames);
-            autoCompleteTextView.setAdapter(adapterItems);
-            autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    String item = adapterView.getItemAtPosition(i).toString();
-                    shaderType = "litmustest_" + testName + "_" + item;
-                }
-            });
-        }
-        else {
-            Log.e(TAG, "initializeShaderMenu(), currTestCase is NULL");
-        }
-
-    }
-
     public void openExploreMenu(String testName, TestViewObject testViewObject) {
         Log.i("TEST", testName + " PRESSED, OPENING Explore MENU");
 
@@ -672,28 +574,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreParamMap.put(STRESS_TARGET_LINES, exploreMenuView.findViewById(R.id.testExploreStressTargetLines));
         exploreParamMap.put(STRESS_STRATEGY_BALANCE_PCT, exploreMenuView.findViewById(R.id.testExploreStressStrategyBalancePct));
 
-        EditText[] exploreParameters = new EditText[19];
-        exploreParameters[0] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestIteration); // testIteration
-        exploreParameters[1] = (EditText) exploreMenuView.findViewById(R.id.testExploreTestingWorkgroups); // testingWorkgroups
-        exploreParameters[2] = (EditText) exploreMenuView.findViewById(R.id.testExploreMaxWorkgroups); // maxWorkgroups
-        exploreParameters[3] = (EditText) exploreMenuView.findViewById(R.id.testExploreWorkgroupSize); // workgroupSize
-        exploreParameters[4] = (EditText) exploreMenuView.findViewById(R.id.testExploreShufflePct); // shufflePct
-        exploreParameters[5] = (EditText) exploreMenuView.findViewById(R.id.testExploreBarrierPct); // barrierPct
-        exploreParameters[6] = (EditText) exploreMenuView.findViewById(R.id.testExploreScratchMemorySize); // scratchMemorySize
-        exploreParameters[7] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStride); // memStride
-        exploreParameters[8] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressPct); // memStressPct
-        exploreParameters[9] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressIterations); // memStressIterations
-        exploreParameters[10] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressStoreFirstPct); // memStressPattern
-        exploreParameters[11] = (EditText) exploreMenuView.findViewById(R.id.testExploreMemoryStressStoreSecondPct); // memStressPattern
-        exploreParameters[12] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressPct); // preStressPct
-        exploreParameters[13] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressIterations); // preStressIterations
-        exploreParameters[14] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressStoreFirstPct); // preStressPattern
-        exploreParameters[15] = (EditText) exploreMenuView.findViewById(R.id.testExplorePreStressStoreSecondPct); // preStressPattern
-        exploreParameters[16] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressLineSize); // stressLineSize
-        exploreParameters[17] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressTargetLines); // stressTargetLines
-        exploreParameters[18] = (EditText) exploreMenuView.findViewById(R.id.testExploreStressStrategyBalancePct); // stressAssignmentStrategy
-
-        currTestCase = findTestCase(testName);
+        currNewTestCase = allTests.get(testName);
         int basic_parameters = getResources().getIdentifier(BASIC_PARAM_FILE, "raw", this.getPackageName());
         int stress_parameters = getResources().getIdentifier(STRESS_PARAM_FILE, "raw", this.getPackageName());
 
@@ -707,12 +588,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialogBuilder.setView(exploreMenuView);
         exploreDialog = dialogBuilder.create();
         exploreDialog.show();
-
-        // Reset shader type
-        shaderType = currTestCase.shaderNames[0];
-
-        // Initialize shader drop down explore menu
-        initializeShaderMenu(testName, exploreMenuView);
 
         // Load default parameter
         defaultParamButton.setOnClickListener(new View.OnClickListener() {
@@ -740,7 +615,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Log.i("EXPLORER TEST", testName + " STARTING");
 
-                writeParameters(testName, exploreParameters, basic_parameters);
+                writeParameters(exploreParamMap, currNewTestCase.getTestType());
                 exploreDialog.dismiss();
 
                 // Disable buttons and change their color
@@ -756,9 +631,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         testArgument[0] = "litmustest_" + testName; // Test Name
 
                         // Shader Name
-                        testArgument[1] = shaderType; // Current selected shader
-                        testArgument[2] = currTestCase.resultNames[0]; // Result Shader
-                        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
+                        testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
+                        testArgument[2] = currNewTestCase.getResultFile(); // Result Shader
+                        testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
 
                         testThread = new TestThread(MainActivity.this, testArgument, false, false);
                         testThread.start();
@@ -901,8 +776,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tuningDialog = dialogBuilder.create();
         tuningDialog.show();
 
-        currTestCase = findTestCase(testName);
-        shaderType = currTestCase.shaderNames[0];
+        currNewTestCase = allTests.get(testName);
 
         // Start tuning test
         tuningStartButton.setOnClickListener(new View.OnClickListener() {
@@ -930,9 +804,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 tuningTestArgument[0] = "litmustest_" + testName; // Test Name
 
                 // Shader Name
-                tuningTestArgument[1] = shaderType; // Current selected shader
-                tuningTestArgument[2] = currTestCase.resultNames[0]; // Result Shader
-                tuningTestArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
+                tuningTestArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
+                tuningTestArgument[2] = currNewTestCase.getResultFile(); // Result Shader
+                tuningTestArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
 
                 tuningCurrConfig = 0;
                 tuningEndConfig = tuningConfigNum;
@@ -962,7 +836,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         currTestViewObject.tuningCurrentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
 
-        writeTuningParameters(currTestCase, true);
+        writeTuningParameters(currNewTestCase.getTestType(), true);
 
         // Run test in different thread
         testThread = new TestThread(MainActivity.this, tuningTestArgument, true, false);
@@ -986,6 +860,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return getFilesDir().toString();
     }
 
+    /** Called by C++ driver. */
     public void iterationProgress(String iterationNum) { ;
         //Log.i(TAG, "IterationProgress: " + iterationNum + "/" + currTestIterations);
         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -1010,6 +885,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    /** Called by C++ driver. */
     public void setGPUName(String gpuName) {
         GPUName = gpuName;
         Log.i(TAG, gpuName);
@@ -1074,31 +950,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         CheckBox currCheckBox = (CheckBox)view;
         String shaderName = view.getTag().toString();
         if(currCheckBox.isChecked()) { // Clicked
-            conformanceShaders.put(shaderName, true);
+            selectedTests.add(shaderName);
         }
         else { // Un-clicked
-            conformanceShaders.put(shaderName, false);
+            selectedTests.remove(shaderName);
         }
         //Log.i(TAG, "conformance: " + shaderName + " " + currCheckBox.isChecked());
     }
 
-    public void conformanceExplorerTestBegin(EditText[] parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
+    public void conformanceExplorerTestBegin(Map<String, EditText> parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
         currTestType = "ConformanceExplorer";
-        conformanceParameters = parameters;
+        conformanceParamMap = parameters;
         conformanceTestViewObject = viewObject;
         conformanceTestRV = resultRV;
-        conformanceSelectedShaders = new ArrayList<String>();
 
-        // Check if at least one test selected
-        for (LinkedHashMap.Entry<String, Boolean> entry :  conformanceShaders.entrySet()) {
-            if(entry.getValue() == true) {
-                conformanceSelectedShaders.add(entry.getKey());
-            }
-        }
-        if(conformanceSelectedShaders.size() == 0) { // No test selected
+        if(selectedTests.size() == 0) { // No test selected
             Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
             return;
         }
+        runningTests.clear();
+        runningTests.addAll(selectedTests);
 
         // Disable start button
         conformanceTestViewObject.startButton.setEnabled(false);
@@ -1114,58 +985,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         conformanceTestViewObject.explorerResultLayout.setVisibility(View.GONE);
 
         conformanceTestResults = new ArrayList<ConformanceResultCase>();
-        conformanceCurrConfig = 0;
-        conformanceEndConfig = conformanceSelectedShaders.size();
+        conformanceCurrConfigIndex = 0;
+        conformanceNumConfig = runningTests.size();
 
         // Start multi tuning test loop
         conformanceExplorerTestLoop();
     }
 
     public void conformanceExplorerTestLoop()  {
-        String shaderName = conformanceSelectedShaders.get(conformanceCurrConfig);
-        currTestCase = findTestCaseWithConformanceShader(shaderName);
+        String testName = runningTests.get(conformanceCurrConfigIndex);
+        currNewTestCase = allTests.get(testName);
         String[] testArgument = new String[4];
 
-        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
+        testArgument[0] = "litmustest_" + testName; // Test Name
 
         // Shader Name
-        testArgument[1] = shaderName; // Current selected shader
+        testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
 
-        // Choosing result shader
-        String coherencyCheck = "coherency";
-        String barrierCheck = "barrier";
-        String rmwCheck = "rmw";
-        if(shaderName.contains(coherencyCheck)) {
-            testArgument[2] = currTestCase.resultNames[1]; // Coherency result shader
-        }
-        else {
-            testArgument[2] = currTestCase.resultNames[0]; // Default result Shader
-        }
-        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
+        testArgument[2] = currNewTestCase.getResultFile();
+
+        testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
 
         // Update test name
-        if(shaderName.contains(coherencyCheck)) { // Weak memory Tests (single memory)
-            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (single)");
-        }
-        else if(shaderName.contains(barrierCheck)) { // Weak memory Tests (barrier)
-            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (barrier)");
-        }
-        else if(shaderName.contains(rmwCheck)) { // Coherency Tests (RMW)
-            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (RMW)");
-        }
-        else { // Coherency Tests (default)
-            conformanceTestViewObject.currentTestName.setText(currTestCase.testName);
-        }
+        conformanceTestViewObject.currentTestName.setText(currNewTestCase.getTestName());
 
-        // Write parameter
-        int paramPresetValue;
-        if(shaderName.contains(coherencyCheck)) {
-            paramPresetValue = this.getResources().getIdentifier(currTestCase.paramPresetNames[2], "raw", this.getPackageName());
-        }
-        else {
-            paramPresetValue = this.getResources().getIdentifier(currTestCase.paramPresetNames[0], "raw", this.getPackageName());
-        }
-        writeParameters(currTestCase.testName, conformanceParameters, paramPresetValue);
+        writeParameters(conformanceParamMap, currNewTestCase.getTestType());
 
         // Run test in different thread
         testThread = new TestThread(MainActivity.this, testArgument, false, true);
@@ -1176,27 +1020,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currTestType = "ConformanceTuning";
         conformanceTestViewObject = viewObject;
         conformanceTestRV = resultRV;
-        conformanceSelectedShaders = new ArrayList<String>();
-        conformanceSelectedTestCases = new ArrayList<TestCase>();
 
-        // Check if at least one test selected
-        for (LinkedHashMap.Entry<String, Boolean> entry :  conformanceShaders.entrySet()) {
-            if(entry.getValue() == true) {
-                conformanceSelectedShaders.add(entry.getKey());
-                conformanceSelectedTestCases.add(findTestCaseWithConformanceShader(entry.getKey()));
-            }
-        }
-        if(conformanceSelectedTestCases.size() == 0) { // No test selected
+        if(selectedTests.size() == 0) { // No test selected
             Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
             return;
         }
-
-        // Go through selected test case and change test type
-        for(int i = 0; i < conformanceSelectedTestCases.size(); i++) {
-            if (conformanceSelectedShaders.get(i).contains("coherency")) {
-                conformanceSelectedTestCases.get(i).testType = "coherency";
-            }
-        }
+        runningTests.clear();
+        runningTests.addAll(selectedTests);
 
         // Disable start button
         conformanceTestViewObject.startButton.setEnabled(false);
@@ -1222,7 +1052,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tuningCurrConfig = 0;
         tuningEndConfig = tuningConfigNum;
 
-        conformanceCurrIteration = 0;
+        conformanceCurrTestIndex = 0;
 
         if(tuningRandomSeed.length() == 0) {
             tuningRandom = new PRNG(new Random().nextInt());
@@ -1248,57 +1078,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void conformanceTuningTestLoop()  {
-        currTestCase = conformanceSelectedTestCases.get(conformanceCurrIteration);
-        String currShader = conformanceSelectedShaders.get(conformanceCurrIteration);
+        String testName = runningTests.get(conformanceCurrConfigIndex);
+        currNewTestCase = allTests.get(testName);
+
         String[] testArgument = new String[4];
 
-        testArgument[0] = "litmustest_" + currTestCase.testName; // Test Name
+        testArgument[0] = "litmustest_" + testName; // Test Name
 
         // Shader Name
-        testArgument[1] = currShader; // Current selected shader
+        testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
 
         // Choosing result shader
-        String coherencyCheck = "coherency";
-        String barrierCheck = "barrier";
-        String rmwCheck = "rmw";
-        if(currShader.contains(coherencyCheck)) {
-            currTestCase.testType = "weakMemory_coherence";
-            testArgument[2] = currTestCase.resultNames[1]; // Coherency result shader
-        }
-        else {
-            if(currTestCase.testType.equals("weakMemory_coherence")) {
-                currTestCase.testType = "weakMemory";
-            }
-            testArgument[2] = currTestCase.resultNames[0]; // Default result Shader
-        }
-        testArgument[3] = currTestCase.testParamName; // Txt file that stores parameter
+        testArgument[2] = currNewTestCase.getResultFile();
+        testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
 
         // Update test name
-        if(currShader.contains(coherencyCheck)) { // Weak memory Tests (single memory)
-            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (single)");
-        }
-        else if(currShader.contains(barrierCheck)) { // Weak memory Tests (barrier)
-            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (barrier)");
-        }
-        else if(currShader.contains(rmwCheck)) { // Coherency Tests (RMW)
-            conformanceTestViewObject.currentTestName.setText(currTestCase.testName + " (RMW)");
-        }
-        else { // Coherency Tests (default)
-            conformanceTestViewObject.currentTestName.setText(currTestCase.testName);
-        }
+        conformanceTestViewObject.currentTestName.setText(testName);
 
         // Update current config number
         conformanceTestViewObject.currentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
 
-        Log.i(TAG, "TestName: " + currTestCase.testName + " Shader: " + currShader);
+        Log.i(TAG, "TestName: " + testName + " Shader: " + currNewTestCase.getShaderFile());
 
-        if(conformanceCurrIteration == 0) {
-            // Write tuning parameter to current test case
-            writeTuningParameters(currTestCase, true);
-        }
-        else {
-            writeTuningParameters(currTestCase, false);
-        }
+        boolean reset = conformanceCurrTestIndex == 0;
+        writeTuningParameters(currNewTestCase.getTestType(), reset);
 
         // Run test in different thread
         testThread = new TestThread(MainActivity.this, testArgument, false, true);
@@ -1376,10 +1179,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else if (currTestType.equals("Tuning")) {
                     // Save param value
-                    String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
+                    String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
 
                     // Save result value
-                    String currResultValue = convertFileToString(currTestCase.outputNames[1] + ".txt");
+                    String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
 
                     // Go through result and get number of sequential behaviors
                     String startIndexIndicator = "seq: ";
@@ -1397,7 +1200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
 
                     // Transfer over the tuning result case
-                    TuningResultCase currTuningResult = new TuningResultCase(currTestCase.testName, currParamValue, currResultValue,
+                    TuningResultCase currTuningResult = new TuningResultCase(currNewTestCase.getTestName(), currParamValue, currResultValue,
                             Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors));
 
                     currTuningResults.add(currTuningResult);
@@ -1419,10 +1222,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else if (currTestType.equals("ConformanceExplorer")) { // Conformance Explorer
                     // Save param value
-                    String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
+                    String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
 
                     // Save result value
-                    String currResultValue = convertFileToString(currTestCase.outputNames[0] + ".txt");
+                    String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
 
                     // Go through result and get number of weak behaviors
                     String startIndexIndicator = "Non-weak: ";
@@ -1441,7 +1244,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     conformanceTestResults.add(currConformanceResult);
 
-                    if(conformanceCurrConfig == conformanceEndConfig-1) { // All test ended, update result
+                    if(conformanceCurrConfigIndex == conformanceNumConfig -1) { // All test ended, update result
 
                         Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
 
@@ -1473,16 +1276,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             conformanceResultWriter.name("Test Parameters");
                             conformanceResultWriter.beginObject();
 
-                            FileInputStream fis = openFileInput(currTestCase.testParamName + ".txt");
+                            FileInputStream fis = openFileInput(PARAMETERS_FILE + ".txt");
                             InputStreamReader isr = new InputStreamReader(fis);
                             BufferedReader br = new BufferedReader(isr);
 
                             String line = br.readLine();
                             while (line != null) {
                                 String[] words = line.split("=");
-                                if(!words[0].equals("numMemLocations") && !words[0].equals("numOutputs")
-                                        && !words[0].equals("permuteFirst") && !words[0].equals("permuteSecond")
-                                        && !words[0].equals("aliasedMemory")) {
+                                if (!nonOverrideableParams.containsKey(words[0])) {
                                     conformanceResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
                                 }
                                 line = br.readLine();
@@ -1494,7 +1295,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             conformanceResultWriter.endObject();
 
                             conformanceResultWriter.name("gpu").value(GPUName);
-                            conformanceResultWriter.name("testCount").value(conformanceEndConfig);
+                            conformanceResultWriter.name("testCount").value(conformanceNumConfig);
 
                             conformanceResultWriter.endObject();
                             conformanceResultWriter.endArray();
@@ -1548,16 +1349,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
                     }
                     else {
-                        conformanceCurrConfig++;
+                        conformanceCurrConfigIndex++;
                         conformanceExplorerTestLoop();
                     }
                 }
                 else if (currTestType.equals("ConformanceTuning")) { // Conformance Tuning
                     // Save param value
-                    String currParamValue = convertFileToString(currTestCase.testParamName + ".txt");
+                    String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
 
                     // Save result value
-                    String currResultValue = convertFileToString(currTestCase.outputNames[0] + ".txt");
+                    String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
 
                     // Go through result and get number of weak behaviors
                     String startIndexIndicator = "Non-weak: ";
@@ -1576,7 +1377,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     conformanceTestResults.add(currConformanceResult);
 
-                    if(conformanceCurrIteration == conformanceSelectedTestCases.size() - 1) { // One tuning config test completed
+                    if(conformanceCurrTestIndex == runningTests.size() - 1) { // One tuning config test completed
                         conformanceTuningResultCases.put(Integer.toString(tuningCurrConfig), conformanceTestResults);
 
                         // Append to the result file
@@ -1601,16 +1402,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             conformanceTuningResultWriter.name("Test Parameters");
                             conformanceTuningResultWriter.beginObject();
 
-                            FileInputStream fis = openFileInput(currTestCase.testParamName + ".txt");
+                            FileInputStream fis = openFileInput(PARAMETERS_FILE + ".txt");
                             InputStreamReader isr = new InputStreamReader(fis);
                             BufferedReader br = new BufferedReader(isr);
 
                             String line = br.readLine();
                             while (line != null) {
                                 String[] words = line.split("=");
-                                if(!words[0].equals("numMemLocations") && !words[0].equals("numOutputs")
-                                        && !words[0].equals("permuteFirst") && !words[0].equals("permuteSecond")
-                                        && !words[0].equals("aliasedMemory")) {
+                                if (!nonOverrideableParams.containsKey(words[0])) {
                                     conformanceTuningResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
                                 }
                                 line = br.readLine();
@@ -1632,7 +1431,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         conformanceTestResults = new ArrayList<ConformanceResultCase>();
 
                         // Reset tuning config
-                        conformanceCurrIteration = 0;
+                        conformanceCurrTestIndex = 0;
                         tuningCurrConfig++;
 
                         if(tuningCurrConfig == tuningEndConfig) { // All tuning tests completed
@@ -1706,7 +1505,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
                     else {
-                        conformanceCurrIteration++;
+                        conformanceCurrTestIndex++;
                         conformanceTuningTestLoop();
                     }
                 }

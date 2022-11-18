@@ -38,9 +38,7 @@ public class ConformanceTest  extends Fragment {
         final View fragmentView = inflater.inflate(R.layout.fragment_conformance_test, container, false);
 
         // Reset MainActivity's conformanceShaders
-        for(int i = 0; i < ((MainActivity)getActivity()).conformanceShaders.size(); i++) {
-            ((MainActivity)getActivity()).conformanceShaders.replaceAll((k, v) -> v = false);
-        }
+        ((MainActivity)getActivity()).selectedTests.clear();
 
         TextView note = fragmentView.findViewById(R.id.conformance_test_note);
         note.setText(getResources().getString(R.string.conformance_test_note));
@@ -275,7 +273,7 @@ public class ConformanceTest  extends Fragment {
             @Override
             public void onClick(View v) {
                 if(testMode.equals("ConformanceExplorer")) {
-                    ((MainActivity)getActivity()).conformanceExplorerTestBegin(conformanceTestExplorerParameters,  conformanceTestViewObject, conformanceTestExplorerResultRV);
+                    ((MainActivity)getActivity()).conformanceExplorerTestBegin(conformanceTestExplorerParamMap,  conformanceTestViewObject, conformanceTestExplorerResultRV);
                 }
                 else { // Tuning
                     ((MainActivity)getActivity()).conformanceTuningTestBegin(conformanceTestTuningParameters,  conformanceTestViewObject, conformanceTestTuningResultRV);

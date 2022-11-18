@@ -1,5 +1,7 @@
 package com.example.litmustestandroid.HelperClass;
 
+import java.util.Map;
+
 public class ParameterConstants {
 
     private ParameterConstants(){}
@@ -28,4 +30,19 @@ public class ParameterConstants {
     public static final String PERMUTE_FIRST = "permuteFirst";
     public static final String PERMUTE_SECOND = "permuteSecond";
     public static final String ALIASED_MEMORY = "aliasedMemory";
+
+    public static Map<String, Integer> nonOverrideableParams;
+    static {
+        nonOverrideableParams.put(NUM_MEM_LOCATIONS, 2);
+        nonOverrideableParams.put(NUM_OUTPUTS, 2);
+        nonOverrideableParams.put(PERMUTE_FIRST, 419);
+        nonOverrideableParams.put(PERMUTE_SECOND, 1031);
+        nonOverrideableParams.put(ALIASED_MEMORY, 0);
+    }
+
+    public static Map<String, Integer> coherencyOverrides;
+    static {
+        coherencyOverrides.put(PERMUTE_SECOND, 1);
+        coherencyOverrides.put(ALIASED_MEMORY, 1);
+    }
 }
