@@ -89,15 +89,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String tuningRandomSeed;
     private String[] tuningTestArgument = new String[4];
     private Map<String, String> tuningParameter;
-    private int tuningCurrConfig, tuningEndConfig, tuningTestWorkgroups, tuningMaxWorkgroups, tuningWorkgroupSize;
+    private int tuningTestWorkgroups, tuningMaxWorkgroups, tuningWorkgroupSize;
     private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
     public HashMap<String, ArrayList<ConformanceResultCase>> conformanceTuningResultCases = new HashMap<>();
 
     private Map<String, EditText> conformanceParamMap;
-    private int conformanceCurrTestIndex;
-    private int conformanceCurrConfigIndex;
-    private int conformanceNumConfig;
     private RecyclerView conformanceTestRV;
     private ArrayList<ConformanceResultCase> conformanceTestResults = new ArrayList<ConformanceResultCase>();
 
@@ -114,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Handler handler = new Handler();
 
-    /*** New stuff for test lists ***/
     private static final String CONFORMANCE_TEST_LIST = "conformance_tests.json";
     private static final String TUNING_TEST_LIST = "tuning_tests.json";
     private static final String MISC_TEST_LIST = "misc_tests.json";
@@ -128,7 +124,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /** Keeps track of the list of tests when running. */
     private ArrayList<String> runningTests = new ArrayList<>();
 
-    /*** End new stuff ***/
+    private int curTestIndex;
+    private int curConfigIndex;
+    private int numConfigs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -781,7 +779,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Log.i("TUNING TEST", testName + " STARTING");
 
-                int tuningConfigNum = Integer.parseInt(tuningParameters[0].getText().toString());
                 currTuningResults = new ArrayList<TuningResultCase>();
                 tuningRandomSeed = tuningParameters[2].getText().toString();
                 tuningTestWorkgroups = Integer.parseInt(tuningParameters[3].getText().toString());
@@ -805,8 +802,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 tuningTestArgument[2] = currNewTestCase.getResultFile(); // Result Shader
                 tuningTestArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
 
-                tuningCurrConfig = 0;
-                tuningEndConfig = tuningConfigNum;
+                curConfigIndex = 0;
+                numConfigs = Integer.parseInt(tuningParameters[0].getText().toString());
 
                 if(tuningRandomSeed.length() == 0) {
                     tuningRandom = new PRNG(new Random().nextInt());
@@ -831,7 +828,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void tuningTestLoop() {
 
-        currTestViewObject.tuningCurrentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
+        currTestViewObject.tuningCurrentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
 
         writeTuningParameters(currNewTestCase.getTestType(), true);
 
@@ -940,54 +937,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void conformanceExplorerTestBegin(Map<String, EditText> parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
-        currTestType = RunType.MULTI_EXPLORER;
-        conformanceParamMap = parameters;
+    public void beginRunningTests(
+            RunType runType,
+            ConformanceTestViewObject viewObject,
+            RecyclerView resultRV) {
+        currTestType = runType;
         conformanceTestViewObject = viewObject;
         conformanceTestRV = resultRV;
-
         if(selectedTests.size() == 0) { // No test selected
             Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
             return;
         }
-        runningTests.clear();
-        runningTests.addAll(selectedTests);
-
         // Disable start button
         conformanceTestViewObject.startButton.setEnabled(false);
         conformanceTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
-
         // Set progress layout visible
         conformanceTestViewObject.progressLayout.setVisibility(View.VISIBLE);
+        // Set config layout visible
+        conformanceTestViewObject.configLayout.setVisibility(View.VISIBLE);
+        conformanceTestResults = new ArrayList<>();
 
-        // Set config layout remain invisible
-        conformanceTestViewObject.configLayout.setVisibility(View.GONE);
+        runningTests.clear();
+        runningTests.addAll(selectedTests);
+        curTestIndex = 0;
+        curConfigIndex = 0;
+        if (runType.equals(RunType.MULTI_EXPLORER)) {
+            conformanceExplorerTestLoop();
+        } else if (runType.equals(RunType.MULTI_TUNING)) {
+            conformanceTuningTestLoop();
+        }
+    }
 
-        // Set result layout invisible
-        conformanceTestViewObject.explorerResultLayout.setVisibility(View.GONE);
-
-        conformanceTestResults = new ArrayList<ConformanceResultCase>();
-        conformanceCurrConfigIndex = 0;
-        conformanceNumConfig = runningTests.size();
-
-        // Start multi tuning test loop
-        conformanceExplorerTestLoop();
+    public void conformanceExplorerTestBegin(Map<String, EditText> parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
+        viewObject.explorerResultLayout.setVisibility(View.GONE);
+        conformanceParamMap = parameters;
+        numConfigs = 1;
+        beginRunningTests(RunType.MULTI_EXPLORER, viewObject, resultRV);
     }
 
     public void conformanceExplorerTestLoop()  {
-        String testName = runningTests.get(conformanceCurrConfigIndex);
+        String testName = runningTests.get(curTestIndex);
         currNewTestCase = allTests.get(testName);
         String[] testArgument = new String[4];
-
         testArgument[0] = testName; // Test Name
-
         // Shader Name
         testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
-
         testArgument[2] = currNewTestCase.getResultFile();
-
         testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
-
         // Update test name
         conformanceTestViewObject.currentTestName.setText(currNewTestCase.getTestName());
 
@@ -999,50 +995,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void conformanceTuningTestBegin(EditText[] parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
-        currTestType = RunType.MULTI_TUNING;
-        conformanceTestViewObject = viewObject;
-        conformanceTestRV = resultRV;
-
-        if(selectedTests.size() == 0) { // No test selected
-            Toast.makeText(MainActivity.this, "No test selected!", Toast.LENGTH_LONG).show();
-            return;
-        }
-        runningTests.clear();
-        runningTests.addAll(selectedTests);
-
-        // Disable start button
-        conformanceTestViewObject.startButton.setEnabled(false);
-        conformanceTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.cyan));
-
-        // Set progress layout visible
-        conformanceTestViewObject.progressLayout.setVisibility(View.VISIBLE);
-
-        // Set config layout visible
-        conformanceTestViewObject.configLayout.setVisibility(View.VISIBLE);
-
-        // Set result layout invisible
-        conformanceTestViewObject.tuningResultLayout.setVisibility(View.GONE);
-
-        int tuningConfigNum = Integer.parseInt(parameters[0].getText().toString());
-        conformanceTestResults = new ArrayList<ConformanceResultCase>();
+        viewObject.tuningResultLayout.setVisibility(View.GONE);
         currTestIterations = parameters[1].getText().toString();
         tuningRandomSeed = parameters[2].getText().toString();
         tuningTestWorkgroups = Integer.parseInt(parameters[3].getText().toString());
         tuningMaxWorkgroups = Integer.parseInt(parameters[4].getText().toString());
         tuningWorkgroupSize = Integer.parseInt(parameters[5].getText().toString());
-
-        tuningCurrConfig = 0;
-        tuningEndConfig = tuningConfigNum;
-
-        conformanceCurrTestIndex = 0;
-
+        numConfigs = Integer.parseInt(parameters[0].getText().toString());
         if(tuningRandomSeed.length() == 0) {
             tuningRandom = new PRNG(new Random().nextInt());
         }
         else {
             tuningRandom = new PRNG(tuningRandomSeed);
         }
-
         try {
             conformanceTuningFOS = openFileOutput(RESULT_FILE, Context.MODE_PRIVATE);
             conformanceTuningResultWriter = new JsonWriter(new OutputStreamWriter(conformanceTuningFOS, "UTF-8"));
@@ -1053,35 +1018,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         catch (IOException e) {
             e.printStackTrace();
         }
-        // Start multi tuning test loop
-        conformanceTuningTestLoop();
+        beginRunningTests(RunType.MULTI_TUNING, viewObject, resultRV);
     }
 
     public void conformanceTuningTestLoop()  {
-        System.out.println("current index " + conformanceCurrConfigIndex);
-        String testName = runningTests.get(conformanceCurrConfigIndex);
+        String testName = runningTests.get(curTestIndex);
         currNewTestCase = allTests.get(testName);
-
         String[] testArgument = new String[4];
-
         testArgument[0] = testName; // Test Name
-
         // Shader Name
         testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
-
         // Choosing result shader
         testArgument[2] = currNewTestCase.getResultFile();
         testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
-
         // Update test name
         conformanceTestViewObject.currentTestName.setText(testName);
-
         // Update current config number
-        conformanceTestViewObject.currentConfigNumber.setText(tuningCurrConfig+1 + "/" + tuningEndConfig);
+        conformanceTestViewObject.currentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
 
         Log.i(TAG, "TestName: " + testName + " Shader: " + currNewTestCase.getShaderFile());
 
-        boolean reset = conformanceCurrTestIndex == 0;
+        boolean reset = curTestIndex == 0;
         writeTuningParameters(currNewTestCase.getTestType(), reset);
 
         // Run test in different thread
@@ -1186,7 +1143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     currTuningResults.add(currTuningResult);
 
-                    if(tuningCurrConfig == tuningEndConfig - 1) {
+                    if(curConfigIndex == numConfigs - 1) {
                         tuningResultCases.put(currTestViewObject.testName, currTuningResults);
 
                         // Enable buttons and change their color
@@ -1197,7 +1154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Toast.makeText(MainActivity.this, "Tuning Test " + currTestViewObject.testName + " finished!", Toast.LENGTH_LONG).show();
                     }
                     else {
-                        tuningCurrConfig++;
+                        curConfigIndex++;
                         tuningTestLoop();
                     }
                 }
@@ -1225,7 +1182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     conformanceTestResults.add(currConformanceResult);
 
-                    if(conformanceCurrConfigIndex == conformanceNumConfig -1) { // All test ended, update result
+                    if(curTestIndex == runningTests.size() - 1) { // All test ended, update result
 
                         Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
 
@@ -1275,7 +1232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             conformanceResultWriter.endObject();
 
                             conformanceResultWriter.name("gpu").value(GPUName);
-                            conformanceResultWriter.name("testCount").value(conformanceNumConfig);
+                            conformanceResultWriter.name("testCount").value(numConfigs);
 
                             conformanceResultWriter.endObject();
                             conformanceResultWriter.endArray();
@@ -1307,7 +1264,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
                     }
                     else {
-                        conformanceCurrConfigIndex++;
+                        curTestIndex++;
                         conformanceExplorerTestLoop();
                     }
                 }
@@ -1335,12 +1292,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     conformanceTestResults.add(currConformanceResult);
 
-                    if(conformanceCurrTestIndex == runningTests.size() - 1) { // One tuning config test completed
-                        conformanceTuningResultCases.put(Integer.toString(tuningCurrConfig), conformanceTestResults);
+                    if(curTestIndex == runningTests.size() - 1) { // One tuning config test completed
+                        conformanceTuningResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
 
                         // Append to the result file
                         try {
-                            conformanceTuningResultWriter.name(Integer.toString(tuningCurrConfig));
+                            conformanceTuningResultWriter.name(Integer.toString(curConfigIndex));
                             conformanceTuningResultWriter.beginObject();
 
                             // Result
@@ -1389,10 +1346,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         conformanceTestResults = new ArrayList<ConformanceResultCase>();
 
                         // Reset tuning config
-                        conformanceCurrTestIndex = 0;
-                        tuningCurrConfig++;
+                        curTestIndex = 0;
+                        curConfigIndex++;
 
-                        if(tuningCurrConfig == tuningEndConfig) { // All tuning tests completed
+                        if(curConfigIndex == numConfigs) { // All tuning tests completed
 
                             Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
 
@@ -1412,7 +1369,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             // Close result writer
                             try {
                                 conformanceTuningResultWriter.name("gpu").value(GPUName);
-                                conformanceTuningResultWriter.name("configurations").value(tuningEndConfig);
+                                conformanceTuningResultWriter.name("configurations").value(numConfigs);
                                 conformanceTuningResultWriter.name("randomSeed").value(tuningRandomSeed);
 
                                 conformanceTuningResultWriter.endObject();
@@ -1427,8 +1384,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             writeToExternalStorage(RESULT_FILE);
 
                             // Get string array of test names
-                            String[] testNumbers = new String[tuningEndConfig];
-                            for(int i = 0; i < tuningEndConfig; i++) {
+                            String[] testNumbers = new String[numConfigs];
+                            for(int i = 0; i < numConfigs; i++) {
                                 testNumbers[i] = Integer.toString(i);
                             }
 
@@ -1439,11 +1396,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
                         }
                         else {
+                            curConfigIndex++;
                             conformanceTuningTestLoop();
                         }
                     }
                     else {
-                        conformanceCurrTestIndex++;
+                        curTestIndex++;
                         conformanceTuningTestLoop();
                     }
                 }
