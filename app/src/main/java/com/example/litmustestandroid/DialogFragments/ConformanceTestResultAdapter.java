@@ -26,6 +26,12 @@ public class ConformanceTestResultAdapter extends RecyclerView.Adapter<Conforman
     String[] testNumbers;
     String testType;
 
+    public ConformanceTestResultAdapter(Context ct, ArrayList<ConformanceResultCase> conformanceResultCases) {
+        this.context = ct;
+        this.conformanceResultCases = conformanceResultCases;
+        testType = "ConformanceExplorer";
+    }
+
     public ConformanceTestResultAdapter(Context ct, String[] testNumbers) {
         this.context = ct;
         this.testNumbers = testNumbers;
@@ -64,7 +70,7 @@ public class ConformanceTestResultAdapter extends RecyclerView.Adapter<Conforman
             }
         }
         else {
-            ArrayList<ConformanceResultCase> resultCases = ((MainActivity)context).conformanceTuningResultCases.get(currentTestName);
+            ArrayList<ConformanceResultCase> resultCases = ((MainActivity)context).multiTestResultCases.get(currentTestName);
             int numTestViolated = 0;
             for(int i = 0; i < resultCases.size(); i++) {
                 if(resultCases.get(i).violated) {
@@ -92,7 +98,7 @@ public class ConformanceTestResultAdapter extends RecyclerView.Adapter<Conforman
                     outputDialog.show(((MainActivity)context).getSupportFragmentManager(), "ConformanceResultOutputDialog");
                 }
                 else {
-                    ArrayList<ConformanceResultCase> resultCases = ((MainActivity)context).conformanceTuningResultCases.get(currentTestName);
+                    ArrayList<ConformanceResultCase> resultCases = ((MainActivity)context).multiTestResultCases.get(currentTestName);
                     ConformanceTuningResultDialogFragment dialog = new ConformanceTuningResultDialogFragment(((MainActivity)context), currentTestName, resultCases);
                     dialog.show(((MainActivity)context).getSupportFragmentManager(), "ConformanceTuningResultDialog");
                 }

@@ -250,12 +250,7 @@ public class ConformanceTest  extends Fragment {
         conformanceTestViewObject.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(testMode.equals(RunType.MULTI_EXPLORER)) {
-                    ((MainActivity)getActivity()).conformanceExplorerTestBegin(conformanceTestExplorerParamMap,  conformanceTestViewObject, conformanceTestTuningResultRV);
-                }
-                else { // Tuning
-                    ((MainActivity)getActivity()).conformanceTuningTestBegin(conformanceTestTuningParameters,  conformanceTestViewObject, conformanceTestTuningResultRV);
-                }
+                ((MainActivity)getActivity()).beginRunningTests(testMode, conformanceTestExplorerParamMap, conformanceTestTuningParameters, conformanceTestViewObject, conformanceTestTuningResultRV);
             }
         });
 

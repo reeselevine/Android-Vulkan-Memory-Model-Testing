@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int tuningTestWorkgroups, tuningMaxWorkgroups, tuningWorkgroupSize;
     private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
     private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
-    public HashMap<String, ArrayList<ConformanceResultCase>> conformanceTuningResultCases = new HashMap<>();
+    public HashMap<String, ArrayList<ConformanceResultCase>> multiTestResultCases = new HashMap<>();
 
     private Map<String, EditText> conformanceParamMap;
     private RecyclerView conformanceTestRV;
@@ -939,9 +939,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void beginRunningTests(
             RunType runType,
+            Map<String, EditText> testParameters,
+            EditText[] tuningParameters,
             ConformanceTestViewObject viewObject,
             RecyclerView resultRV) {
         currTestType = runType;
+        if (currTestType.equals(RunType.MULTI_EXPLORER)) {
+            numConfigs = 1;
+        } else {
+            numConfigs = Integer.parseInt(tuningParameters[0].getText().toString());
+        }
+        conformanceParamMap = testParameters;
+        currTestIterations = tuningParameters[1].getText().toString();
+        tuningRandomSeed = tuningParameters[2].getText().toString();
+        tuningTestWorkgroups = Integer.parseInt(tuningParameters[3].getText().toString());
+        tuningMaxWorkgroups = Integer.parseInt(tuningParameters[4].getText().toString());
+        tuningWorkgroupSize = Integer.parseInt(tuningParameters[5].getText().toString());
+        if(tuningRandomSeed.length() == 0) {
+            tuningRandom = new PRNG(new Random().nextInt());
+        }
+        else {
+            tuningRandom = new PRNG(tuningRandomSeed);
+        }
         conformanceTestViewObject = viewObject;
         conformanceTestRV = resultRV;
         if(selectedTests.size() == 0) { // No test selected
@@ -962,20 +981,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         runningTests.addAll(selectedTests);
         curTestIndex = 0;
         curConfigIndex = 0;
-        if (runType.equals(RunType.MULTI_EXPLORER)) {
-            conformanceExplorerTestLoop();
-        } else if (runType.equals(RunType.MULTI_TUNING)) {
-            conformanceTuningTestLoop();
+        try {
+            conformanceTuningFOS = openFileOutput(RESULT_FILE, Context.MODE_PRIVATE);
+            conformanceTuningResultWriter = new JsonWriter(new OutputStreamWriter(conformanceTuningFOS, "UTF-8"));
+            conformanceTuningResultWriter.setIndent("  ");
+            conformanceTuningResultWriter.beginArray();
+            conformanceTuningResultWriter.beginObject();
         }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        testLoop();
     }
 
-    public void conformanceExplorerTestBegin(Map<String, EditText> parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
-        conformanceParamMap = parameters;
-        numConfigs = 1;
-        beginRunningTests(RunType.MULTI_EXPLORER, viewObject, resultRV);
-    }
-
-    public void conformanceExplorerTestLoop()  {
+    public void testLoop() {
         String testName = runningTests.get(curTestIndex);
         currNewTestCase = allTests.get(testName);
         String[] testArgument = new String[4];
@@ -987,60 +1006,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Update test name
         conformanceTestViewObject.currentTestName.setText(currNewTestCase.getTestName());
         conformanceTestViewObject.currentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
-
-        writeParameters(conformanceParamMap, currNewTestCase.getTestType());
-
-        // Run test in different thread
-        testThread = new TestThread(MainActivity.this, testArgument, false, true);
-        testThread.start();
-    }
-
-    public void conformanceTuningTestBegin(EditText[] parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
-        currTestIterations = parameters[1].getText().toString();
-        tuningRandomSeed = parameters[2].getText().toString();
-        tuningTestWorkgroups = Integer.parseInt(parameters[3].getText().toString());
-        tuningMaxWorkgroups = Integer.parseInt(parameters[4].getText().toString());
-        tuningWorkgroupSize = Integer.parseInt(parameters[5].getText().toString());
-        numConfigs = Integer.parseInt(parameters[0].getText().toString());
-        if(tuningRandomSeed.length() == 0) {
-            tuningRandom = new PRNG(new Random().nextInt());
+        if (currTestType.equals(RunType.MULTI_EXPLORER)) {
+            writeParameters(conformanceParamMap, currNewTestCase.getTestType());
+        } else if (currTestType.equals(RunType.MULTI_TUNING)) {
+            writeTuningParameters(currNewTestCase.getTestType(), curTestIndex == 0);
         }
-        else {
-            tuningRandom = new PRNG(tuningRandomSeed);
-        }
-        try {
-            conformanceTuningFOS = openFileOutput(RESULT_FILE, Context.MODE_PRIVATE);
-            conformanceTuningResultWriter = new JsonWriter(new OutputStreamWriter(conformanceTuningFOS, "UTF-8"));
-            conformanceTuningResultWriter.setIndent("  ");
-            conformanceTuningResultWriter.beginArray();
-            conformanceTuningResultWriter.beginObject();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        beginRunningTests(RunType.MULTI_TUNING, viewObject, resultRV);
-    }
-
-    public void conformanceTuningTestLoop()  {
-        String testName = runningTests.get(curTestIndex);
-        currNewTestCase = allTests.get(testName);
-        String[] testArgument = new String[4];
-        testArgument[0] = testName; // Test Name
-        // Shader Name
-        testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
-        // Choosing result shader
-        testArgument[2] = currNewTestCase.getResultFile();
-        testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
-        // Update test name
-        conformanceTestViewObject.currentTestName.setText(testName);
-        // Update current config number
-        conformanceTestViewObject.currentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
-
-        Log.i(TAG, "TestName: " + testName + " Shader: " + currNewTestCase.getShaderFile());
-
-        boolean reset = curTestIndex == 0;
-        writeTuningParameters(currNewTestCase.getTestType(), reset);
-
         // Run test in different thread
         testThread = new TestThread(MainActivity.this, testArgument, false, true);
         testThread.start();
@@ -1158,139 +1128,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         tuningTestLoop();
                     }
                 }
-                else if (currTestType.equals(RunType.MULTI_EXPLORER)) {
+                else if (currTestType.equals(RunType.MULTI_TUNING) || currTestType.equals(RunType.MULTI_EXPLORER)) {
                     // Save param value
                     String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
-
                     // Save result value
                     String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
-
                     // Go through result and get number of weak behaviors
                     String startIndexIndicator = "Non-weak: ";
                     String endIndexIndicator = "\nWeak:";
                     String numNonWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-
                     // Go through result and get number of weak behaviors
                     startIndexIndicator = "Weak: ";
                     endIndexIndicator = "\nTotal elapsed time";
                     String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
                     // Transfer over the tuning result case
                     ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue,
                             Integer.parseInt(numNonWeakBehaviors), Integer.parseInt(numWeakBehaviors));
-
                     conformanceTestResults.add(currConformanceResult);
-
-                    if(curTestIndex == runningTests.size() - 1) { // All test ended, update result
-
-                        Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
-
-                        // Write a json file
-                        try {
-                            FileOutputStream conformanceFOS = openFileOutput(RESULT_FILE, Context.MODE_PRIVATE);
-                            JsonWriter conformanceResultWriter = new JsonWriter(new OutputStreamWriter(conformanceFOS, "UTF-8"));
-                            conformanceResultWriter.setIndent("  ");
-                            conformanceResultWriter.beginArray();
-                            conformanceResultWriter.beginObject();
-                            conformanceResultWriter.name("0");
-                            conformanceResultWriter.beginObject();
-
-                            // Result
-                            for(int i = 0; i < conformanceTestResults.size(); i++) {
-                                ConformanceResultCase resultCase = conformanceTestResults.get(i);
-
-                                String resultName = resultCase.testName;
-
-                                conformanceResultWriter.name(resultName);
-                                conformanceResultWriter.beginObject();
-                                conformanceResultWriter.name("Non-weak").value(resultCase.numNonWeakBehaviors);
-                                conformanceResultWriter.name("Weak").value(resultCase.numWeakBehaviors);
-                                conformanceResultWriter.endObject();
-                            }
-
-                            // Parameter
-                            conformanceResultWriter.name("Test Parameters");
-                            conformanceResultWriter.beginObject();
-
-                            FileInputStream fis = openFileInput(PARAMETERS_FILE + ".txt");
-                            InputStreamReader isr = new InputStreamReader(fis);
-                            BufferedReader br = new BufferedReader(isr);
-
-                            String line = br.readLine();
-                            while (line != null) {
-                                String[] words = line.split("=");
-                                if (!nonOverrideableParams.containsKey(words[0])) {
-                                    conformanceResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
-                                }
-                                line = br.readLine();
-                            }
-                            fis.close();
-                            isr.close();
-                            br.close();
-                            conformanceResultWriter.endObject();
-                            conformanceResultWriter.endObject();
-
-                            conformanceResultWriter.name("gpu").value(GPUName);
-                            conformanceResultWriter.name("testCount").value(numConfigs);
-
-                            conformanceResultWriter.endObject();
-                            conformanceResultWriter.endArray();
-                            conformanceResultWriter.close();
-                            conformanceFOS.close();
-
-                        }
-                        catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        writeToExternalStorage(RESULT_FILE);
-                        // Enable start button
-                        conformanceTestViewObject.startButton.setEnabled(true);
-                        conformanceTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
-
-                        // Set progress layout invisible
-                        conformanceTestViewObject.progressLayout.setVisibility(View.GONE);
-
-                        // Set result layout visible
-                        conformanceTestViewObject.resultLayout.setVisibility(View.VISIBLE);
-
-                        // Update result
-                        ConformanceTestResultAdapter conformanceTestResultAdapter = new ConformanceTestResultAdapter(MainActivity.this, conformanceTestResults);
-                        conformanceTestRV.setAdapter(conformanceTestResultAdapter);
-                        conformanceTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                        conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
-                    }
-                    else {
-                        curTestIndex++;
-                        conformanceExplorerTestLoop();
-                    }
-                }
-                else if (currTestType.equals(RunType.MULTI_TUNING)) { // Conformance Tuning
-                    // Save param value
-                    String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
-
-                    // Save result value
-                    String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
-
-                    // Go through result and get number of weak behaviors
-                    String startIndexIndicator = "Non-weak: ";
-                    String endIndexIndicator = "\nWeak:";
-                    String numNonWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-
-                    // Go through result and get number of weak behaviors
-                    startIndexIndicator = "Weak: ";
-                    endIndexIndicator = "\nTotal elapsed time";
-                    String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-                    // Transfer over the tuning result case
-                    ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue,
-                            Integer.parseInt(numNonWeakBehaviors), Integer.parseInt(numWeakBehaviors));
-
-                    conformanceTestResults.add(currConformanceResult);
-
-                    if(curTestIndex == runningTests.size() - 1) { // One tuning config test completed
-                        conformanceTuningResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
+                    if(curTestIndex == runningTests.size() - 1) {
+                        multiTestResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
 
                         // Append to the result file
                         try {
@@ -1345,7 +1201,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         // Reset tuning config
                         curTestIndex = 0;
                         curConfigIndex++;
-
                         if(curConfigIndex == numConfigs) { // All tuning tests completed
 
                             Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
@@ -1390,12 +1245,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
                         }
                         else {
-                            conformanceTuningTestLoop();
+                            testLoop();
                         }
                     }
                     else {
                         curTestIndex++;
-                        conformanceTuningTestLoop();
+                        testLoop();
                     }
                 }
                 else { // Lock Test
