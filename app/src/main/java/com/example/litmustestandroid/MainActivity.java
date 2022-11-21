@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Button tuningStartButton, tuningCloseButton;
     private Random tuningRandom;
     private String tuningRandomSeed;
-    private String[] tuningTestArgument = new String[4];
+    private String[] tuningTestArgument = new String[3];
     private Map<String, String> tuningParameter;
     private int tuningTestWorkgroups, tuningMaxWorkgroups, tuningWorkgroupSize;
     private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
@@ -622,15 +622,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        String[] testArgument = new String[4];
+                        String[] testArgument = new String[3];
                         testArgument[0] = testName; // Test Name
-
                         // Shader Name
                         testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
                         testArgument[2] = currNewTestCase.getResultFile(); // Result Shader
-                        testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
 
-                        testThread = new TestThread(MainActivity.this, testArgument, false, false);
+                        testThread = new TestThread(MainActivity.this, testArgument);
                         testThread.start();
                     }
                 }, 500);
@@ -800,8 +798,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Shader Name
                 tuningTestArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
                 tuningTestArgument[2] = currNewTestCase.getResultFile(); // Result Shader
-                tuningTestArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
-
                 curConfigIndex = 0;
                 numConfigs = Integer.parseInt(tuningParameters[0].getText().toString());
 
@@ -833,7 +829,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         writeTuningParameters(currNewTestCase.getTestType(), true);
 
         // Run test in different thread
-        testThread = new TestThread(MainActivity.this, tuningTestArgument, true, false);
+        testThread = new TestThread(MainActivity.this, tuningTestArgument);
         testThread.start();
     }
 
@@ -997,12 +993,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void testLoop() {
         String testName = runningTests.get(curTestIndex);
         currNewTestCase = allTests.get(testName);
-        String[] testArgument = new String[4];
+        String[] testArgument = new String[3];
         testArgument[0] = testName; // Test Name
         // Shader Name
         testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
         testArgument[2] = currNewTestCase.getResultFile();
-        testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
         // Update test name
         conformanceTestViewObject.currentTestName.setText(currNewTestCase.getTestName());
         conformanceTestViewObject.currentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
@@ -1012,7 +1007,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             writeTuningParameters(currNewTestCase.getTestType(), curTestIndex == 0);
         }
         // Run test in different thread
-        testThread = new TestThread(MainActivity.this, testArgument, false, true);
+        testThread = new TestThread(MainActivity.this, testArgument);
         testThread.start();
     }
 

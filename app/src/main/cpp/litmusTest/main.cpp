@@ -17,17 +17,13 @@ using namespace easyvk;
 
 const int size = 4;
 constexpr char *TAG = "Main";
-
-bool tuningMode = false;
-bool conformanceMode = false;
+const std::string configFile = "parameters.txt";
 
 /** Returns the GPU to use for this test run. */
 Device getDevice(Instance &instance, map<string, int> params, ofstream &outputFile) {
     Device device = instance.devices().at(0);
-    if(!tuningMode) {
-        outputFile << "Using device " << device.properties().deviceName << "\n";
-        outputFile << "\n";
-    }
+    outputFile << "Using device " << device.properties().deviceName << "\n";
+    outputFile << "\n";
     return device;
 }
 
@@ -238,18 +234,10 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         resultProgram.teardown();
     }
 
-    if(conformanceMode) {
-        outputFile << "Total Result:\n";
-        outputFile << "Non-weak: " << numSeq + numInter << "\n";
-        outputFile << "Weak: " << numWeak << "\n";
-    }
-    else {
-        outputFile << "Total Result:\n";
-        outputFile << "seq: " << numSeq << "\n";
-        outputFile << "interleaved: " << numInter << "\n";
-        outputFile << "weak: " << numWeak << "\n";
-    }
-
+    // change to seq, interleaved, weak
+    outputFile << "Total Result:\n";
+    outputFile << "Non-weak: " << numSeq + numInter << "\n";
+    outputFile << "Weak: " << numWeak << "\n";
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
@@ -294,38 +282,34 @@ std::string readOutput(std::string filePath) {
     return ss.str();
 }
 
-int runTest(JNIEnv* env, jobject obj, string testName, string shaderFile, string resultShaderFile, string configFile, string filePath)
+int runTest(JNIEnv* env, jobject obj, string testName, string shaderFile, string resultShaderFile, string filePath)
 {
     std::ofstream outputFile;
     string outputFilePath = filePath +  "/" + "output.txt";
     outputFile.open(outputFilePath);
 
-    if(!tuningMode) {
-        outputFile << "Test Name: " << testName << "\n";
-        outputFile << "Shader Name: " << shaderFile << "\n";
-        outputFile << "Result Name: " << resultShaderFile << "\n";
-        outputFile << "\n";
-    }
+    outputFile << "Test Name: " << testName << "\n";
+    outputFile << "Shader Name: " << shaderFile << "\n";
+    outputFile << "Result Name: " << resultShaderFile << "\n";
+    outputFile << "\n";
 
-    configFile = filePath + "/" + configFile + ".txt";
+    std::string configFileFullPath = filePath + "/" + configFile;
     shaderFile = filePath + "/" + shaderFile + ".spv";
     resultShaderFile = filePath + "/" + resultShaderFile + ".spv";
 
-    LOGD("%s", configFile.c_str());
+    LOGD("%s", configFileFullPath.c_str());
     LOGD("%s", shaderFile.c_str());
     LOGD("%s", resultShaderFile.c_str());
 
     srand(time(NULL));
-    map<string, int> params = read_config(configFile);
+    map<string, int> params = read_config(configFileFullPath);
 
-    if(!tuningMode) {
-        outputFile << "Parameter:\n";
+    outputFile << "Parameter:\n";
 
-        for (const auto& [key, value] : params) {
-            outputFile << key << " = " << value << ";\n";
-        }
-        outputFile << "\n";
+    for (const auto& [key, value] : params) {
+        outputFile << key << " = " << value << ";\n";
     }
+    outputFile << "\n";
 
     try{
         run(env, obj, shaderFile, resultShaderFile, params, outputFile);
@@ -361,15 +345,12 @@ Java_com_example_litmustestandroid_TestThread_main(
         JNIEnv* env,
         jobject obj,
         jobject mainObj,
-        jobjectArray testArray,
-        jboolean tuningModeEnabled,
-        jboolean conformanceModeEnabled) {
+        jobjectArray testArray) {
 
     // Convert string array to individual string
     jstring jTestName = (jstring) (env)->GetObjectArrayElement(testArray, 0);
     jstring jShaderFile = (jstring) (env)->GetObjectArrayElement(testArray, 1);
     jstring jResultShaderFile = (jstring) (env)->GetObjectArrayElement(testArray, 2);
-    jstring jConfigFile = (jstring) (env)->GetObjectArrayElement(testArray, 3);
 
     const char* testConvertedValue = (env)->GetStringUTFChars(jTestName, 0);
     std::string testName = testConvertedValue;
@@ -380,16 +361,10 @@ Java_com_example_litmustestandroid_TestThread_main(
     const char* resultConvertedValue = (env)->GetStringUTFChars(jResultShaderFile, 0);
     std::string resultShaderFile = resultConvertedValue;
 
-    const char* configConvertedValue = (env)->GetStringUTFChars(jConfigFile, 0);
-    std::string configFile = configConvertedValue;
-
     LOGD("Get file path via JNI");
     std::string filePath = getFileDirFromJava(env, mainObj);
 
-    tuningMode = tuningModeEnabled;
-    conformanceMode = conformanceModeEnabled;
-
-    runTest(env, mainObj, testName, shaderFile, resultShaderFile, configFile, filePath);
+    runTest(env, mainObj, testName, shaderFile, resultShaderFile, filePath);
 
     jclass clazz = env->GetObjectClass(mainObj);
     jmethodID completeMethod = env->GetMethodID(clazz, "testComplete", "()V");

@@ -11,16 +11,14 @@ public class TestThread extends Thread {
         System.loadLibrary("litmusTest-main-lib");
     }
 
-    TestThread(MainActivity mainActivity, String[] testParameter, boolean tuningMode, boolean conformanceMode) {
+    TestThread(MainActivity mainActivity, String[] testParameter) {
         this.mainActivity = mainActivity;
         this.testParameter = testParameter;
-        this.tuningMode = tuningMode;
-        this.conformanceMode = conformanceMode;
     }
 
     public void run() {
-        main(mainActivity, testParameter, tuningMode, conformanceMode);
+        main(mainActivity, testParameter);
     }
 
-    public native int main(MainActivity mainActivity, String[] testParameter, boolean tuningMode, boolean conformanceMode);
+    public native int main(MainActivity mainActivity, String[] testParameter);
 }
