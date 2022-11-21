@@ -4,5 +4,76 @@
     "name": "message_passing",
     "shader": "litmustest_message_passing_default",
     "resultShader": "litmustest_message_passing_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "message_passing_coherency_tuning",
+    "shader": "litmustest_message_passing_coherency",
+    "resultShader": "litmustest_message_passing_coherency_results"
+  },
+
+  {
+    "type": "WEAK_MEMORY",
+    "name": "store",
+    "shader": "litmustest_store_default",
+    "resultShader": "litmustest_store_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "store_coherency_tuning",
+    "shader": "litmustest_store_coherency",
+    "resultShader": "litmustest_store_coherency_results"
+  },
+
+  {
+    "type": "WEAK_MEMORY",
+    "name": "read",
+    "shader": "litmustest_read_default",
+    "resultShader": "litmustest_read_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "read_coherency_tuning",
+    "shader": "litmustest_read_coherency",
+    "resultShader": "litmustest_read_coherency_results"
+  },
+
+  {
+    "type": "WEAK_MEMORY",
+    "name": "load_buffer",
+    "shader": "litmustest_load_buffer_default",
+    "resultShader": "litmustest_load_buffer_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "load_buffer_coherency_tuning",
+    "shader": "litmustest_load_buffer_coherency",
+    "resultShader": "litmustest_load_buffer_coherency_results"
+  },
+
+  {
+    "type": "WEAK_MEMORY",
+    "name": "store_buffer",
+    "shader": "litmustest_store_buffer_default",
+    "resultShader": "litmustest_store_buffer_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "store_buffer_coherency_tuning",
+    "shader": "litmustest_store_buffer_coherency",
+    "resultShader": "litmustest_store_buffer_coherency_results"
+  },
+
+  {
+    "type": "WEAK_MEMORY",
+    "name": "write_22",
+    "shader": "litmustest_write_22_default",
+    "resultShader": "litmustest_write_22_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "write_22_coherency_tuning",
+    "shader": "litmustest_write_22_coherency",
+    "resultShader": "litmustest_write_22_coherency_results"
   }
 ]

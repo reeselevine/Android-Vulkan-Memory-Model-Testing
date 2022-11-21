@@ -1,8 +1,56 @@
 [
   {
-    "type": "WEAK_MEMORY",
-    "name": "message_passing",
-    "shader": "litmustest_message_passing_default",
-    "resultShader": "litmustest_message_passing_results"
+    "type": "COHERENCY",
+    "name": "corr",
+    "shader": "litmustest_corr_default",
+    "resultShader": "litmustest_corr_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "corw1",
+    "shader": "litmustest_corw1_default",
+    "resultShader": "litmustest_corw1_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "corw2",
+    "shader": "litmustest_corw2_default",
+    "resultShader": "litmustest_corw2_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "cowr",
+    "shader": "litmustest_cowr_default",
+    "resultShader": "litmustest_cowr_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "coww",
+    "shader": "litmustest_coww_default",
+    "resultShader": "litmustest_coww_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "atomicity",
+    "shader": "litmustest_atomicity_default",
+    "resultShader": "litmustest_atomicity_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "barrier_store_load",
+    "shader": "litmustest_barrier_store_load_storage_workgroup",
+    "resultShader": "litmustest_barrier_store_load_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "barrier_load_store",
+    "shader": "litmustest_barrier_load_store_storage_workgroup",
+    "resultShader": "litmustest_barrier_load_store_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "barrier_store_store",
+    "shader": "litmustest_barrier_store_store_storage_workgroup",
+    "resultShader": "litmustest_barrier_store_store_results"
   }
 ]

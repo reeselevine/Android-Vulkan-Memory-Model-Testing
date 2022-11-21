@@ -334,8 +334,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (NewTestCase testCase : allTests.values()) {
             // copy shader file
             int shaderId = this.getResources().getIdentifier(testCase.getShaderFile(), "raw", this.getPackageName());
+            Log.d(TAG, "File: " + testCase.getShaderFile() + ".spv copying to " + getFilesDir().toString());
             copyFile(shaderId, testCase.getShaderFile() + ".spv");
-            Log.d(TAG, "File: " + testCase.getShaderFile() + ".spv copied to " + getFilesDir().toString());
             if (!seenResultFiles.contains(testCase.getResultFile())) {
                 seenResultFiles.add(testCase.getResultFile());
                 // copy result file
@@ -660,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         try
         {
-            FileInputStream fis = openFileInput("litmustest_" + testName + "_output_explorer.txt");
+            FileInputStream fis = openFileInput(OUTPUT_FILE + ".txt");
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
@@ -1154,7 +1154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     currTestViewObject.explorerProgressLayout.setVisibility(View.GONE);
 
                     // Write to external storage
-                    String fileName = "litmustest_" + currTestViewObject.testName + "_output_explorer.txt";
+                    String fileName = OUTPUT_FILE + ".txt";
                     try {
                         FileInputStream fis = openFileInput(fileName);
                         FileChannel inChannel = fis.getChannel();
@@ -1226,6 +1226,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     // Save result value
                     String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
+                    //System.out.println(currResultValue);
 
                     // Go through result and get number of weak behaviors
                     String startIndexIndicator = "Non-weak: ";

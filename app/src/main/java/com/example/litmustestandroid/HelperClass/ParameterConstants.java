@@ -1,5 +1,6 @@
 package com.example.litmustestandroid.HelperClass;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ParameterConstants {
@@ -33,6 +34,7 @@ public class ParameterConstants {
 
     public static Map<String, Integer> nonOverrideableParams;
     static {
+        nonOverrideableParams = new HashMap<>();
         nonOverrideableParams.put(NUM_MEM_LOCATIONS, 2);
         nonOverrideableParams.put(NUM_OUTPUTS, 2);
         nonOverrideableParams.put(PERMUTE_FIRST, 419);
@@ -42,6 +44,7 @@ public class ParameterConstants {
 
     public static Map<String, Integer> coherencyOverrides;
     static {
+        coherencyOverrides = new HashMap<>();
         coherencyOverrides.put(PERMUTE_SECOND, 1);
         coherencyOverrides.put(ALIASED_MEMORY, 1);
     }

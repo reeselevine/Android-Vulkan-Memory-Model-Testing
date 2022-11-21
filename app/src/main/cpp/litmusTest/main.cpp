@@ -297,15 +297,7 @@ std::string readOutput(std::string filePath) {
 int runTest(JNIEnv* env, jobject obj, string testName, string shaderFile, string resultShaderFile, string configFile, string filePath)
 {
     std::ofstream outputFile;
-    string outputFilePath = "";
-    if(tuningMode) {
-        outputFilePath = filePath + "/" + testName + "_output_tuning.txt";
-        outputFile.open(outputFilePath);
-    }
-    else {
-        outputFilePath = filePath + "/" + testName + "_output_explorer.txt";
-        outputFile.open(outputFilePath);
-    }
+    string outputFilePath = filePath +  "/" + "output.txt";
 
     if(!tuningMode) {
         outputFile << "Test Name: " << testName << "\n";

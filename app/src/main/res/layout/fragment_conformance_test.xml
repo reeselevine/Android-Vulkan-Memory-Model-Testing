@@ -88,7 +88,7 @@
 
                             <CheckBox
                                 android:id="@+id/message_passing_coherency_checkBox"
-                                android:tag="litmustest_message_passing_coherency"
+                                android:tag="message_passing_coherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -99,7 +99,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_coherency_checkBox"
-                                android:tag="litmustest_store_coherency"
+                                android:tag="store_coherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -110,7 +110,7 @@
 
                             <CheckBox
                                 android:id="@+id/read_coherency_checkBox"
-                                android:tag="litmustest_read_coherency"
+                                android:tag="read_coherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -129,7 +129,7 @@
 
                             <CheckBox
                                 android:id="@+id/load_buffer_coherency_checkBox"
-                                android:tag="litmustest_load_buffer_coherency"
+                                android:tag="load_buffer_coherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -140,7 +140,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_buffer_coherency_checkBox"
-                                android:tag="litmustest_store_buffer_coherency"
+                                android:tag="store_buffer_coherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -151,7 +151,7 @@
 
                             <CheckBox
                                 android:id="@+id/write_22_coherency_checkBox"
-                                android:tag="litmustest_write_22_coherency"
+                                android:tag="write_22_coherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -186,7 +186,7 @@
 
                             <CheckBox
                                 android:id="@+id/message_passing_barrier_checkBox"
-                                android:tag="litmustest_message_passing_barrier"
+                                android:tag="message_passing_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -197,7 +197,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_barrier_checkBox"
-                                android:tag="litmustest_store_barrier"
+                                android:tag="store_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -208,7 +208,7 @@
 
                             <CheckBox
                                 android:id="@+id/read_barrier_checkBox"
-                                android:tag="litmustest_read_barrier"
+                                android:tag="read_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -227,7 +227,7 @@
 
                             <CheckBox
                                 android:id="@+id/load_buffer_barrier_checkBox"
-                                android:tag="litmustest_load_buffer_barrier"
+                                android:tag="load_buffer_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -238,7 +238,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_buffer_barrier_checkBox"
-                                android:tag="litmustest_store_buffer_barrier"
+                                android:tag="store_buffer_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -249,7 +249,7 @@
 
                             <CheckBox
                                 android:id="@+id/write_22_barrier_checkBox"
-                                android:tag="litmustest_write_22_barrier"
+                                android:tag="write_22_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -284,7 +284,7 @@
 
                             <CheckBox
                                 android:id="@+id/corr_default_checkBox"
-                                android:tag="litmustest_corr_default"
+                                android:tag="corr_default"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -295,7 +295,7 @@
 
                             <CheckBox
                                 android:id="@+id/coww_default_checkBox"
-                                android:tag="litmustest_coww_default"
+                                android:tag="coww_default"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -314,7 +314,7 @@
 
                             <CheckBox
                                 android:id="@+id/cowr_default_checkBox"
-                                android:tag="litmustest_cowr_default"
+                                android:tag="cowr_default"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -325,7 +325,7 @@
 
                             <CheckBox
                                 android:id="@+id/corw2_default_checkBox"
-                                android:tag="litmustest_corw2_default"
+                                android:tag="corw2_default"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -360,7 +360,7 @@
 
                             <CheckBox
                                 android:id="@+id/corr_rmw_checkBox"
-                                android:tag="litmustest_corr_rmw"
+                                android:tag="corr_rmw"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -371,7 +371,7 @@
 
                             <CheckBox
                                 android:id="@+id/coww_rmw_checkBox"
-                                android:tag="litmustest_coww_rmw"
+                                android:tag="coww_rmw"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -390,7 +390,7 @@
 
                             <CheckBox
                                 android:id="@+id/cowr_rmw_checkBox"
-                                android:tag="litmustest_cowr_rmw"
+                                android:tag="cowr_rmw"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -401,7 +401,7 @@
 
                             <CheckBox
                                 android:id="@+id/corw2_rmw_checkBox"
-                                android:tag="litmustest_corw2_rmw"
+                                android:tag="corw2_rmw"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
