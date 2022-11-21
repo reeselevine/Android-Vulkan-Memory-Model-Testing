@@ -955,6 +955,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         conformanceTestViewObject.progressLayout.setVisibility(View.VISIBLE);
         // Set config layout visible
         conformanceTestViewObject.configLayout.setVisibility(View.VISIBLE);
+        conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
         conformanceTestResults = new ArrayList<>();
 
         runningTests.clear();
@@ -969,7 +970,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void conformanceExplorerTestBegin(Map<String, EditText> parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
-        viewObject.explorerResultLayout.setVisibility(View.GONE);
         conformanceParamMap = parameters;
         numConfigs = 1;
         beginRunningTests(RunType.MULTI_EXPLORER, viewObject, resultRV);
@@ -986,6 +986,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         testArgument[3] = PARAMETERS_FILE; // Txt file that stores parameter
         // Update test name
         conformanceTestViewObject.currentTestName.setText(currNewTestCase.getTestName());
+        conformanceTestViewObject.currentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
 
         writeParameters(conformanceParamMap, currNewTestCase.getTestType());
 
@@ -995,7 +996,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void conformanceTuningTestBegin(EditText[] parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
-        viewObject.tuningResultLayout.setVisibility(View.GONE);
         currTestIterations = parameters[1].getText().toString();
         tuningRandomSeed = parameters[2].getText().toString();
         tuningTestWorkgroups = Integer.parseInt(parameters[3].getText().toString());
@@ -1252,10 +1252,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         conformanceTestViewObject.progressLayout.setVisibility(View.GONE);
 
                         // Set result layout visible
-                        conformanceTestViewObject.explorerResultLayout.setVisibility(View.VISIBLE);
-
-                        // Indicate that there is result to be displayed
-                        conformanceTestViewObject.newExplorer = false;
+                        conformanceTestViewObject.resultLayout.setVisibility(View.VISIBLE);
 
                         // Update result
                         ConformanceTestResultAdapter conformanceTestResultAdapter = new ConformanceTestResultAdapter(MainActivity.this, conformanceTestResults);
@@ -1361,10 +1358,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             conformanceTestViewObject.progressLayout.setVisibility(View.GONE);
 
                             // Set result layout visible
-                            conformanceTestViewObject.tuningResultLayout.setVisibility(View.VISIBLE);
-
-                            // Indicate that there is result to be displayed
-                            conformanceTestViewObject.newTuning = false;
+                            conformanceTestViewObject.resultLayout.setVisibility(View.VISIBLE);
 
                             // Close result writer
                             try {
@@ -1396,7 +1390,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
                         }
                         else {
-                            curConfigIndex++;
                             conformanceTuningTestLoop();
                         }
                     }

@@ -1247,42 +1247,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/conformance_test_explorerResultLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
-                android:layout_marginVertical="@dimen/_5sdp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Explorer Test Result"
-                    android:textSize="@dimen/_17sdp"
-                    android:textStyle="bold"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/conformanceTestExplorerResultRV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:layout_marginTop="@dimen/_5sdp"/>
-
-                <Button
-                    android:id="@+id/conformanceTestExplorerSendResultButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_gravity="center"
-                    android:padding="@dimen/_13sdp"
-                    android:backgroundTint="@color/purple_500"
-                    android:text="Send Result"
-                    android:textSize="@dimen/_13sdp"
-                    android:textColor="@color/white"/>
-
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/conformance_test_tuningResultLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

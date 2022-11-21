@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 public class ConformanceTest  extends Fragment {
 
-    private Button explorerButton, tuningButton, defaultParamButton, stressParamButton, explorerSendResultButton, tuningSendResultButton;
+    private Button explorerButton, tuningButton, defaultParamButton, stressParamButton, tuningSendResultButton;
     private RunType testMode = RunType.MULTI_EXPLORER;
 
     @Nullable
@@ -57,15 +57,10 @@ public class ConformanceTest  extends Fragment {
         conformanceTestViewObject.configLayout = fragmentView.findViewById(R.id.conformance_test_currentConfigLayout);
         conformanceTestViewObject.configLayout.setVisibility(View.GONE);
 
-        // Set explorer result layout to be invisible in default
-        conformanceTestViewObject.explorerResultLayout = fragmentView.findViewById(R.id.conformance_test_explorerResultLayout);
-        conformanceTestViewObject.explorerResultLayout.setVisibility(View.GONE);
-
         // Set tuning result layout to be invisible in default
-        conformanceTestViewObject.tuningResultLayout = fragmentView.findViewById(R.id.conformance_test_tuningResultLayout);
-        conformanceTestViewObject.tuningResultLayout.setVisibility(View.GONE);
+        conformanceTestViewObject.resultLayout = fragmentView.findViewById(R.id.conformance_test_tuningResultLayout);
+        conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
 
-        RecyclerView conformanceTestExplorerResultRV = fragmentView.findViewById(R.id.conformanceTestExplorerResultRV);
         RecyclerView conformanceTestTuningResultRV = fragmentView.findViewById(R.id.conformanceTestTuningResultRV);
 
         TextView testList = fragmentView.findViewById(R.id.conformanceTestList);
@@ -122,12 +117,7 @@ public class ConformanceTest  extends Fragment {
                 tuningButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 explorerParameterLayout.setVisibility(View.VISIBLE);
                 explorerParameterItemLayout.setVisibility(View.VISIBLE);
-
-                if(!conformanceTestViewObject.newExplorer) {
-                    conformanceTestViewObject.explorerResultLayout.setVisibility(View.VISIBLE);
-                }
-
-                conformanceTestViewObject.tuningResultLayout.setVisibility(View.GONE);
+                conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
                 tuningParameterLayout.setVisibility(View.GONE);
                 testMode = RunType.MULTI_EXPLORER;
             }
@@ -141,11 +131,7 @@ public class ConformanceTest  extends Fragment {
                 tuningParameterLayout.setVisibility(View.VISIBLE);
                 tuningParameterItemLayout.setVisibility(View.VISIBLE);
 
-                if(!conformanceTestViewObject.newTuning) {
-                    conformanceTestViewObject.tuningResultLayout.setVisibility(View.VISIBLE);
-                }
-
-                conformanceTestViewObject.explorerResultLayout.setVisibility(View.GONE);
+                conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
                 explorerParameterLayout.setVisibility(View.GONE);
                 testMode = RunType.MULTI_TUNING;
             }
@@ -228,7 +214,6 @@ public class ConformanceTest  extends Fragment {
 
         defaultParamButton = fragmentView.findViewById(R.id.conformanceTestDefaultParamButton);
         stressParamButton = fragmentView.findViewById(R.id.conformanceTestStressParamButton);
-        explorerSendResultButton = fragmentView.findViewById(R.id.conformanceTestExplorerSendResultButton);
         tuningSendResultButton = fragmentView.findViewById(R.id.conformanceTestTuningSendResultButton);
 
         conformanceTestViewObject.startButton = fragmentView.findViewById(R.id.conformance_test_startButton);
@@ -254,14 +239,6 @@ public class ConformanceTest  extends Fragment {
             }
         });
 
-        explorerSendResultButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Open dialog for sending result
-                ((MainActivity)getActivity()).sendResultEmail(testMode);
-            }
-        });
-
         tuningSendResultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -274,7 +251,7 @@ public class ConformanceTest  extends Fragment {
             @Override
             public void onClick(View v) {
                 if(testMode.equals(RunType.MULTI_EXPLORER)) {
-                    ((MainActivity)getActivity()).conformanceExplorerTestBegin(conformanceTestExplorerParamMap,  conformanceTestViewObject, conformanceTestExplorerResultRV);
+                    ((MainActivity)getActivity()).conformanceExplorerTestBegin(conformanceTestExplorerParamMap,  conformanceTestViewObject, conformanceTestTuningResultRV);
                 }
                 else { // Tuning
                     ((MainActivity)getActivity()).conformanceTuningTestBegin(conformanceTestTuningParameters,  conformanceTestViewObject, conformanceTestTuningResultRV);

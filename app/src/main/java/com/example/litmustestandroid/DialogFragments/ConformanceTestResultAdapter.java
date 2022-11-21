@@ -26,12 +26,6 @@ public class ConformanceTestResultAdapter extends RecyclerView.Adapter<Conforman
     String[] testNumbers;
     String testType;
 
-    public ConformanceTestResultAdapter(Context ct, ArrayList<ConformanceResultCase> conformanceResultCases) {
-        this.context = ct;
-        this.conformanceResultCases = conformanceResultCases;
-        testType = "ConformanceExplorer";
-    }
-
     public ConformanceTestResultAdapter(Context ct, String[] testNumbers) {
         this.context = ct;
         this.testNumbers = testNumbers;

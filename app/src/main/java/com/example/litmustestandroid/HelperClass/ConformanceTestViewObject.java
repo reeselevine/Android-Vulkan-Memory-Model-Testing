@@ -14,9 +14,5 @@ public class ConformanceTestViewObject {
     public TextView currentConfigNumber;
     public TextView currentIterationNumber;
 
-    public LinearLayout explorerResultLayout;
-    public LinearLayout tuningResultLayout;
-
-    public boolean newExplorer = true;
-    public boolean newTuning = true;
+    public LinearLayout resultLayout;
 }
