@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.litmustestandroid.HelperClass.ConformanceTestViewObject;
+import com.example.litmustestandroid.HelperClass.RunType;
 import com.example.litmustestandroid.MainActivity;
 import com.example.litmustestandroid.R;
 
@@ -29,7 +30,7 @@ import java.util.HashMap;
 public class ConformanceTest  extends Fragment {
 
     private Button explorerButton, tuningButton, defaultParamButton, stressParamButton, explorerSendResultButton, tuningSendResultButton;
-    private String testMode = "ConformanceExplorer";
+    private RunType testMode = RunType.MULTI_EXPLORER;
 
     @Nullable
     @org.jetbrains.annotations.Nullable
@@ -128,7 +129,7 @@ public class ConformanceTest  extends Fragment {
 
                 conformanceTestViewObject.tuningResultLayout.setVisibility(View.GONE);
                 tuningParameterLayout.setVisibility(View.GONE);
-                testMode = "ConformanceExplorer";
+                testMode = RunType.MULTI_EXPLORER;
             }
         });
 
@@ -146,7 +147,7 @@ public class ConformanceTest  extends Fragment {
 
                 conformanceTestViewObject.explorerResultLayout.setVisibility(View.GONE);
                 explorerParameterLayout.setVisibility(View.GONE);
-                testMode = "ConformanceTuning";
+                testMode = RunType.MULTI_TUNING;
             }
         });
 
@@ -272,7 +273,7 @@ public class ConformanceTest  extends Fragment {
         conformanceTestViewObject.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(testMode.equals("ConformanceExplorer")) {
+                if(testMode.equals(RunType.MULTI_EXPLORER)) {
                     ((MainActivity)getActivity()).conformanceExplorerTestBegin(conformanceTestExplorerParamMap,  conformanceTestViewObject, conformanceTestExplorerResultRV);
                 }
                 else { // Tuning

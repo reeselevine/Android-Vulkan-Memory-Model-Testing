@@ -17,9 +17,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -109,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String TAG = "MainActivity";
 
-    private String currTestType = "";
+    private RunType currTestType;
     private NewTestCase currNewTestCase;
     private String GPUName = "";
     private TestThread testThread;
@@ -545,7 +542,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i("TEST", testName + " PRESSED, OPENING Explore MENU");
 
         currTestViewObject = testViewObject;
-        currTestType = "Explorer";
+        currTestType = RunType.EXPLORER;
 
         dialogBuilder = new AlertDialog.Builder(this);
         final View exploreMenuView = getLayoutInflater().inflate(R.layout.main_test_explore, null);
@@ -628,7 +625,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void run() {
                         String[] testArgument = new String[4];
-                        testArgument[0] = "litmustest_" + testName; // Test Name
+                        testArgument[0] = testName; // Test Name
 
                         // Shader Name
                         testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
@@ -754,7 +751,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i("TUNING TEST", testName + " PRESSED, OPENING TUNING MENU");
 
         currTestViewObject = testViewObject;
-        currTestType = "Tuning";
+        currTestType = RunType.TUNING;
 
         dialogBuilder = new AlertDialog.Builder(this);
         final View tuningMenuView = getLayoutInflater().inflate(R.layout.main_test_tuning, null);
@@ -801,7 +798,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Make progress layout visible
                 testViewObject.tuningProgressLayout.setVisibility(View.VISIBLE);
 
-                tuningTestArgument[0] = "litmustest_" + testName; // Test Name
+                tuningTestArgument[0] = testName; // Test Name
 
                 // Shader Name
                 tuningTestArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
@@ -866,16 +863,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                if(currTestType.equals("Explorer")) {
+                if(currTestType.equals(RunType.EXPLORER)) {
                     currTestViewObject.explorerCurrentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
-                else if (currTestType.equals("Tuning")) {
+                else if (currTestType.equals(RunType.TUNING)) {
                     currTestViewObject.tuningCurrentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
-                else if (currTestType.equals("ConformanceExplorer")){ // Conformance Explorer
+                else if (currTestType.equals(RunType.MULTI_EXPLORER)){ // Conformance Explorer
                     conformanceTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
-                else if (currTestType.equals("ConformanceTuning")){ // Conformance Explorer
+                else if (currTestType.equals(RunType.MULTI_TUNING)){ // Conformance Explorer
                     conformanceTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
                 else { // Lock Test
@@ -891,34 +888,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i(TAG, gpuName);
     }
 
-    public void sendResultEmail(String testMode) {
+    public void sendResultEmail(RunType testMode) {
         Log.i(TAG, "Sending result via email");
 
         String subject = "Android Vulkan Memory Model Testing";
         String message = "GPU: " + GPUName;
-        String fileName = "";
 
-        if(testMode.equals("Explorer")) {
+        if(testMode.equals(RunType.MULTI_EXPLORER)) {
             subject += " MultiTest Explorer Result";
-            fileName = "litmustest_multitest_explorer_result.txt";
         }
-        else if (testMode.equals("Tuning")) {
+        else if (testMode.equals(RunType.MULTI_TUNING)) {
             subject += " MultiTest Tuning Result";
-            fileName = "litmustest_multitest_tuning_result.json";
-        }
-        else if (testMode.equals("ConformanceExplorer")) {
-            subject += " Conformance Test Explorer Result";
-            fileName = "litmustest_conformance_explorer_result.json";
-        }
-        else if (testMode.equals("ConformanceTuning")) {
-            subject += " Conformance Test Tuning Result";
-            fileName = "litmustest_conformance_tuning_result.json";
-        }
-        else { // Shouldn't be here
-            Log.e(TAG, "multiTestSendResult invalid currTestType!: " + currTestType);
         }
 
-        File fileLocation = new File(getFileDir(), fileName);
+        File fileLocation = new File(getFileDir(), RESULT_FILE);
         Uri path = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", fileLocation);
 
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
@@ -955,11 +938,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else { // Un-clicked
             selectedTests.remove(shaderName);
         }
-        //Log.i(TAG, "conformance: " + shaderName + " " + currCheckBox.isChecked());
     }
 
     public void conformanceExplorerTestBegin(Map<String, EditText> parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
-        currTestType = "ConformanceExplorer";
+        currTestType = RunType.MULTI_EXPLORER;
         conformanceParamMap = parameters;
         conformanceTestViewObject = viewObject;
         conformanceTestRV = resultRV;
@@ -997,7 +979,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currNewTestCase = allTests.get(testName);
         String[] testArgument = new String[4];
 
-        testArgument[0] = "litmustest_" + testName; // Test Name
+        testArgument[0] = testName; // Test Name
 
         // Shader Name
         testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
@@ -1017,7 +999,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void conformanceTuningTestBegin(EditText[] parameters, ConformanceTestViewObject viewObject, RecyclerView resultRV) {
-        currTestType = "ConformanceTuning";
+        currTestType = RunType.MULTI_TUNING;
         conformanceTestViewObject = viewObject;
         conformanceTestRV = resultRV;
 
@@ -1061,10 +1043,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tuningRandom = new PRNG(tuningRandomSeed);
         }
 
-        // Initialize result writer
-        String outputFileName = "litmustest_conformance_tuning_result.json";
         try {
-            conformanceTuningFOS = openFileOutput(outputFileName, Context.MODE_PRIVATE);
+            conformanceTuningFOS = openFileOutput(RESULT_FILE, Context.MODE_PRIVATE);
             conformanceTuningResultWriter = new JsonWriter(new OutputStreamWriter(conformanceTuningFOS, "UTF-8"));
             conformanceTuningResultWriter.setIndent("  ");
             conformanceTuningResultWriter.beginArray();
@@ -1078,12 +1058,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void conformanceTuningTestLoop()  {
+        System.out.println("current index " + conformanceCurrConfigIndex);
         String testName = runningTests.get(conformanceCurrConfigIndex);
         currNewTestCase = allTests.get(testName);
 
         String[] testArgument = new String[4];
 
-        testArgument[0] = "litmustest_" + testName; // Test Name
+        testArgument[0] = testName; // Test Name
 
         // Shader Name
         testArgument[1] = currNewTestCase.getShaderFile(); // Current selected shader
@@ -1109,7 +1090,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void lockTestBegin(LockTestViewObject viewObject, String shaderName, boolean checkCorrect) {
-        currTestType = "LockTest";
+        currTestType = RunType.LOCK_TEST;
         lockTestViewObject = viewObject;
 
         handleButtons(true, viewObject.buttons, viewObject.resultButtons);
@@ -1133,6 +1114,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void writeToExternalStorage(String fileName) {
+        try {
+            FileInputStream fis = openFileInput(fileName);
+            FileChannel inChannel = fis.getChannel();
+            File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName);
+            FileChannel outChannel =  new FileOutputStream(output).getChannel();
+
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+            fis.close();
+            inChannel.close();
+            outChannel.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
     public void testComplete() {
         if(testThread != null) {
             testThread.interrupt();
@@ -1147,37 +1151,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void run() {
                 Log.i(TAG, "testComplete");
-                if(currTestType.equals("Explorer")) {
+                if(currTestType.equals(RunType.EXPLORER)) {
                     // Enable buttons and change their color
                     handleButtons(false, currTestViewObject.buttons, currTestViewObject.resultButtons);
-
                     currTestViewObject.explorerProgressLayout.setVisibility(View.GONE);
-
-                    // Write to external storage
-                    String fileName = OUTPUT_FILE + ".txt";
-                    try {
-                        FileInputStream fis = openFileInput(fileName);
-                        FileChannel inChannel = fis.getChannel();
-                        File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName);
-                        FileChannel outChannel =  new FileOutputStream(output).getChannel();
-
-                        inChannel.transferTo(0, inChannel.size(), outChannel);
-                        fis.close();
-                        inChannel.close();
-                        outChannel.close();
-                    }
-                    catch (FileNotFoundException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-
+                    writeToExternalStorage(OUTPUT_FILE + ".txt");
                     Toast.makeText(MainActivity.this, "Test " + currTestViewObject.testName + " finished!", Toast.LENGTH_LONG).show();
                 }
-                else if (currTestType.equals("Tuning")) {
+                else if (currTestType.equals(RunType.TUNING)) {
                     // Save param value
                     String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
 
@@ -1220,13 +1201,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         tuningTestLoop();
                     }
                 }
-                else if (currTestType.equals("ConformanceExplorer")) { // Conformance Explorer
+                else if (currTestType.equals(RunType.MULTI_EXPLORER)) {
                     // Save param value
                     String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
 
                     // Save result value
                     String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
-                    //System.out.println(currResultValue);
 
                     // Go through result and get number of weak behaviors
                     String startIndexIndicator = "Non-weak: ";
@@ -1251,8 +1231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                         // Write a json file
                         try {
-                            String outputFileName = "litmustest_conformance_explorer_result.json";
-                            FileOutputStream conformanceFOS = openFileOutput(outputFileName, Context.MODE_PRIVATE);
+                            FileOutputStream conformanceFOS = openFileOutput(RESULT_FILE, Context.MODE_PRIVATE);
                             JsonWriter conformanceResultWriter = new JsonWriter(new OutputStreamWriter(conformanceFOS, "UTF-8"));
                             conformanceResultWriter.setIndent("  ");
                             conformanceResultWriter.beginArray();
@@ -1307,29 +1286,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         catch (IOException e) {
                             e.printStackTrace();
                         }
-
-                        // Write to external storage
-                        String fileName = "litmustest_conformance_explorer_result.json";
-                        try {
-                            FileInputStream fis = openFileInput(fileName);
-                            FileChannel inChannel = fis.getChannel();
-                            File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName);
-                            FileChannel outChannel =  new FileOutputStream(output).getChannel();
-
-                            inChannel.transferTo(0, inChannel.size(), outChannel);
-                            fis.close();
-                            inChannel.close();
-                            outChannel.close();
-                        }
-                        catch (FileNotFoundException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-
+                        writeToExternalStorage(RESULT_FILE);
                         // Enable start button
                         conformanceTestViewObject.startButton.setEnabled(true);
                         conformanceTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
@@ -1354,7 +1311,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         conformanceExplorerTestLoop();
                     }
                 }
-                else if (currTestType.equals("ConformanceTuning")) { // Conformance Tuning
+                else if (currTestType.equals(RunType.MULTI_TUNING)) { // Conformance Tuning
                     // Save param value
                     String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
 
@@ -1467,27 +1424,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 e.printStackTrace();
                             }
 
-                            // Write to external storage
-                            String fileName = "litmustest_conformance_tuning_result.json";
-                            try {
-                                FileInputStream fis = openFileInput(fileName);
-                                FileChannel inChannel = fis.getChannel();
-                                File output = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM),fileName);
-                                FileChannel outChannel =  new FileOutputStream(output).getChannel();
-
-                                inChannel.transferTo(0, inChannel.size(), outChannel);
-                                fis.close();
-                                inChannel.close();
-                                outChannel.close();
-                            }
-                            catch (FileNotFoundException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            catch (IOException e)
-                            {
-                                e.printStackTrace();
-                            }
+                            writeToExternalStorage(RESULT_FILE);
 
                             // Get string array of test names
                             String[] testNumbers = new String[tuningEndConfig];

@@ -10,6 +10,7 @@ public class FileConstants {
 
     public static final String PARAMETERS_FILE = "parameters";
     public static final String OUTPUT_FILE = "output";
+    public static final String RESULT_FILE = "result.json";
 
     public static final String[] allFiles = {BASIC_PARAM_FILE, STRESS_PARAM_FILE, COHERENCY_OVERRIDES_FILE, PARAMETERS_FILE, OUTPUT_FILE};
 }
