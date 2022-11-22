@@ -1129,16 +1129,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Save result value
                     String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
                     // Go through result and get number of weak behaviors
-                    String startIndexIndicator = "Non-weak: ";
-                    String endIndexIndicator = "\nWeak:";
-                    String numNonWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+                    String startIndexIndicator = "seq: ";
+                    String endIndexIndicator = "\ninterleaved:";
+                    String numSeqBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
                     // Go through result and get number of weak behaviors
-                    startIndexIndicator = "Weak: ";
+                    startIndexIndicator = "interleaved: ";
+                    endIndexIndicator = "\nweak:";
+                    String numInterleavedBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+                    startIndexIndicator = "weak: ";
                     endIndexIndicator = "\nTotal elapsed time";
                     String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
                     // Transfer over the tuning result case
                     ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue,
-                            Integer.parseInt(numNonWeakBehaviors), Integer.parseInt(numWeakBehaviors));
+                            Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors));
                     conformanceTestResults.add(currConformanceResult);
                     if(curTestIndex == runningTests.size() - 1) {
                         multiTestResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
@@ -1156,13 +1159,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                                 conformanceTuningResultWriter.name(resultName);
                                 conformanceTuningResultWriter.beginObject();
-                                conformanceTuningResultWriter.name("Non-weak").value(resultCase.numNonWeakBehaviors);
-                                conformanceTuningResultWriter.name("Weak").value(resultCase.numWeakBehaviors);
+                                conformanceTuningResultWriter.name("seq").value(resultCase.numSeqBehaviors);
+                                conformanceTuningResultWriter.name("interleaved").value(resultCase.numInterleavedBehaviors);
+                                conformanceTuningResultWriter.name("weak").value(resultCase.numWeakBehaviors);
                                 conformanceTuningResultWriter.endObject();
                             }
 
                             // Parameter
-                            conformanceTuningResultWriter.name("Test Parameters");
+                            conformanceTuningResultWriter.name("params");
                             conformanceTuningResultWriter.beginObject();
 
                             FileInputStream fis = openFileInput(PARAMETERS_FILE + ".txt");
@@ -1213,9 +1217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             // Close result writer
                             try {
                                 conformanceTuningResultWriter.name("gpu").value(GPUName);
-                                conformanceTuningResultWriter.name("configurations").value(numConfigs);
                                 conformanceTuningResultWriter.name("randomSeed").value(tuningRandomSeed);
-
                                 conformanceTuningResultWriter.endObject();
                                 conformanceTuningResultWriter.endArray();
                                 conformanceTuningResultWriter.close();

@@ -234,10 +234,10 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
         resultProgram.teardown();
     }
 
-    // change to seq, interleaved, weak
     outputFile << "Total Result:\n";
-    outputFile << "Non-weak: " << numSeq + numInter << "\n";
-    outputFile << "Weak: " << numWeak << "\n";
+    outputFile << "seq: " << numSeq << "\n";
+    outputFile << "interleaved: " << numInter << "\n";
+    outputFile << "weak: " << numWeak << "\n";
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
