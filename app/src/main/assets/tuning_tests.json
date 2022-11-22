@@ -147,5 +147,57 @@
     "name": "write_22_rmw_barrier2",
     "shader": "litmustest_write_22_rmw_barrier2",
     "resultShader": "litmustest_write_22_results"
+  },
+
+  {
+    "type": "COHERENCY",
+    "name": "rr_mutant",
+    "shader": "litmustest_rr_mutant",
+    "resultShader": "litmustest_rr_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "rr_rmw_mutant",
+    "shader": "litmustest_rr_rmw_mutant",
+    "resultShader": "litmustest_rr_results"
+  },
+
+  {
+    "type": "COHERENCY",
+    "name": "rw_mutant",
+    "shader": "litmustest_rw_mutant",
+    "resultShader": "litmustest_rw_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "rw_rmw_mutant",
+    "shader": "litmustest_rw_rmw_mutant",
+    "resultShader": "litmustest_rw_results"
+  },
+
+  {
+    "type": "COHERENCY",
+    "name": "wr_mutant",
+    "shader": "litmustest_wr_mutant",
+    "resultShader": "litmustest_wr_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "wr_rmw_mutant",
+    "shader": "litmustest_wr_rmw_mutant",
+    "resultShader": "litmustest_wr_results"
+  },
+
+  {
+    "type": "COHERENCY",
+    "name": "ww_mutant",
+    "shader": "litmustest_ww_mutant",
+    "resultShader": "litmustest_ww_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "ww_rmw_mutant",
+    "shader": "litmustest_ww_rmw_mutant",
+    "resultShader": "litmustest_ww_results"
   }
 ]

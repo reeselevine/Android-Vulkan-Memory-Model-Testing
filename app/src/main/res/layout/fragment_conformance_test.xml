@@ -456,6 +456,14 @@
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
                             <CheckBox
                                 android:id="@+id/read_rmw_barrier1_checkBox"
                                 android:tag="read_rmw_barrier1"
@@ -478,15 +486,7 @@
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                        <CheckBox
+                            <CheckBox
                                 android:id="@+id/store_default_checkBox"
                                 android:tag="store"
                                 android:layout_width="wrap_content"
@@ -574,6 +574,14 @@
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
                             <CheckBox
                                 android:id="@+id/write_22_rmw_checkBox"
                                 android:tag="write_22_rmw"
@@ -615,6 +623,94 @@
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
                                 android:text="2+2 Write RMW Barrier 2"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/rr_mutant_checkBox"
+                                android:tag="rr_mutant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="RR (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/rr_rmw_mutant_checkBox"
+                                android:tag="rr_rmw_mutant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="RR RMW (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/rw__mutant_checkBox"
+                                android:tag="rw_mutant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="RW (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/rw_rmw_mutant_checkBox"
+                                android:tag="rw_rmw_mutant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="RW RMW (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/wr_mutant_checkBox"
+                                android:tag="wr_mutant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="WR (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/wr_rmw_mutant_checkBox"
+                                android:tag="wr_rmw_mutant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="WR RMW (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/ww_mutant_checkBox"
+                                android:tag="ww_mutant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="WW (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/ww_rmw_mutant_checkBox"
+                                android:tag="ww_rmw_mutant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="WW RMW (mutant)"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 

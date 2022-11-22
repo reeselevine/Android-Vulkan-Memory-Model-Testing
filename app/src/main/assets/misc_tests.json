@@ -1,5 +1,23 @@
 [
   {
+    "type": "WEAK_MEMORY",
+    "name": "read",
+    "shader": "litmustest_read",
+    "resultShader": "litmustest_read_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "write_22",
+    "shader": "litmustest_write_22",
+    "resultShader": "litmustest_write_22_results"
+  },
+  {
+    "type": "WEAK_MEMORY",
+    "name": "store_buffer",
+    "shader": "litmustest_store_buffer",
+    "resultShader": "litmustest_store_buffer_results"
+  },
+  {
     "type": "COHERENCY",
     "name": "corr",
     "shader": "litmustest_corr_default",
