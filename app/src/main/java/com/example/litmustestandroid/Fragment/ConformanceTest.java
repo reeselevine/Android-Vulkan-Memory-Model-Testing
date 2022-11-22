@@ -146,18 +146,7 @@ public class ConformanceTest  extends Fragment {
         testCheckBoxViews[5] = fragmentView.findViewById(R.id.write_22_coherency_checkBox);
         testCheckBoxViews[6] = fragmentView.findViewById(R.id.message_passing_barrier_checkBox);
         testCheckBoxViews[7] = fragmentView.findViewById(R.id.store_barrier_checkBox);
-        testCheckBoxViews[8] = fragmentView.findViewById(R.id.read_barrier_checkBox);
         testCheckBoxViews[9] = fragmentView.findViewById(R.id.load_buffer_barrier_checkBox);
-        testCheckBoxViews[10] = fragmentView.findViewById(R.id.store_buffer_barrier_checkBox);
-        testCheckBoxViews[11] = fragmentView.findViewById(R.id.write_22_barrier_checkBox);
-        testCheckBoxViews[12] = fragmentView.findViewById(R.id.corr_default_checkBox);
-        testCheckBoxViews[13] = fragmentView.findViewById(R.id.coww_default_checkBox);
-        testCheckBoxViews[14] = fragmentView.findViewById(R.id.cowr_default_checkBox);
-        testCheckBoxViews[15] = fragmentView.findViewById(R.id.corw2_default_checkBox);
-        testCheckBoxViews[16] = fragmentView.findViewById(R.id.corr_rmw_checkBox);
-        testCheckBoxViews[17] = fragmentView.findViewById(R.id.coww_rmw_checkBox);
-        testCheckBoxViews[18] = fragmentView.findViewById(R.id.cowr_rmw_checkBox);
-        testCheckBoxViews[19] = fragmentView.findViewById(R.id.corw2_rmw_checkBox);
 
         CheckBox selectAllCheckBox = fragmentView.findViewById((R.id.selectAllCheckBox));
         selectAllCheckBox.setOnClickListener(new View.OnClickListener() {

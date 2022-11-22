@@ -119,14 +119,6 @@
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
                             <CheckBox
                                 android:id="@+id/load_buffer_coherency_checkBox"
                                 android:tag="load_buffer_coherency"
@@ -160,6 +152,13 @@
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
                             <CheckBox
                                 android:id="@+id/message_passing_barrier_checkBox"
@@ -184,23 +183,15 @@
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
                             <CheckBox
-                                android:id="@+id/read_barrier_checkBox"
-                                android:tag="read_barrier"
+                                android:id="@+id/read_rmw_barrier_checkBox"
+                                android:tag="read_rmw_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Read Barrier"
+                                android:text="Read RMW Barrier"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
 
                             <CheckBox
                                 android:id="@+id/load_buffer_barrier_checkBox"
@@ -214,28 +205,36 @@
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
                             <CheckBox
-                                android:id="@+id/store_buffer_barrier_checkBox"
-                                android:tag="store_buffer_barrier"
+                                android:id="@+id/store_buffer_rmw_barrier_checkBox"
+                                android:tag="store_buffer_rmw_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Store Buffer Barrier"
+                                android:text="Store Buffer RMW Barrier"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
                             <CheckBox
-                                android:id="@+id/write_22_barrier_checkBox"
-                                android:tag="write_22_barrier"
+                                android:id="@+id/write_22_rmw_barrier_checkBox"
+                                android:tag="write_22_rmw_barrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="2+2 Write Barrier"
+                                android:text="2+2 Write RMW Barrier"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
-                            <CheckBox
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                        <CheckBox
                                 android:id="@+id/rr_checkBox"
                                 android:tag="rr"
                                 android:layout_width="wrap_content"
@@ -330,7 +329,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Coherence Tests"
+                        android:text="Tuning Tests"
                         android:textSize="@dimen/_11sdp"
                         android:textColor="@color/gray"/>
 
@@ -348,24 +347,134 @@
                             android:orientation="vertical">
 
                             <CheckBox
-                                android:id="@+id/corr_default_checkBox"
-                                android:tag="corr_default"
+                                android:id="@+id/message_passing_default_checkBox"
+                                android:tag="message_passing"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="CoRR"
+                                android:text="Message Passing"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
                             <CheckBox
-                                android:id="@+id/coww_default_checkBox"
-                                android:tag="coww_default"
+                                android:id="@+id/message_passing_coherency_tuning_checkBox"
+                                android:tag="message_passing_coherency_tuning"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="CoWW"
+                                android:text="Message Passing Coherency (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/message_passing_barrier1_checkBox"
+                                android:tag="message_passing_barrier1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Message Passing Barrier 1"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/message_passing_barrier2_checkBox"
+                                android:tag="message_passing_barrier2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Message Passing Barrier 2"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/load_buffer_default_checkBox"
+                                android:tag="load_buffer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Load Buffer"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/load_buffer_coherency_tuning_checkBox"
+                                android:tag="load_buffer_coherency_tuning"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Load Buffer Coherency (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/load_buffer_barrier1_checkBox"
+                                android:tag="load_buffer_barrier1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Load Buffer Barrier 1"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/load_buffer_barrier2_checkBox"
+                                android:tag="load_buffer_barrier2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Load Buffer Barrier 2"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/read_rmw_checkBox"
+                                android:tag="read_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Read RMW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/read_coherency_tuning_checkBox"
+                                android:tag="read_coherency_tuning"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Read Coherency (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/read_rmw_barrier1_checkBox"
+                                android:tag="read_rmw_barrier1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Read RMW Barrier 1"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/read_rmw_barrier2_checkBox"
+                                android:tag="read_rmw_barrier2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Read RMW Barrier 2"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -377,101 +486,135 @@
                             android:layout_weight="1"
                             android:orientation="vertical">
 
-                            <CheckBox
-                                android:id="@+id/cowr_default_checkBox"
-                                android:tag="cowr_default"
+                        <CheckBox
+                                android:id="@+id/store_default_checkBox"
+                                android:tag="store"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="CoWR"
+                                android:text="Store"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
                             <CheckBox
-                                android:id="@+id/corw2_default_checkBox"
-                                android:tag="corw2_default"
+                                android:id="@+id/store_coherency_tuning_checkBox"
+                                android:tag="store_coherency_tuning"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="CoRW2"
-                                android:textSize="@dimen/_11sdp"
-                                android:onClick="conformanceTestCheckBoxesListener"/>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Coherence Tests (RMW)"
-                        android:textSize="@dimen/_11sdp"
-                        android:textColor="@color/gray"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:layout_marginBottom="@dimen/_5sdp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <CheckBox
-                                android:id="@+id/corr_rmw_checkBox"
-                                android:tag="corr_rmw"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:minWidth="0dp"
-                                android:minHeight="0dp"
-                                android:text="CoRR"
+                                android:text="Store Coherency (mutant)"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
                             <CheckBox
-                                android:id="@+id/coww_rmw_checkBox"
-                                android:tag="coww_rmw"
+                                android:id="@+id/store_barrier1_checkBox"
+                                android:tag="store_barrier1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="CoWW"
-                                android:textSize="@dimen/_11sdp"
-                                android:onClick="conformanceTestCheckBoxesListener"/>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <CheckBox
-                                android:id="@+id/cowr_rmw_checkBox"
-                                android:tag="cowr_rmw"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:minWidth="0dp"
-                                android:minHeight="0dp"
-                                android:text="CoWR"
+                                android:text="Store Barrier 1"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
                             <CheckBox
-                                android:id="@+id/corw2_rmw_checkBox"
-                                android:tag="corw2_rmw"
+                                android:id="@+id/store_barrier2_checkBox"
+                                android:tag="store_barrier2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="CoRW2"
+                                android:text="Store Barrier 2"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/store_buffer_rmw_checkBox"
+                                android:tag="store_buffer_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Store Buffer RMW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/store_buffer_coherency_tuning_checkBox"
+                                android:tag="store_buffer_coherency_tuning"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Store Buffer Coherency (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/store_buffer_rmw_barrier1_checkBox"
+                                android:tag="store_buffer_rmw_barrier1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Store Buffer RMW Barrier 1"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/store_buffer_rmw_barrier2_checkBox"
+                                android:tag="store_buffer_rmw_barrier2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="Store Buffer RMW Barrier 2"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/write_22_rmw_checkBox"
+                                android:tag="write_22_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="2+2 Write RMW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/write_22_coherency_tuning_checkBox"
+                                android:tag="write_22_coherency_tuning"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="2+2 Write Coherency (mutant)"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/write_22_rmw_barrier1_checkBox"
+                                android:tag="write_22_rmw_barrier1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="2+2 Write RMW Barrier 1"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/write_22_rmw_barrier2_checkBox"
+                                android:tag="write_22_rmw_barrier2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="2+2 Write RMW Barrier 2"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 

@@ -33,7 +33,7 @@
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "read_barrier",
+    "name": "read_rmw_barrier",
     "shader": "litmustest_read_rmw_barrier",
     "resultShader": "litmustest_read_results"
   },
@@ -59,7 +59,7 @@
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "store_buffer_barrier",
+    "name": "store_buffer_rmw_barrier",
     "shader": "litmustest_store_buffer_rmw_barrier",
     "resultShader": "litmustest_store_buffer_results"
   },
@@ -72,7 +72,7 @@
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "write_22_barrier",
+    "name": "write_22_rmw_barrier",
     "shader": "litmustest_write_22_rmw_barrier",
     "resultShader": "litmustest_write_22_results"
   },
