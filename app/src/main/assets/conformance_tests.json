@@ -75,5 +75,57 @@
     "name": "write_22_barrier",
     "shader": "litmustest_write_22_rmw_barrier",
     "resultShader": "litmustest_write_22_results"
+  },
+
+  {
+    "type": "COHERENCY",
+    "name": "rr",
+    "shader": "litmustest_rr",
+    "resultShader": "litmustest_rr_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "rr_rmw",
+    "shader": "litmustest_rr_rmw",
+    "resultShader": "litmustest_rr_results"
+  },
+
+  {
+    "type": "COHERENCY",
+    "name": "rw",
+    "shader": "litmustest_rw",
+    "resultShader": "litmustest_rw_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "rw_rmw",
+    "shader": "litmustest_rw_rmw",
+    "resultShader": "litmustest_rw_results"
+  },
+
+  {
+    "type": "COHERENCY",
+    "name": "wr",
+    "shader": "litmustest_wr",
+    "resultShader": "litmustest_wr_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "wr_rmw",
+    "shader": "litmustest_wr_rmw",
+    "resultShader": "litmustest_wr_results"
+  },
+
+  {
+    "type": "COHERENCY",
+    "name": "ww",
+    "shader": "litmustest_ww",
+    "resultShader": "litmustest_ww_results"
+  },
+  {
+    "type": "COHERENCY",
+    "name": "ww_rmw",
+    "shader": "litmustest_ww_rmw",
+    "resultShader": "litmustest_ww_results"
   }
 ]

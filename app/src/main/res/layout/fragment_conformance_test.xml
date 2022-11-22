@@ -69,7 +69,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Weak Memory Tests (Single Memory)"
+                        android:text="Conformance Tests"
                         android:textSize="@dimen/_11sdp"
                         android:textColor="@color/gray"/>
 
@@ -93,7 +93,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Message Passing"
+                                android:text="Message Passing Coherency"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -104,7 +104,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Store"
+                                android:text="Store Coherency"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -115,7 +115,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Read"
+                                android:text="Read Coherency"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -134,7 +134,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Load Buffer"
+                                android:text="Load Buffer Coherency"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -156,33 +156,10 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="2+2 Write"
+                                android:text="2+2 Write Coherency"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Weak Memory Tests (Barrier)"
-                        android:textSize="@dimen/_11sdp"
-                        android:textColor="@color/gray"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:layout_marginBottom="@dimen/_5sdp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
 
                             <CheckBox
                                 android:id="@+id/message_passing_barrier_checkBox"
@@ -191,7 +168,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Message Passing"
+                                android:text="Message Passing Barrier"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -202,7 +179,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Store"
+                                android:text="Store Barrier"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -213,7 +190,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Read"
+                                android:text="Read Barrier"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -232,7 +209,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Load Buffer"
+                                android:text="Load Buffer Barrier"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -243,7 +220,7 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="Store Buffer"
+                                android:text="Store Buffer Barrier"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
@@ -254,7 +231,95 @@
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
                                 android:minHeight="0dp"
-                                android:text="2+2 Write"
+                                android:text="2+2 Write Barrier"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/rr_checkBox"
+                                android:tag="rr"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="RR"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/rr_rmw_checkBox"
+                                android:tag="rr_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="RR RMW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/rw_checkBox"
+                                android:tag="rw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="RW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/rw_rmw_checkBox"
+                                android:tag="rw_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="RW RMW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/wr_checkBox"
+                                android:tag="wr"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="WR"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/wr_rmw_checkBox"
+                                android:tag="wr_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="WR RMW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/ww_checkBox"
+                                android:tag="ww"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="WW"
+                                android:textSize="@dimen/_11sdp"
+                                android:onClick="conformanceTestCheckBoxesListener"/>
+
+                            <CheckBox
+                                android:id="@+id/ww_rmw_checkBox"
+                                android:tag="ww_rmw"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:text="WW RMW"
                                 android:textSize="@dimen/_11sdp"
                                 android:onClick="conformanceTestCheckBoxesListener"/>
 
