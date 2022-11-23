@@ -1,0 +1,6 @@
+numConfigs=100
+iterations=100
+randomSeed=webgpu
+testingWorkgroups=2
+maxWorkgroups=4
+workgroupSize=256

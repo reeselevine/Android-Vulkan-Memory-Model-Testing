@@ -7,7 +7,7 @@
         <item android:id="@+id/nav_introduction"
               android:title="Introduction"/>
         <item android:id="@+id/nav_conformance_test"
-            android:title="Conformance Test Suite"/>
+            android:title="Tuning/Conformance"/>
         <item android:id="@+id/nav_lock_test"
             android:title="Lock Tests"/>
         <item android:title="Weak Memory Tests">

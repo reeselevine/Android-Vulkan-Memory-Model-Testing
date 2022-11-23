@@ -2,19 +2,19 @@
   {
     "type": "WEAK_MEMORY",
     "name": "read",
-    "shader": "litmustest_read",
+    "shader": "litmustest_read_default",
     "resultShader": "litmustest_read_results"
   },
   {
     "type": "WEAK_MEMORY",
     "name": "write_22",
-    "shader": "litmustest_write_22",
+    "shader": "litmustest_write_22_default",
     "resultShader": "litmustest_write_22_results"
   },
   {
     "type": "WEAK_MEMORY",
     "name": "store_buffer",
-    "shader": "litmustest_store_buffer",
+    "shader": "litmustest_store_buffer_default",
     "resultShader": "litmustest_store_buffer_results"
   },
   {

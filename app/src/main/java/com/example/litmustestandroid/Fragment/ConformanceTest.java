@@ -25,6 +25,7 @@ import com.example.litmustestandroid.R;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ConformanceTest  extends Fragment {
@@ -137,59 +138,52 @@ public class ConformanceTest  extends Fragment {
             }
         });
 
-        View[] testCheckBoxViews = new View[20];
-        testCheckBoxViews[0] = fragmentView.findViewById(R.id.message_passing_coherency_checkBox);
-        testCheckBoxViews[1] = fragmentView.findViewById(R.id.store_coherency_checkBox);
-        testCheckBoxViews[2] = fragmentView.findViewById(R.id.read_coherency_checkBox);
-        testCheckBoxViews[3] = fragmentView.findViewById(R.id.load_buffer_coherency_checkBox);
-        testCheckBoxViews[4] = fragmentView.findViewById(R.id.store_buffer_coherency_checkBox);
-        testCheckBoxViews[5] = fragmentView.findViewById(R.id.write_22_coherency_checkBox);
-        testCheckBoxViews[6] = fragmentView.findViewById(R.id.message_passing_barrier_checkBox);
-        testCheckBoxViews[7] = fragmentView.findViewById(R.id.store_barrier_checkBox);
-        testCheckBoxViews[9] = fragmentView.findViewById(R.id.load_buffer_barrier_checkBox);
+        ArrayList<CheckBox> conformanceCheckBoxes = conformanceTestViews(fragmentView);
+        ArrayList<CheckBox> tuningCheckBoxes = tuningTestViews(fragmentView);
+        ArrayList<CheckBox> allTestCheckBoxes = new ArrayList<>();
+        allTestCheckBoxes.addAll(conformanceCheckBoxes);
+        allTestCheckBoxes.addAll(tuningCheckBoxes);
 
-        CheckBox selectAllCheckBox = fragmentView.findViewById((R.id.selectAllCheckBox));
-        selectAllCheckBox.setOnClickListener(new View.OnClickListener() {
+        Button selectConformanceTestsButton = fragmentView.findViewById(R.id.selectConformanceTestsButton);
+        selectConformanceTestsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(selectAllCheckBox.isChecked()) {
-                    for(int i = 0; i < testCheckBoxViews.length; i++) {
-                        ((CheckBox)testCheckBoxViews[i]).setChecked(true);
-                        ((MainActivity)getActivity()).conformanceTestCheckBoxesListener(testCheckBoxViews[i]);
-                    }
-                }
-                else {
-                    for(int i = 0; i < testCheckBoxViews.length; i++) {
-                        ((CheckBox)testCheckBoxViews[i]).setChecked(false);
-                        ((MainActivity)getActivity()).conformanceTestCheckBoxesListener(testCheckBoxViews[i]);
-                    }
-                }
+                setTests(conformanceCheckBoxes, true);
+            }
+        });
+
+        Button selectTuningTestsButton = fragmentView.findViewById(R.id.selectTuningTestsButton);
+        selectTuningTestsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTests(tuningCheckBoxes, true);
+            }
+        });
+
+        Button selectAllTestsButton = fragmentView.findViewById(R.id.selectAllTestsButton);
+        selectAllTestsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTests(allTestCheckBoxes, true);
+            }
+        });
+
+        Button clearTestsButton = fragmentView.findViewById(R.id.clearTestsButton);
+        clearTestsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTests(allTestCheckBoxes, false);
             }
         });
 
         int basic_parameters = getResources().getIdentifier(BASIC_PARAM_FILE, "raw", getActivity().getPackageName());
         int stress_parameters = getResources().getIdentifier(STRESS_PARAM_FILE, "raw", getActivity().getPackageName());
+        int tuning_parameters = getResources().getIdentifier(TUNING_PARAM_FILE, "raw", getActivity().getPackageName());
 
-        HashMap<String, EditText> conformanceTestExplorerParamMap = new HashMap<>();
-        conformanceTestExplorerParamMap.put(ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerTestIteration));
-        conformanceTestExplorerParamMap.put(TESTING_WORKGROUPS, fragmentView.findViewById(R.id.conformanceTestExplorerTestingWorkgroups));
-        conformanceTestExplorerParamMap.put(MAX_WORKGROUPS, fragmentView.findViewById(R.id.conformanceTestExplorerMaxWorkgroups));
-        conformanceTestExplorerParamMap.put(WORKGROUP_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerWorkgroupSize));
-        conformanceTestExplorerParamMap.put(SHUFFLE_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerShufflePct));
-        conformanceTestExplorerParamMap.put(BARRIER_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerBarrierPct));
-        conformanceTestExplorerParamMap.put(SCRATCH_MEMORY_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize));
-        conformanceTestExplorerParamMap.put(MEM_STRIDE, fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize));
-        conformanceTestExplorerParamMap.put(MEM_STRESS_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPct));
-        conformanceTestExplorerParamMap.put(MEM_STRESS_ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressIterations));
-        conformanceTestExplorerParamMap.put(MEM_STRESS_STORE_FIRST_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreFirstPct));
-        conformanceTestExplorerParamMap.put(MEM_STRESS_STORE_SECOND_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreSecondPct));
-        conformanceTestExplorerParamMap.put(PRE_STRESS_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPct));
-        conformanceTestExplorerParamMap.put(PRE_STRESS_ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressIterations));
-        conformanceTestExplorerParamMap.put(PRE_STRESS_STORE_FIRST_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreFirstPct));
-        conformanceTestExplorerParamMap.put(PRE_STRESS_STORE_SECOND_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreSecondPct));
-        conformanceTestExplorerParamMap.put(STRESS_LINE_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize));
-        conformanceTestExplorerParamMap.put(STRESS_TARGET_LINES, fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines));
-        conformanceTestExplorerParamMap.put(STRESS_STRATEGY_BALANCE_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerStressStrategyBalancePct));
+        HashMap<String, EditText> paramMap = buildParamMap(fragmentView);
+        ((MainActivity)getActivity()).loadParameters(paramMap, basic_parameters);
+        HashMap<String, EditText> tuningParamMap = buildTuningParamMap(fragmentView);
+        ((MainActivity)getActivity()).loadParameters(tuningParamMap, tuning_parameters);
 
         EditText[] conformanceTestTuningParameters = new EditText[6];
         conformanceTestTuningParameters [0] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningConfigNum); // testConfigNum
@@ -199,7 +193,7 @@ public class ConformanceTest  extends Fragment {
         conformanceTestTuningParameters [4] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningMaxWorkgroups); // maxWorkgroups
         conformanceTestTuningParameters [5] = (EditText) fragmentView.findViewById(R.id.conformanceTestTuningWorkgroupSize); // workgroupSize
 
-        ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParamMap, basic_parameters);
+
 
         defaultParamButton = fragmentView.findViewById(R.id.conformanceTestDefaultParamButton);
         stressParamButton = fragmentView.findViewById(R.id.conformanceTestStressParamButton);
@@ -215,7 +209,7 @@ public class ConformanceTest  extends Fragment {
             public void onClick(View v) {
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParamMap, basic_parameters);
+                ((MainActivity)getActivity()).loadParameters(paramMap, basic_parameters);
             }
         });
 
@@ -224,7 +218,7 @@ public class ConformanceTest  extends Fragment {
             public void onClick(View v) {
                 stressParamButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
                 defaultParamButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
-                ((MainActivity)getActivity()).loadParameters(conformanceTestExplorerParamMap, stress_parameters);
+                ((MainActivity)getActivity()).loadParameters(paramMap, stress_parameters);
             }
         });
 
@@ -239,10 +233,132 @@ public class ConformanceTest  extends Fragment {
         conformanceTestViewObject.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).beginRunningTests(testMode, conformanceTestExplorerParamMap, conformanceTestTuningParameters, conformanceTestViewObject, conformanceTestTuningResultRV);
+                ((MainActivity)getActivity()).beginRunningTests(testMode, paramMap, conformanceTestTuningParameters, conformanceTestViewObject, conformanceTestTuningResultRV);
             }
         });
 
         return fragmentView;
+    }
+
+    private HashMap<String, EditText> buildParamMap(View fragmentView) {
+        HashMap<String, EditText> paramMap = new HashMap<>();
+        paramMap.put(ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerTestIteration));
+        paramMap.put(TESTING_WORKGROUPS, fragmentView.findViewById(R.id.conformanceTestExplorerTestingWorkgroups));
+        paramMap.put(MAX_WORKGROUPS, fragmentView.findViewById(R.id.conformanceTestExplorerMaxWorkgroups));
+        paramMap.put(WORKGROUP_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerWorkgroupSize));
+        paramMap.put(SHUFFLE_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerShufflePct));
+        paramMap.put(BARRIER_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerBarrierPct));
+        paramMap.put(SCRATCH_MEMORY_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize));
+        paramMap.put(MEM_STRIDE, fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize));
+        paramMap.put(MEM_STRESS_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPct));
+        paramMap.put(MEM_STRESS_ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressIterations));
+        paramMap.put(MEM_STRESS_STORE_FIRST_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreFirstPct));
+        paramMap.put(MEM_STRESS_STORE_SECOND_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreSecondPct));
+        paramMap.put(PRE_STRESS_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressPct));
+        paramMap.put(PRE_STRESS_ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressIterations));
+        paramMap.put(PRE_STRESS_STORE_FIRST_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreFirstPct));
+        paramMap.put(PRE_STRESS_STORE_SECOND_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerPreStressStoreSecondPct));
+        paramMap.put(STRESS_LINE_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerStressLineSize));
+        paramMap.put(STRESS_TARGET_LINES, fragmentView.findViewById(R.id.conformanceTestExplorerStressTargetLines));
+        paramMap.put(STRESS_STRATEGY_BALANCE_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerStressStrategyBalancePct));
+        return paramMap;
+    }
+
+    private HashMap<String, EditText> buildTuningParamMap(View fragmentView) {
+        HashMap<String, EditText> tuningParamMap = new HashMap<>();
+        tuningParamMap.put(NUM_CONFIGS, fragmentView.findViewById(R.id.conformanceTestTuningConfigNum));
+        tuningParamMap.put(ITERATIONS, fragmentView.findViewById(R.id.conformanceTestTuningTestIteration));
+        tuningParamMap.put(RANDOM_SEED, fragmentView.findViewById(R.id.conformanceTestTuningRandomSeed));
+        tuningParamMap.put(TESTING_WORKGROUPS, fragmentView.findViewById(R.id.conformanceTestTuningTestingWorkgroups));
+        tuningParamMap.put(MAX_WORKGROUPS, fragmentView.findViewById(R.id.conformanceTestTuningMaxWorkgroups));
+        tuningParamMap.put(WORKGROUP_SIZE, fragmentView.findViewById(R.id.conformanceTestTuningWorkgroupSize));
+        return tuningParamMap;
+    }
+
+    private ArrayList<CheckBox> conformanceTestViews(View view) {
+        ArrayList<CheckBox> conformanceTests = new ArrayList<>();
+        conformanceTests.add(view.findViewById(R.id.message_passing_coherency_checkBox));
+        conformanceTests.add(view.findViewById(R.id.message_passing_barrier_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.load_buffer_coherency_checkBox));
+        conformanceTests.add(view.findViewById(R.id.load_buffer_barrier_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.store_coherency_checkBox));
+        conformanceTests.add(view.findViewById(R.id.store_barrier_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.store_buffer_coherency_checkBox));
+        conformanceTests.add(view.findViewById(R.id.store_buffer_rmw_barrier_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.read_coherency_checkBox));
+        conformanceTests.add(view.findViewById(R.id.read_rmw_barrier_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.write_22_coherency_checkBox));
+        conformanceTests.add(view.findViewById(R.id.write_22_rmw_barrier_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.rr_checkBox));
+        conformanceTests.add(view.findViewById(R.id.rr_rmw_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.rw_checkBox));
+        conformanceTests.add(view.findViewById(R.id.rw_rmw_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.wr_checkBox));
+        conformanceTests.add(view.findViewById(R.id.wr_rmw_checkBox));
+
+        conformanceTests.add(view.findViewById(R.id.ww_checkBox));
+        conformanceTests.add(view.findViewById(R.id.ww_rmw_checkBox));
+        return conformanceTests;
+    }
+
+    private ArrayList<CheckBox> tuningTestViews(View view) {
+        ArrayList<CheckBox> tuningTests = new ArrayList<>();
+        tuningTests.add(view.findViewById(R.id.message_passing_coherency_tuning_checkBox));
+        tuningTests.add(view.findViewById(R.id.message_passing_default_checkBox));
+        tuningTests.add(view.findViewById(R.id.message_passing_barrier1_checkBox));
+        tuningTests.add(view.findViewById(R.id.message_passing_barrier2_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.load_buffer_coherency_tuning_checkBox));
+        tuningTests.add(view.findViewById(R.id.load_buffer_default_checkBox));
+        tuningTests.add(view.findViewById(R.id.load_buffer_barrier1_checkBox));
+        tuningTests.add(view.findViewById(R.id.load_buffer_barrier2_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.store_coherency_tuning_checkBox));
+        tuningTests.add(view.findViewById(R.id.store_default_checkBox));
+        tuningTests.add(view.findViewById(R.id.store_barrier1_checkBox));
+        tuningTests.add(view.findViewById(R.id.store_barrier2_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.store_buffer_coherency_tuning_checkBox));
+        tuningTests.add(view.findViewById(R.id.store_buffer_rmw_checkBox));
+        tuningTests.add(view.findViewById(R.id.store_buffer_rmw_barrier1_checkBox));
+        tuningTests.add(view.findViewById(R.id.store_buffer_rmw_barrier2_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.read_coherency_tuning_checkBox));
+        tuningTests.add(view.findViewById(R.id.read_rmw_checkBox));
+        tuningTests.add(view.findViewById(R.id.read_rmw_barrier1_checkBox));
+        tuningTests.add(view.findViewById(R.id.read_rmw_barrier2_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.write_22_coherency_tuning_checkBox));
+        tuningTests.add(view.findViewById(R.id.write_22_rmw_checkBox));
+        tuningTests.add(view.findViewById(R.id.write_22_rmw_barrier1_checkBox));
+        tuningTests.add(view.findViewById(R.id.write_22_rmw_barrier2_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.rr_mutant_checkBox));
+        tuningTests.add(view.findViewById(R.id.rr_rmw_mutant_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.rw_mutant_checkBox));
+        tuningTests.add(view.findViewById(R.id.rw_rmw_mutant_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.wr_mutant_checkBox));
+        tuningTests.add(view.findViewById(R.id.wr_rmw_mutant_checkBox));
+
+        tuningTests.add(view.findViewById(R.id.ww_mutant_checkBox));
+        tuningTests.add(view.findViewById(R.id.ww_rmw_mutant_checkBox));
+        return tuningTests;
+    }
+
+    private void setTests(ArrayList<CheckBox> tests, boolean set) {
+        for (CheckBox test : tests) {
+            test.setChecked(set);
+            ((MainActivity)getActivity()).conformanceTestCheckBoxesListener(test);
+        }
     }
 }

@@ -31,6 +31,8 @@ public class ParameterConstants {
     public static final String PERMUTE_FIRST = "permuteFirst";
     public static final String PERMUTE_SECOND = "permuteSecond";
     public static final String ALIASED_MEMORY = "aliasedMemory";
+    public static final String NUM_CONFIGS = "numConfigs";
+    public static final String RANDOM_SEED = "randomSeed";
 
     public static Map<String, Integer> nonOverrideableParams;
     static {

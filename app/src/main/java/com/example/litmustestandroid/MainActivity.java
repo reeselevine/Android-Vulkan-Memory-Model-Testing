@@ -260,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             inputStream.read(bufferData);
             inputStream.close();
             json = new String(bufferData, "UTF-8");
-            System.out.println(json);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -923,9 +922,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void conformanceTestCheckBoxesListener(View view) {
-        CheckBox currCheckBox = (CheckBox)view;
-        String shaderName = view.getTag().toString();
-        if(currCheckBox.isChecked()) { // Clicked
+        String shaderName = ((CheckBox) view).getTag().toString();
+        if(((CheckBox) view).isChecked()) { // Clicked
             selectedTests.add(shaderName);
         }
         else { // Un-clicked
