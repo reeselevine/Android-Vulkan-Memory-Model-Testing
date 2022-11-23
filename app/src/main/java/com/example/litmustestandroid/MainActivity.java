@@ -1137,9 +1137,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     startIndexIndicator = "weak: ";
                     endIndexIndicator = "\nTotal elapsed time";
                     String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+                    startIndexIndicator = "Total elapsed time: ";
+                    String duration = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.length() - 2);
                     // Transfer over the tuning result case
                     ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue,
-                            Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors));
+                            Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors), Double.parseDouble(duration));
                     conformanceTestResults.add(currConformanceResult);
                     if(curTestIndex == runningTests.size() - 1) {
                         multiTestResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
@@ -1160,6 +1162,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 conformanceTuningResultWriter.name("seq").value(resultCase.numSeqBehaviors);
                                 conformanceTuningResultWriter.name("interleaved").value(resultCase.numInterleavedBehaviors);
                                 conformanceTuningResultWriter.name("weak").value(resultCase.numWeakBehaviors);
+                                conformanceTuningResultWriter.name("durationSeconds").value(resultCase.duration);
                                 conformanceTuningResultWriter.endObject();
                             }
 

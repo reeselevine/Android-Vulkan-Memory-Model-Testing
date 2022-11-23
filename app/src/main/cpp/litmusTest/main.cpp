@@ -241,7 +241,7 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-    outputFile << "Total elapsed time: " << elapsed_seconds.count() << "s\n";
+    outputFile << "Total elapsed time: " << std::fixed << std::setprecision(3) << elapsed_seconds.count() << "s\n";
 
     for (Buffer buffer : buffers) {
         buffer.teardown();
