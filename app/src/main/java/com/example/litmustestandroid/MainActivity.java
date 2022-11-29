@@ -937,10 +937,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             EditText[] tuningParameters,
             ConformanceTestViewObject viewObject,
             RecyclerView resultRV) {
+        System.out.println("Run type: " + runType.toString());
         currTestType = runType;
         if (currTestType.equals(RunType.MULTI_EXPLORER)) {
             numConfigs = 1;
         } else {
+            System.out.println("Start num configs: " + tuningParameters[0].getText().toString());
             numConfigs = Integer.parseInt(tuningParameters[0].getText().toString());
         }
         conformanceParamMap = testParameters;
@@ -1201,6 +1203,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         // Reset tuning config
                         curTestIndex = 0;
                         curConfigIndex++;
+                        System.out.println("Cur Config: " + curConfigIndex);
+                        System.out.println("Num Configs: " + numConfigs);
                         if(curConfigIndex == numConfigs) { // All tuning tests completed
 
                             Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();

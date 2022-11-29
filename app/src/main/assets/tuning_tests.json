@@ -9,7 +9,7 @@
     "type": "WEAK_MEMORY",
     "name": "message_passing_coherency_tuning",
     "shader": "litmustest_message_passing_coherency",
-    "resultShader": "litmustest_message_passing_coherency_results"
+    "resultShader": "litmustest_message_passing_coherency_tuning_results"
   },
   {
     "type": "WEAK_MEMORY",
@@ -34,7 +34,7 @@
     "type": "WEAK_MEMORY",
     "name": "store_coherency_tuning",
     "shader": "litmustest_store_coherency",
-    "resultShader": "litmustest_store_coherency_results"
+    "resultShader": "litmustest_store_coherency_tuning_results"
   },
   {
     "type": "WEAK_MEMORY",
@@ -59,7 +59,7 @@
     "type": "WEAK_MEMORY",
     "name": "read_coherency_tuning",
     "shader": "litmustest_read_coherency",
-    "resultShader": "litmustest_read_coherency_results"
+    "resultShader": "litmustest_read_coherency_tuning_results"
   },
   {
     "type": "WEAK_MEMORY",
@@ -84,7 +84,7 @@
     "type": "WEAK_MEMORY",
     "name": "load_buffer_coherency_tuning",
     "shader": "litmustest_load_buffer_coherency",
-    "resultShader": "litmustest_load_buffer_coherency_results"
+    "resultShader": "litmustest_load_buffer_coherency_tuning_results"
   },
   {
     "type": "WEAK_MEMORY",
@@ -109,7 +109,7 @@
     "type": "WEAK_MEMORY",
     "name": "store_buffer_coherency_tuning",
     "shader": "litmustest_store_buffer_coherency",
-    "resultShader": "litmustest_store_buffer_coherency_results"
+    "resultShader": "litmustest_store_buffer_coherency_tuning_results"
   },
   {
     "type": "WEAK_MEMORY",
@@ -134,7 +134,7 @@
     "type": "WEAK_MEMORY",
     "name": "write_22_coherency_tuning",
     "shader": "litmustest_write_22_coherency",
-    "resultShader": "litmustest_write_22_coherency_results"
+    "resultShader": "litmustest_write_22_coherency_tuning_results"
   },
   {
     "type": "WEAK_MEMORY",

@@ -31,7 +31,7 @@ import java.util.HashMap;
 public class ConformanceTest  extends Fragment {
 
     private Button explorerButton, tuningButton, defaultParamButton, stressParamButton, tuningSendResultButton;
-    private RunType testMode = RunType.MULTI_EXPLORER;
+    private RunType testMode = RunType.MULTI_TUNING;
 
     @Nullable
     @org.jetbrains.annotations.Nullable
