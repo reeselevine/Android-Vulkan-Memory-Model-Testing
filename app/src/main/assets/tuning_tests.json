@@ -166,26 +166,26 @@
     "type": "COHERENCY",
     "name": "rw_mutant",
     "shader": "litmustest_rw_mutant",
-    "resultShader": "litmustest_rw_results"
+    "resultShader": "litmustest_rw_mutant_results"
   },
   {
     "type": "COHERENCY",
     "name": "rw_rmw_mutant",
     "shader": "litmustest_rw_rmw_mutant",
-    "resultShader": "litmustest_rw_results"
+    "resultShader": "litmustest_rw_mutant_results"
   },
 
   {
     "type": "COHERENCY",
     "name": "wr_mutant",
     "shader": "litmustest_wr_mutant",
-    "resultShader": "litmustest_wr_results"
+    "resultShader": "litmustest_wr_mutant_results"
   },
   {
     "type": "COHERENCY",
     "name": "wr_rmw_mutant",
     "shader": "litmustest_wr_rmw_mutant",
-    "resultShader": "litmustest_wr_results"
+    "resultShader": "litmustest_wr_mutant_results"
   },
 
   {
