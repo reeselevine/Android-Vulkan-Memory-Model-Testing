@@ -1,203 +1,235 @@
 [
   {
     "type": "WEAK_MEMORY",
-    "name": "message_passing",
+    "name": "messagePassing",
     "shader": "litmustest_message_passing_default",
-    "resultShader": "litmustest_message_passing_results"
+    "resultShader": "litmustest_message_passing_results",
+    "conformanceTest": "messagePassingBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "message_passing_coherency_tuning",
+    "name": "messagePassingCoherencyTuning",
     "shader": "litmustest_message_passing_coherency",
-    "resultShader": "litmustest_message_passing_coherency_tuning_results"
+    "resultShader": "litmustest_message_passing_coherency_tuning_results",
+    "conformanceTest": "messagePassingCoherency"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "message_passing_barrier1",
+    "name": "messagePassingBarrier1",
     "shader": "litmustest_message_passing_barrier1",
-    "resultShader": "litmustest_message_passing_results"
+    "resultShader": "litmustest_message_passing_results",
+    "conformanceTest": "messagePassingBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "message_passing_barrier2",
+    "name": "messagePassingBarrier2",
     "shader": "litmustest_message_passing_barrier2",
-    "resultShader": "litmustest_message_passing_results"
+    "resultShader": "litmustest_message_passing_results",
+    "conformanceTest": "messagePassingBarrier"
   },
 
   {
     "type": "WEAK_MEMORY",
     "name": "store",
     "shader": "litmustest_store_default",
-    "resultShader": "litmustest_store_results"
+    "resultShader": "litmustest_store_results",
+    "conformanceTest": "storeBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "store_coherency_tuning",
+    "name": "storeCoherencyTuning",
     "shader": "litmustest_store_coherency",
-    "resultShader": "litmustest_store_coherency_tuning_results"
+    "resultShader": "litmustest_store_coherency_tuning_results",
+    "conformanceTest": "storeCoherency"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "store_barrier1",
+    "name": "storeBarrier1",
     "shader": "litmustest_store_barrier1",
-    "resultShader": "litmustest_store_results"
+    "resultShader": "litmustest_store_results",
+    "conformanceTest": "storeBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "store_barrier2",
+    "name": "storeBarrier2",
     "shader": "litmustest_store_barrier2",
-    "resultShader": "litmustest_store_results"
+    "resultShader": "litmustest_store_results",
+    "conformanceTest": "storeBarrier"
   },
 
   {
     "type": "WEAK_MEMORY",
-    "name": "read_rmw",
+    "name": "readRMW",
     "shader": "litmustest_read_rmw",
-    "resultShader": "litmustest_read_results"
+    "resultShader": "litmustest_read_results",
+    "conformanceTest": "readRMWBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "read_coherency_tuning",
+    "name": "readCoherencyTuning",
     "shader": "litmustest_read_coherency",
-    "resultShader": "litmustest_read_coherency_tuning_results"
+    "resultShader": "litmustest_read_coherency_tuning_results",
+    "conformanceTest": "readCoherency"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "read_rmw_barrier1",
+    "name": "readRMWBarrier1",
     "shader": "litmustest_read_rmw_barrier1",
-    "resultShader": "litmustest_read_results"
+    "resultShader": "litmustest_read_results",
+    "conformanceTest": "readRMWBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "read_rmw_barrier2",
+    "name": "readRMWBarrier2",
     "shader": "litmustest_read_rmw_barrier2",
-    "resultShader": "litmustest_read_results"
+    "resultShader": "litmustest_read_results",
+    "conformanceTest": "readRMWBarrier"
   },
 
   {
     "type": "WEAK_MEMORY",
-    "name": "load_buffer",
+    "name": "loadBuffer",
     "shader": "litmustest_load_buffer_default",
-    "resultShader": "litmustest_load_buffer_results"
+    "resultShader": "litmustest_load_buffer_results",
+    "conformanceTest": "loadBufferBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "load_buffer_coherency_tuning",
+    "name": "loadBufferCoherencyTuning",
     "shader": "litmustest_load_buffer_coherency",
-    "resultShader": "litmustest_load_buffer_coherency_tuning_results"
+    "resultShader": "litmustest_load_buffer_coherency_tuning_results",
+    "conformanceTest": "loadBufferCoherency"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "load_buffer_barrier1",
+    "name": "loadBufferBarrier1",
     "shader": "litmustest_load_buffer_barrier1",
-    "resultShader": "litmustest_load_buffer_results"
+    "resultShader": "litmustest_load_buffer_results",
+    "conformanceTest": "loadBufferBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "load_buffer_barrier2",
+    "name": "loadBufferBarrier2",
     "shader": "litmustest_load_buffer_barrier2",
-    "resultShader": "litmustest_load_buffer_results"
+    "resultShader": "litmustest_load_buffer_results",
+    "conformanceTest": "loadBufferBarrier"
   },
 
   {
     "type": "WEAK_MEMORY",
-    "name": "store_buffer_rmw",
+    "name": "storeBufferRMW",
     "shader": "litmustest_store_buffer_rmw",
-    "resultShader": "litmustest_store_buffer_results"
+    "resultShader": "litmustest_store_buffer_results",
+    "conformanceTest": "storeBufferRMWBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "store_buffer_coherency_tuning",
+    "name": "storeBufferCoherencyTuning",
     "shader": "litmustest_store_buffer_coherency",
-    "resultShader": "litmustest_store_buffer_coherency_tuning_results"
+    "resultShader": "litmustest_store_buffer_coherency_tuning_results",
+    "conformanceTest": "storeBufferCoherency"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "store_buffer_rmw_barrier1",
+    "name": "storeBufferRMWBarrier1",
     "shader": "litmustest_store_buffer_rmw_barrier1",
-    "resultShader": "litmustest_store_buffer_results"
+    "resultShader": "litmustest_store_buffer_results",
+    "conformanceTest": "storeBufferRMWBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "store_buffer_rmw_barrier2",
+    "name": "storeBufferRMWBarrier2",
     "shader": "litmustest_store_buffer_rmw_barrier2",
-    "resultShader": "litmustest_store_buffer_results"
+    "resultShader": "litmustest_store_buffer_results",
+    "conformanceTest": "storeBufferRMWBarrier"
   },
 
   {
     "type": "WEAK_MEMORY",
-    "name": "write_22_rmw",
+    "name": "twoPlusTwoWriteRMW",
     "shader": "litmustest_write_22_rmw",
-    "resultShader": "litmustest_write_22_results"
+    "resultShader": "litmustest_write_22_results",
+    "conformanceTest": "twoPlusTwoWriteRMWBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "write_22_coherency_tuning",
+    "name": "twoPlusTwoWriteCoherencyTuning",
     "shader": "litmustest_write_22_coherency",
-    "resultShader": "litmustest_write_22_coherency_tuning_results"
+    "resultShader": "litmustest_write_22_coherency_tuning_results",
+    "conformanceTest": "twoPlusTwoWriteCoherency"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "write_22_rmw_barrier1",
+    "name": "twoPlusTwoWriteRMWBarrier1",
     "shader": "litmustest_write_22_rmw_barrier1",
-    "resultShader": "litmustest_write_22_results"
+    "resultShader": "litmustest_write_22_results",
+    "conformanceTest": "twoPlusTwoWriteRMWBarrier"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "write_22_rmw_barrier2",
+    "name": "twoPlusTwoWriteRMWBarrier2",
     "shader": "litmustest_write_22_rmw_barrier2",
-    "resultShader": "litmustest_write_22_results"
+    "resultShader": "litmustest_write_22_results",
+    "conformanceTest": "twoPlusTwoWriteRMWBarrier"
   },
 
   {
     "type": "COHERENCY",
-    "name": "rr_mutant",
+    "name": "rrMutant",
     "shader": "litmustest_rr_mutant",
-    "resultShader": "litmustest_rr_results"
+    "resultShader": "litmustest_rr_results",
+    "conformanceTest": "rr"
   },
   {
     "type": "COHERENCY",
-    "name": "rr_rmw_mutant",
+    "name": "rrRMWMutant",
     "shader": "litmustest_rr_rmw_mutant",
-    "resultShader": "litmustest_rr_results"
+    "resultShader": "litmustest_rr_results",
+    "conformanceTest": "rrRMW"
   },
 
   {
     "type": "COHERENCY",
-    "name": "rw_mutant",
+    "name": "rwMutant",
     "shader": "litmustest_rw_mutant",
-    "resultShader": "litmustest_rw_mutant_results"
+    "resultShader": "litmustest_rw_mutant_results",
+    "conformanceTest": "rw"
   },
   {
     "type": "COHERENCY",
-    "name": "rw_rmw_mutant",
+    "name": "rwRMWMutant",
     "shader": "litmustest_rw_rmw_mutant",
-    "resultShader": "litmustest_rw_mutant_results"
+    "resultShader": "litmustest_rw_mutant_results",
+    "conformanceTest": "rwRMW"
   },
 
   {
     "type": "COHERENCY",
-    "name": "wr_mutant",
+    "name": "wrMutant",
     "shader": "litmustest_wr_mutant",
-    "resultShader": "litmustest_wr_mutant_results"
+    "resultShader": "litmustest_wr_mutant_results",
+    "conformanceTest": "wr"
   },
   {
     "type": "COHERENCY",
-    "name": "wr_rmw_mutant",
+    "name": "wrRMWMutant",
     "shader": "litmustest_wr_rmw_mutant",
-    "resultShader": "litmustest_wr_mutant_results"
+    "resultShader": "litmustest_wr_mutant_results",
+    "conformanceTest": "wrRMW"
   },
 
   {
     "type": "COHERENCY",
-    "name": "ww_mutant",
+    "name": "wwMutant",
     "shader": "litmustest_ww_mutant",
-    "resultShader": "litmustest_ww_results"
+    "resultShader": "litmustest_ww_results",
+    "conformanceTest": "ww"
   },
   {
     "type": "COHERENCY",
-    "name": "ww_rmw_mutant",
+    "name": "wwRMWMutant",
     "shader": "litmustest_ww_rmw_mutant",
-    "resultShader": "litmustest_ww_results"
+    "resultShader": "litmustest_ww_results",
+    "conformanceTest": "wwRMW"
   }
 ]

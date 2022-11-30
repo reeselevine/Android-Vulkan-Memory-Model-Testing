@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /** Keeps track of the list of tests when running. */
     private ArrayList<String> runningTests = new ArrayList<>();
 
+    private HashMap<String, TuningBestResult> bestConfigs = new HashMap<>();
+
     private int curTestIndex;
     private int curConfigIndex;
     private int numConfigs;
@@ -279,8 +281,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         testName,
                         testData.getString("shader"),
                         testData.getString("resultShader"),
-                        NewTestCase.TestType.valueOf(testData.getString("type"))
-                );
+                        NewTestCase.TestType.valueOf(testData.getString("type")),
+                        testData.optString("conformanceTest"));
                 testList.put(testName, testCase);
             }
         } catch (JSONException e) {

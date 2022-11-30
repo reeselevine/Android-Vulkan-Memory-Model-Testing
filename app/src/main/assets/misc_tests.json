@@ -7,13 +7,13 @@
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "write_22",
+    "name": "twoPlusTwoWrite",
     "shader": "litmustest_write_22_default",
     "resultShader": "litmustest_write_22_results"
   },
   {
     "type": "WEAK_MEMORY",
-    "name": "store_buffer",
+    "name": "storeBuffer",
     "shader": "litmustest_store_buffer_default",
     "resultShader": "litmustest_store_buffer_results"
   },
@@ -55,19 +55,19 @@
   },
   {
     "type": "COHERENCY",
-    "name": "barrier_store_load",
+    "name": "barrierStoreLoad",
     "shader": "litmustest_barrier_store_load_storage_workgroup",
     "resultShader": "litmustest_barrier_store_load_results"
   },
   {
     "type": "COHERENCY",
-    "name": "barrier_load_store",
+    "name": "barrierLoadStore",
     "shader": "litmustest_barrier_load_store_storage_workgroup",
     "resultShader": "litmustest_barrier_load_store_results"
   },
   {
     "type": "COHERENCY",
-    "name": "barrier_store_store",
+    "name": "barrierStoreStore",
     "shader": "litmustest_barrier_store_store_storage_workgroup",
     "resultShader": "litmustest_barrier_store_store_results"
   }

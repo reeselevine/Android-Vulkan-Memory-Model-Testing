@@ -5,5 +5,6 @@ public enum RunType {
     TUNING,
     MULTI_EXPLORER,
     MULTI_TUNING,
+    TUNE_AND_CONFORM,
     LOCK_TEST
 }

@@ -88,7 +88,7 @@
 
                             <CheckBox
                                 android:id="@+id/message_passing_coherency_checkBox"
-                                android:tag="message_passing_coherency"
+                                android:tag="messagePassingCoherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -99,7 +99,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_coherency_checkBox"
-                                android:tag="store_coherency"
+                                android:tag="storeCoherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -110,7 +110,7 @@
 
                             <CheckBox
                                 android:id="@+id/read_coherency_checkBox"
-                                android:tag="read_coherency"
+                                android:tag="readCoherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -121,7 +121,7 @@
 
                             <CheckBox
                                 android:id="@+id/load_buffer_coherency_checkBox"
-                                android:tag="load_buffer_coherency"
+                                android:tag="loadBufferCoherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -132,7 +132,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_buffer_coherency_checkBox"
-                                android:tag="store_buffer_coherency"
+                                android:tag="storeBufferCoherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -143,7 +143,7 @@
 
                             <CheckBox
                                 android:id="@+id/write_22_coherency_checkBox"
-                                android:tag="write_22_coherency"
+                                android:tag="twoPlusTwoWriteCoherency"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -162,7 +162,7 @@
 
                             <CheckBox
                                 android:id="@+id/message_passing_barrier_checkBox"
-                                android:tag="message_passing_barrier"
+                                android:tag="messagePassingBarrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -173,7 +173,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_barrier_checkBox"
-                                android:tag="store_barrier"
+                                android:tag="storeBarrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -184,7 +184,7 @@
 
                             <CheckBox
                                 android:id="@+id/read_rmw_barrier_checkBox"
-                                android:tag="read_rmw_barrier"
+                                android:tag="readRMWBarrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -195,7 +195,7 @@
 
                             <CheckBox
                                 android:id="@+id/load_buffer_barrier_checkBox"
-                                android:tag="load_buffer_barrier"
+                                android:tag="loadBufferBarrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -206,7 +206,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_buffer_rmw_barrier_checkBox"
-                                android:tag="store_buffer_rmw_barrier"
+                                android:tag="storeBufferRMWBarrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -217,7 +217,7 @@
 
                             <CheckBox
                                 android:id="@+id/write_22_rmw_barrier_checkBox"
-                                android:tag="write_22_rmw_barrier"
+                                android:tag="twoPlusTwoWriteRMWBarrier"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -247,7 +247,7 @@
 
                             <CheckBox
                                 android:id="@+id/rr_rmw_checkBox"
-                                android:tag="rr_rmw"
+                                android:tag="rrRMW"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -269,7 +269,7 @@
 
                             <CheckBox
                                 android:id="@+id/rw_rmw_checkBox"
-                                android:tag="rw_rmw"
+                                android:tag="rwRMW"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -291,7 +291,7 @@
 
                             <CheckBox
                                 android:id="@+id/wr_rmw_checkBox"
-                                android:tag="wr_rmw"
+                                android:tag="wrRMW"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -313,7 +313,7 @@
 
                             <CheckBox
                                 android:id="@+id/ww_rmw_checkBox"
-                                android:tag="ww_rmw"
+                                android:tag="wwRMW"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -348,7 +348,7 @@
 
                             <CheckBox
                                 android:id="@+id/message_passing_default_checkBox"
-                                android:tag="message_passing"
+                                android:tag="messagePassing"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -359,7 +359,7 @@
 
                             <CheckBox
                                 android:id="@+id/message_passing_coherency_tuning_checkBox"
-                                android:tag="message_passing_coherency_tuning"
+                                android:tag="messagePassingCoherencyTuning"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -370,7 +370,7 @@
 
                             <CheckBox
                                 android:id="@+id/message_passing_barrier1_checkBox"
-                                android:tag="message_passing_barrier1"
+                                android:tag="messagePassingBarrier1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -381,7 +381,7 @@
 
                             <CheckBox
                                 android:id="@+id/message_passing_barrier2_checkBox"
-                                android:tag="message_passing_barrier2"
+                                android:tag="messagePassingBarrier2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -392,7 +392,7 @@
 
                             <CheckBox
                                 android:id="@+id/load_buffer_default_checkBox"
-                                android:tag="load_buffer"
+                                android:tag="loadBuffer"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -403,7 +403,7 @@
 
                             <CheckBox
                                 android:id="@+id/load_buffer_coherency_tuning_checkBox"
-                                android:tag="load_buffer_coherency_tuning"
+                                android:tag="loadBufferCoherencyTuning"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -414,7 +414,7 @@
 
                             <CheckBox
                                 android:id="@+id/load_buffer_barrier1_checkBox"
-                                android:tag="load_buffer_barrier1"
+                                android:tag="loadBufferBarrier1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -425,7 +425,7 @@
 
                             <CheckBox
                                 android:id="@+id/load_buffer_barrier2_checkBox"
-                                android:tag="load_buffer_barrier2"
+                                android:tag="loadBufferBarrier2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -436,7 +436,7 @@
 
                             <CheckBox
                                 android:id="@+id/read_rmw_checkBox"
-                                android:tag="read_rmw"
+                                android:tag="readRMW"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -447,7 +447,7 @@
 
                             <CheckBox
                                 android:id="@+id/read_coherency_tuning_checkBox"
-                                android:tag="read_coherency_tuning"
+                                android:tag="readCoherencyTuning"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -466,7 +466,7 @@
 
                             <CheckBox
                                 android:id="@+id/read_rmw_barrier1_checkBox"
-                                android:tag="read_rmw_barrier1"
+                                android:tag="readRMWBarrier1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -477,7 +477,7 @@
 
                             <CheckBox
                                 android:id="@+id/read_rmw_barrier2_checkBox"
-                                android:tag="read_rmw_barrier2"
+                                android:tag="readRMWBarrier2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -499,7 +499,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_coherency_tuning_checkBox"
-                                android:tag="store_coherency_tuning"
+                                android:tag="storeCoherencyTuning"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -510,7 +510,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_barrier1_checkBox"
-                                android:tag="store_barrier1"
+                                android:tag="storeBarrier1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -521,7 +521,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_barrier2_checkBox"
-                                android:tag="store_barrier2"
+                                android:tag="storeBarrier2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -532,7 +532,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_buffer_rmw_checkBox"
-                                android:tag="store_buffer_rmw"
+                                android:tag="storeBufferRMW"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -543,7 +543,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_buffer_coherency_tuning_checkBox"
-                                android:tag="store_buffer_coherency_tuning"
+                                android:tag="storeBufferCoherencyTuning"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -554,7 +554,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_buffer_rmw_barrier1_checkBox"
-                                android:tag="store_buffer_rmw_barrier1"
+                                android:tag="storeBufferRMWBarrier1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -565,7 +565,7 @@
 
                             <CheckBox
                                 android:id="@+id/store_buffer_rmw_barrier2_checkBox"
-                                android:tag="store_buffer_rmw_barrier2"
+                                android:tag="storeBufferRMWBarrier2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -584,7 +584,7 @@
 
                             <CheckBox
                                 android:id="@+id/write_22_rmw_checkBox"
-                                android:tag="write_22_rmw"
+                                android:tag="twoPlusTwoWriteRMW"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -595,7 +595,7 @@
 
                             <CheckBox
                                 android:id="@+id/write_22_coherency_tuning_checkBox"
-                                android:tag="write_22_coherency_tuning"
+                                android:tag="twoPlusTwoWriteCoherencyTuning"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -606,7 +606,7 @@
 
                             <CheckBox
                                 android:id="@+id/write_22_rmw_barrier1_checkBox"
-                                android:tag="write_22_rmw_barrier1"
+                                android:tag="twoPlusTwoWriteRMWBarrier1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -617,7 +617,7 @@
 
                             <CheckBox
                                 android:id="@+id/write_22_rmw_barrier2_checkBox"
-                                android:tag="write_22_rmw_barrier2"
+                                android:tag="twoPlusTwoWriteRMWBarrier2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -628,7 +628,7 @@
 
                             <CheckBox
                                 android:id="@+id/rr_mutant_checkBox"
-                                android:tag="rr_mutant"
+                                android:tag="rrMutant"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -639,7 +639,7 @@
 
                             <CheckBox
                                 android:id="@+id/rr_rmw_mutant_checkBox"
-                                android:tag="rr_rmw_mutant"
+                                android:tag="rrRMWMutant"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -650,7 +650,7 @@
 
                             <CheckBox
                                 android:id="@+id/rw_mutant_checkBox"
-                                android:tag="rw_mutant"
+                                android:tag="rwMutant"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -661,7 +661,7 @@
 
                             <CheckBox
                                 android:id="@+id/rw_rmw_mutant_checkBox"
-                                android:tag="rw_rmw_mutant"
+                                android:tag="rwRMWMutant"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -672,7 +672,7 @@
 
                             <CheckBox
                                 android:id="@+id/wr_mutant_checkBox"
-                                android:tag="wr_mutant"
+                                android:tag="wrMutant"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -683,7 +683,7 @@
 
                             <CheckBox
                                 android:id="@+id/wr_rmw_mutant_checkBox"
-                                android:tag="wr_rmw_mutant"
+                                android:tag="wrRMWMutant"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -694,7 +694,7 @@
 
                             <CheckBox
                                 android:id="@+id/ww_mutant_checkBox"
-                                android:tag="ww_mutant"
+                                android:tag="wwMutant"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"
@@ -705,7 +705,7 @@
 
                             <CheckBox
                                 android:id="@+id/ww_rmw_mutant_checkBox"
-                                android:tag="ww_rmw_mutant"
+                                android:tag="wwRMWMutant"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:minWidth="0dp"

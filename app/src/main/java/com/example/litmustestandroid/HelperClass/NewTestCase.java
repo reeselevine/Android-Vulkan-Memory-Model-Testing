@@ -8,6 +8,9 @@ public class NewTestCase {
         COHERENCY
     };
 
+    /** Weak memory tests ususally involve multiple test locations, while coherency tests
+     * usually involve one.
+     */
     private TestType testType;
 
     private String testName;
@@ -16,11 +19,17 @@ public class NewTestCase {
 
     private String resultFile;
 
-    public NewTestCase(String _testName, String _shaderFile, String _resultFile, TestType _testType) {
+    /** If this is a tuning test, it will have an associated conformance test, which is used during
+     * the "Tune and Conform" runs.
+     */
+    private String conformanceTest;
+
+    public NewTestCase(String _testName, String _shaderFile, String _resultFile, TestType _testType, String _conformanceTest) {
         this.testName = _testName;
         this.shaderFile = _shaderFile;
         this.resultFile = _resultFile;
         this.testType = _testType;
+        this.conformanceTest = _conformanceTest;
     }
 
     public String getTestName() {
