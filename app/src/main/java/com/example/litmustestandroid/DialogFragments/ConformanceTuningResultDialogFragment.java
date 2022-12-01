@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -27,13 +26,13 @@ public class ConformanceTuningResultDialogFragment extends DialogFragment {
 
     Context context;
     String configNum;
-    ArrayList<ConformanceResultCase> conformanceResultCases;
+    ArrayList<ResultCase> conformanceResultCases;
 
     private TextView testName;
     private Button closeButton;
     private RecyclerView resultRV;
 
-    public ConformanceTuningResultDialogFragment(Context ct, String configNum, ArrayList<ConformanceResultCase> conformanceResultCases) {
+    public ConformanceTuningResultDialogFragment(Context ct, String configNum, ArrayList<ResultCase> conformanceResultCases) {
         this.configNum = configNum;
         this.context = ct;
         this.conformanceResultCases = conformanceResultCases;

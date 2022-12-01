@@ -90,13 +90,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String[] tuningTestArgument = new String[3];
     private Map<String, String> tuningParameter;
     private int tuningTestWorkgroups, tuningMaxWorkgroups, tuningWorkgroupSize;
-    private ArrayList<TuningResultCase> currTuningResults = new ArrayList<TuningResultCase>();
-    private HashMap<String, ArrayList<TuningResultCase>> tuningResultCases = new HashMap<>();
-    public HashMap<String, ArrayList<ConformanceResultCase>> multiTestResultCases = new HashMap<>();
+    private ArrayList<ResultCase> currTuningResults = new ArrayList<ResultCase>();
+    private HashMap<String, ArrayList<ResultCase>> tuningResultCases = new HashMap<>();
+    public HashMap<String, ArrayList<ResultCase>> multiTestResultCases = new HashMap<>();
 
     private Map<String, EditText> conformanceParamMap;
     private RecyclerView conformanceTestRV;
-    private ArrayList<ConformanceResultCase> conformanceTestResults = new ArrayList<ConformanceResultCase>();
+    private ArrayList<ResultCase> conformanceTestResults = new ArrayList<ResultCase>();
 
     private FileOutputStream conformanceTuningFOS;
     private JsonWriter conformanceTuningResultWriter;
@@ -778,7 +778,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Log.i("TUNING TEST", testName + " STARTING");
 
-                currTuningResults = new ArrayList<TuningResultCase>();
+                currTuningResults = new ArrayList<>();
                 tuningRandomSeed = tuningParameters[2].getText().toString();
                 tuningTestWorkgroups = Integer.parseInt(tuningParameters[3].getText().toString());
                 tuningMaxWorkgroups = Integer.parseInt(tuningParameters[4].getText().toString());
@@ -824,11 +824,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void tuningTestLoop() {
-
         currTestViewObject.tuningCurrentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
-
         writeTuningParameters(currNewTestCase.getTestType(), true);
-
         // Run test in different thread
         testThread = new TestThread(MainActivity.this, tuningTestArgument);
         testThread.start();
@@ -836,13 +833,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void tuningTestResult(String testName) {
         Log.i("TUNING RESULT", testName + " PRESSED");
-
-        ArrayList<TuningResultCase> currTestList = tuningResultCases.get(testName);
-
+        ArrayList<ResultCase> currTestList = tuningResultCases.get(testName);
         if(currTestList == null) {
             Log.e(TAG, testName + " cannot find result cases!");
         }
-
         TuningResultDialogFragment dialog = new TuningResultDialogFragment(testName, currTestList, MainActivity.this);
         dialog.show(getSupportFragmentManager(), "TuningResultDialog");
     }
@@ -1086,12 +1080,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return paramMap;
     }
 
-    private void handleBestConfig(ConformanceResultCase resultCase) {
+    private void handleBestConfig(ResultCase resultCase) {
         double rate = resultCase.numWeakBehaviors/resultCase.duration;
         if (!bestConfigs.containsKey(resultCase.testName) || bestConfigs.get(resultCase.testName).getRate() < rate) {
             HashMap<String, Integer> paramMap = buildParamMapFromFile();
             bestConfigs.put(resultCase.testName, new TuningBestResult(resultCase.testName, rate, paramMap));
         }
+    }
+
+    private ResultCase buildResultCase() {
+        String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
+        // Save result value
+        String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
+        // Go through result and get number of weak behaviors
+        String startIndexIndicator = "seq: ";
+        String endIndexIndicator = "\ninterleaved:";
+        String numSeqBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+        // Go through result and get number of weak behaviors
+        startIndexIndicator = "interleaved: ";
+        endIndexIndicator = "\nweak:";
+        String numInterleavedBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+        startIndexIndicator = "weak: ";
+        endIndexIndicator = "\nTotal elapsed time";
+        String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
+        startIndexIndicator = "Total elapsed time: ";
+        String duration = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.length() - 2);
+        return new ResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue,
+                Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors), Double.parseDouble(duration));
     }
 
     public void testComplete() {
@@ -1116,32 +1131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Toast.makeText(MainActivity.this, "Test " + currTestViewObject.testName + " finished!", Toast.LENGTH_LONG).show();
                 }
                 else if (currTestType.equals(RunType.TUNING)) {
-                    // Save param value
-                    String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
-
-                    // Save result value
-                    String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
-
-                    // Go through result and get number of sequential behaviors
-                    String startIndexIndicator = "seq: ";
-                    String endIndexIndicator = "\ninterleaved:";
-                    String numSeqBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-                    // Go through result and get number of interleaved behaviors
-                    startIndexIndicator = "interleaved: ";
-                    endIndexIndicator = "\nweak:";
-                    String numInterleavedBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-                    // Go through result and get number of weak behaviors
-                    startIndexIndicator = "weak: ";
-                    endIndexIndicator = "\nTotal elapsed time";
-                    String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-
-                    // Transfer over the tuning result case
-                    TuningResultCase currTuningResult = new TuningResultCase(currNewTestCase.getTestName(), currParamValue, currResultValue,
-                            Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors));
-                    currTuningResults.add(currTuningResult);
-
+                    currTuningResults.add(buildResultCase());
                     if(curConfigIndex == numConfigs - 1) {
                         tuningResultCases.put(currTestViewObject.testName, currTuningResults);
 
@@ -1160,28 +1150,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else if (currTestType.equals(RunType.MULTI_TUNING) ||
                         currTestType.equals(RunType.MULTI_EXPLORER) ||
                         currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_1)) {
-                    // Save param value
-                    String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
-                    // Save result value
-                    String currResultValue = convertFileToString(OUTPUT_FILE + ".txt");
-                    // Go through result and get number of weak behaviors
-                    String startIndexIndicator = "seq: ";
-                    String endIndexIndicator = "\ninterleaved:";
-                    String numSeqBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-                    // Go through result and get number of weak behaviors
-                    startIndexIndicator = "interleaved: ";
-                    endIndexIndicator = "\nweak:";
-                    String numInterleavedBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-                    startIndexIndicator = "weak: ";
-                    endIndexIndicator = "\nTotal elapsed time";
-                    String numWeakBehaviors = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.indexOf(endIndexIndicator));
-                    startIndexIndicator = "Total elapsed time: ";
-                    String duration = currResultValue.substring(currResultValue.indexOf(startIndexIndicator) + startIndexIndicator.length(), currResultValue.length() - 2);
-                    // Transfer over the tuning result case
-                    ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue,
-                            Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors), Double.parseDouble(duration));
-                    conformanceTestResults.add(currConformanceResult);
-                    handleBestConfig(currConformanceResult);
+                    ResultCase curResultCase = buildResultCase();
+                    conformanceTestResults.add(curResultCase);
+                    handleBestConfig(curResultCase);
                     if(curTestIndex == runningTests.size() - 1) {
                         multiTestResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
 
@@ -1192,7 +1163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                             // Result
                             for(int i = 0; i < conformanceTestResults.size(); i++) {
-                                ConformanceResultCase resultCase = conformanceTestResults.get(i);
+                                ResultCase resultCase = conformanceTestResults.get(i);
 
                                 String resultName = resultCase.testName;
 
@@ -1220,13 +1191,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
 
                         // Reset currTuningResults for next test config
-                        conformanceTestResults = new ArrayList<ConformanceResultCase>();
+                        conformanceTestResults = new ArrayList<ResultCase>();
 
                         // Reset tuning config
                         curTestIndex = 0;
                         curConfigIndex++;
-                        System.out.println("Cur Config: " + curConfigIndex);
-                        System.out.println("Num Configs: " + numConfigs);
                         if(curConfigIndex == numConfigs) { // All tuning tests completed
                             for (Map.Entry<String, TuningBestResult> entry : bestConfigs.entrySet()) {
                                 System.out.println(entry.getKey());

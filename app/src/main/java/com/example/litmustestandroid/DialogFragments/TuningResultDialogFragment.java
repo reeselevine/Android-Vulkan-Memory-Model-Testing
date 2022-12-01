@@ -26,7 +26,7 @@ public class TuningResultDialogFragment extends DialogFragment {
     private static final String TAG = "TuningResultDialog";
 
     private String testName;
-    private ArrayList<TuningResultCase> tuningResultCases = new ArrayList<TuningResultCase>();
+    private ArrayList<ResultCase> tuningResultCases;
     private MainActivity mainActivity;
 
     private TextView testNameTextView;
@@ -37,7 +37,7 @@ public class TuningResultDialogFragment extends DialogFragment {
     private TuningResultAdapter tuningResultAdapter;
     private Button closeButton;
 
-    public TuningResultDialogFragment(String testName, ArrayList<TuningResultCase> tuningResultCases, MainActivity mainActivity) {
+    public TuningResultDialogFragment(String testName, ArrayList<ResultCase> tuningResultCases, MainActivity mainActivity) {
         this.testName = testName;
         this.tuningResultCases = tuningResultCases;
         this.mainActivity = mainActivity;

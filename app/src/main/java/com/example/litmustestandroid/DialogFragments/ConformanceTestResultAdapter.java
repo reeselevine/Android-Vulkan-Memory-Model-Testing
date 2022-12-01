@@ -2,7 +2,6 @@ package com.example.litmustestandroid.DialogFragments;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +21,11 @@ import java.util.ArrayList;
 public class ConformanceTestResultAdapter extends RecyclerView.Adapter<ConformanceTestResultAdapter.ConformanceTestResultViewHolder>{
 
     Context context;
-    ArrayList<ConformanceResultCase> conformanceResultCases;
+    ArrayList<ResultCase> conformanceResultCases;
     String[] testNumbers;
     String testType;
 
-    public ConformanceTestResultAdapter(Context ct, ArrayList<ConformanceResultCase> conformanceResultCases) {
+    public ConformanceTestResultAdapter(Context ct, ArrayList<ResultCase> conformanceResultCases) {
         this.context = ct;
         this.conformanceResultCases = conformanceResultCases;
         testType = "ConformanceExplorer";
@@ -70,7 +69,7 @@ public class ConformanceTestResultAdapter extends RecyclerView.Adapter<Conforman
             }
         }
         else {
-            ArrayList<ConformanceResultCase> resultCases = ((MainActivity)context).multiTestResultCases.get(currentTestName);
+            ArrayList<ResultCase> resultCases = ((MainActivity)context).multiTestResultCases.get(currentTestName);
             int numTestViolated = 0;
             for(int i = 0; i < resultCases.size(); i++) {
                 if(resultCases.get(i).violated) {
@@ -98,7 +97,7 @@ public class ConformanceTestResultAdapter extends RecyclerView.Adapter<Conforman
                     outputDialog.show(((MainActivity)context).getSupportFragmentManager(), "ConformanceResultOutputDialog");
                 }
                 else {
-                    ArrayList<ConformanceResultCase> resultCases = ((MainActivity)context).multiTestResultCases.get(currentTestName);
+                    ArrayList<ResultCase> resultCases = ((MainActivity)context).multiTestResultCases.get(currentTestName);
                     ConformanceTuningResultDialogFragment dialog = new ConformanceTuningResultDialogFragment(((MainActivity)context), currentTestName, resultCases);
                     dialog.show(((MainActivity)context).getSupportFragmentManager(), "ConformanceTuningResultDialog");
                 }

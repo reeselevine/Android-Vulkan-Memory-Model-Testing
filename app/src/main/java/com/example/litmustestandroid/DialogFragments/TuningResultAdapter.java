@@ -21,10 +21,10 @@ public class TuningResultAdapter extends RecyclerView.Adapter<TuningResultAdapte
 
     String testName;
     Context context;
-    ArrayList<TuningResultCase> tuningResultCases;
+    ArrayList<ResultCase> tuningResultCases;
     MainActivity mainActivity;
 
-    public TuningResultAdapter(String testName, Context ct, ArrayList<TuningResultCase> tuningResultCases, MainActivity mainActivity) {
+    public TuningResultAdapter(String testName, Context ct, ArrayList<ResultCase> tuningResultCases, MainActivity mainActivity) {
         this.testName = testName;
         this.context = ct;
         this.tuningResultCases = tuningResultCases;
