@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<String> runningTests = new ArrayList<>();
 
     private HashMap<String, TuningBestResult> bestConfigs = new HashMap<>();
+    private ArrayList<TuningBestResult> configsToRun = new ArrayList<>();
 
     private int curTestIndex;
     private int curConfigIndex;
@@ -381,17 +382,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private HashMap<String, Integer> editTextToIntMap(Map<String, EditText> editTextMap) {
+        HashMap<String, Integer> resultMap = new HashMap<>();
+        for (Map.Entry<String, EditText> entry : editTextMap.entrySet()) {
+            resultMap.put(entry.getKey(), Integer.valueOf(entry.getValue().getText().toString()));
+        }
+        return resultMap;
+    }
+
     // Read and write current parameters value for testing
-    public void writeParameters(Map<String, EditText> parameters, TestType testType) {
+    public void writeParameters(Map<String, Integer> parameters, TestType testType) {
         String fileName = PARAMETERS_FILE + ".txt";
         try{
             FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
             // write user chosen parameters
-            for (Map.Entry<String, EditText> entry : parameters.entrySet()) {
+            for (Map.Entry<String, Integer> entry : parameters.entrySet()) {
                 if (entry.getKey() == ITERATIONS) {
-                    currTestIterations = entry.getValue().getText().toString();
+                    currTestIterations = entry.getValue().toString();
                 }
-                String outputLine = entry.getKey() + "=" + entry.getValue().getText().toString() + "\n";
+                String outputLine = entry.getKey() + "=" + entry.getValue().toString() + "\n";
                 fos.write(outputLine.getBytes());
             }
             // write non overrideable parameters and coherency params, if they apply
@@ -611,7 +620,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Log.i("EXPLORER TEST", testName + " STARTING");
 
-                writeParameters(exploreParamMap, currNewTestCase.getTestType());
+                writeParameters(editTextToIntMap(exploreParamMap), currNewTestCase.getTestType());
                 exploreDialog.dismiss();
 
                 // Disable buttons and change their color
@@ -929,6 +938,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+
+
     public void beginRunningTests(
             RunType runType,
             Map<String, EditText> testParameters,
@@ -988,7 +999,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void testLoop() {
-        String testName = runningTests.get(curTestIndex);
+        String testName;
+        if (currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_2)) {
+            String tuningTestName = configsToRun.get(curTestIndex).getTestName();
+            testName = allTests.get(tuningTestName).getConformanceTest();
+        } else {
+            testName = runningTests.get(curTestIndex);
+        }
         currNewTestCase = allTests.get(testName);
         String[] testArgument = new String[3];
         testArgument[0] = testName; // Test Name
@@ -999,7 +1016,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         conformanceTestViewObject.currentTestName.setText(currNewTestCase.getTestName());
         conformanceTestViewObject.currentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
         if (currTestType.equals(RunType.MULTI_EXPLORER)) {
-            writeParameters(conformanceParamMap, currNewTestCase.getTestType());
+            writeParameters(editTextToIntMap(conformanceParamMap), currNewTestCase.getTestType());
+        } else if (currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_2)) {
+            writeParameters(configsToRun.get(curTestIndex).getParamMap(), currNewTestCase.getTestType());
         } else if (currTestType.equals(RunType.MULTI_TUNING) || currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_1)) {
             writeTuningParameters(currNewTestCase.getTestType(), curTestIndex == 0);
         }
@@ -1053,7 +1072,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             e.printStackTrace();
         }
-
     }
 
     private HashMap<String, Integer> buildParamMapFromFile() {
@@ -1109,6 +1127,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors), Double.parseDouble(duration));
     }
 
+    private void appendToResults() {
+        multiTestResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
+        // Append to the result file
+        try {
+            conformanceTuningResultWriter.name(Integer.toString(curConfigIndex));
+            conformanceTuningResultWriter.beginObject();
+            // Result
+            for(int i = 0; i < conformanceTestResults.size(); i++) {
+                ResultCase resultCase = conformanceTestResults.get(i);
+                String resultName = resultCase.testName;
+                conformanceTuningResultWriter.name(resultName);
+                conformanceTuningResultWriter.beginObject();
+                conformanceTuningResultWriter.name("seq").value(resultCase.numSeqBehaviors);
+                conformanceTuningResultWriter.name("interleaved").value(resultCase.numInterleavedBehaviors);
+                conformanceTuningResultWriter.name("weak").value(resultCase.numWeakBehaviors);
+                conformanceTuningResultWriter.name("durationSeconds").value(resultCase.duration);
+                conformanceTuningResultWriter.endObject();
+            }
+            // Parameter
+            conformanceTuningResultWriter.name("params");
+            conformanceTuningResultWriter.beginObject();
+            HashMap<String, Integer> paramMap = buildParamMapFromFile();
+            for (Map.Entry<String, Integer> entry : paramMap.entrySet()) {
+                conformanceTuningResultWriter.name(entry.getKey()).value(entry.getValue());
+            }
+            conformanceTuningResultWriter.endObject();
+            conformanceTuningResultWriter.endObject();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Reset currTuningResults for next test config
+        conformanceTestResults = new ArrayList<>();
+    }
+
+    private void finishTests() {
+        Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
+        // Enable start button
+        conformanceTestViewObject.startButton.setEnabled(true);
+        conformanceTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
+        // Set progress layout invisible
+        conformanceTestViewObject.progressLayout.setVisibility(View.GONE);
+        // Set result layout visible
+        conformanceTestViewObject.resultLayout.setVisibility(View.VISIBLE);
+        // Close result writer
+        try {
+            conformanceTuningResultWriter.name("gpu").value(GPUName);
+            conformanceTuningResultWriter.name("randomSeed").value(tuningRandomSeed);
+            conformanceTuningResultWriter.endObject();
+            conformanceTuningResultWriter.endArray();
+            conformanceTuningResultWriter.close();
+            conformanceTuningFOS.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        writeToExternalStorage(RESULT_FILE);
+        // Get string array of test names
+        String[] testNumbers = new String[numConfigs];
+        for(int i = 0; i < numConfigs; i++) {
+            testNumbers[i] = Integer.toString(i);
+        }
+        // Update result
+        ConformanceTestResultAdapter conformanceTestResultAdapter = new ConformanceTestResultAdapter(MainActivity.this, testNumbers);
+        conformanceTestRV.setAdapter(conformanceTestResultAdapter);
+        conformanceTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
+    }
+
     public void testComplete() {
         if(testThread != null) {
             testThread.interrupt();
@@ -1154,93 +1241,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     conformanceTestResults.add(curResultCase);
                     handleBestConfig(curResultCase);
                     if(curTestIndex == runningTests.size() - 1) {
-                        multiTestResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
-
-                        // Append to the result file
-                        try {
-                            conformanceTuningResultWriter.name(Integer.toString(curConfigIndex));
-                            conformanceTuningResultWriter.beginObject();
-
-                            // Result
-                            for(int i = 0; i < conformanceTestResults.size(); i++) {
-                                ResultCase resultCase = conformanceTestResults.get(i);
-
-                                String resultName = resultCase.testName;
-
-                                conformanceTuningResultWriter.name(resultName);
-                                conformanceTuningResultWriter.beginObject();
-                                conformanceTuningResultWriter.name("seq").value(resultCase.numSeqBehaviors);
-                                conformanceTuningResultWriter.name("interleaved").value(resultCase.numInterleavedBehaviors);
-                                conformanceTuningResultWriter.name("weak").value(resultCase.numWeakBehaviors);
-                                conformanceTuningResultWriter.name("durationSeconds").value(resultCase.duration);
-                                conformanceTuningResultWriter.endObject();
-                            }
-
-                            // Parameter
-                            conformanceTuningResultWriter.name("params");
-                            conformanceTuningResultWriter.beginObject();
-                            HashMap<String, Integer> paramMap = buildParamMapFromFile();
-                            for (Map.Entry<String, Integer> entry : paramMap.entrySet()) {
-                                conformanceTuningResultWriter.name(entry.getKey()).value(entry.getValue());
-                            }
-                            conformanceTuningResultWriter.endObject();
-                            conformanceTuningResultWriter.endObject();
-                        }
-                        catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        // Reset currTuningResults for next test config
-                        conformanceTestResults = new ArrayList<ResultCase>();
-
+                        appendToResults();
                         // Reset tuning config
                         curTestIndex = 0;
                         curConfigIndex++;
                         if(curConfigIndex == numConfigs) { // All tuning tests completed
-                            for (Map.Entry<String, TuningBestResult> entry : bestConfigs.entrySet()) {
-                                System.out.println(entry.getKey());
-                                System.out.println(entry.getValue().getRate());
-                                System.out.println(entry.getValue().getParamMap());
+                            if (currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_1)) {
+                                configsToRun.clear();
+                                configsToRun.addAll(bestConfigs.values());
+                                currTestType = RunType.TUNE_AND_CONFORM_STAGE_2;
+                                numConfigs += configsToRun.size();
+                                testLoop();
+                            } else {
+                                finishTests();
                             }
-
-                            Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
-
-                            // Enable start button
-                            conformanceTestViewObject.startButton.setEnabled(true);
-                            conformanceTestViewObject.startButton.setBackgroundColor(getResources().getColor(R.color.lightblue));
-
-                            // Set progress layout invisible
-                            conformanceTestViewObject.progressLayout.setVisibility(View.GONE);
-
-                            // Set result layout visible
-                            conformanceTestViewObject.resultLayout.setVisibility(View.VISIBLE);
-
-                            // Close result writer
-                            try {
-                                conformanceTuningResultWriter.name("gpu").value(GPUName);
-                                conformanceTuningResultWriter.name("randomSeed").value(tuningRandomSeed);
-                                conformanceTuningResultWriter.endObject();
-                                conformanceTuningResultWriter.endArray();
-                                conformanceTuningResultWriter.close();
-                                conformanceTuningFOS.close();
-                            }
-                            catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            writeToExternalStorage(RESULT_FILE);
-
-                            // Get string array of test names
-                            String[] testNumbers = new String[numConfigs];
-                            for(int i = 0; i < numConfigs; i++) {
-                                testNumbers[i] = Integer.toString(i);
-                            }
-
-                            // Update result
-                            ConformanceTestResultAdapter conformanceTestResultAdapter = new ConformanceTestResultAdapter(MainActivity.this, testNumbers);
-                            conformanceTestRV.setAdapter(conformanceTestResultAdapter);
-                            conformanceTestRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                            conformanceTestRV.addItemDecoration(new DividerItemDecoration(MainActivity.this, LinearLayoutManager.VERTICAL));
                         }
                         else {
                             testLoop();
@@ -1248,6 +1262,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     else {
                         curTestIndex++;
+                        testLoop();
+                    }
+                }
+                else if (currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_2)) {
+                    ResultCase curResultCase = buildResultCase();
+                    conformanceTestResults.add(curResultCase);
+                    appendToResults();
+                    curTestIndex++;
+                    curConfigIndex++;
+                    if (curTestIndex == configsToRun.size()) {
+                        finishTests();
+                    } else {
                         testLoop();
                     }
                 }

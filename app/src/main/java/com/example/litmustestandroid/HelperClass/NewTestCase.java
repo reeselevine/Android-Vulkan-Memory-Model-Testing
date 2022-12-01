@@ -44,6 +44,10 @@ public class NewTestCase {
         return resultFile;
     }
 
+    public String getConformanceTest() {
+        return conformanceTest;
+    }
+
     public TestType getTestType() {
         return testType;
     }
