@@ -863,10 +863,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else if (currTestType.equals(RunType.TUNING)) {
                     currTestViewObject.tuningCurrentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
-                else if (currTestType.equals(RunType.MULTI_EXPLORER)){ // Conformance Explorer
-                    conformanceTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
-                }
-                else if (currTestType.equals(RunType.MULTI_TUNING)){ // Conformance Explorer
+                else if (currTestType.equals(RunType.MULTI_EXPLORER) ||
+                         currTestType.equals(RunType.MULTI_TUNING) ||
+                         currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_1) ||
+                         currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_2)) {
                     conformanceTestViewObject.currentIterationNumber.setText(iterationNum + "/" + currTestIterations);
                 }
                 else { // Lock Test
@@ -893,6 +893,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (testMode.equals(RunType.MULTI_TUNING)) {
             subject += " MultiTest Tuning Result";
+        } else if (testMode.equals(RunType.TUNE_AND_CONFORM_STAGE_1)) {
+            subject += " MultiTest Tune And Conform Result";
         }
 
         File fileLocation = new File(getFileDir(), RESULT_FILE);
@@ -939,14 +941,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             EditText[] tuningParameters,
             ConformanceTestViewObject viewObject,
             RecyclerView resultRV) {
-        System.out.println("Run type: " + runType.toString());
         currTestType = runType;
         if (currTestType.equals(RunType.MULTI_EXPLORER)) {
             numConfigs = 1;
         } else {
-            System.out.println("Start num configs: " + tuningParameters[0].getText().toString());
             numConfigs = Integer.parseInt(tuningParameters[0].getText().toString());
         }
+        bestConfigs = new HashMap<>();
         conformanceParamMap = testParameters;
         currTestIterations = tuningParameters[1].getText().toString();
         tuningRandomSeed = tuningParameters[2].getText().toString();
@@ -1005,7 +1006,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         conformanceTestViewObject.currentConfigNumber.setText(curConfigIndex+1 + "/" + numConfigs);
         if (currTestType.equals(RunType.MULTI_EXPLORER)) {
             writeParameters(conformanceParamMap, currNewTestCase.getTestType());
-        } else if (currTestType.equals(RunType.MULTI_TUNING)) {
+        } else if (currTestType.equals(RunType.MULTI_TUNING) || currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_1)) {
             writeTuningParameters(currNewTestCase.getTestType(), curTestIndex == 0);
         }
         // Run test in different thread
@@ -1061,6 +1062,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private HashMap<String, Integer> buildParamMapFromFile() {
+        HashMap<String, Integer> paramMap = new HashMap<>();
+        try {
+            FileInputStream fis = openFileInput(PARAMETERS_FILE + ".txt");
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+
+            String line = br.readLine();
+            while (line != null) {
+                String[] words = line.split("=");
+                if (!nonOverrideableParams.containsKey(words[0])) {
+                    paramMap.put(words[0], Integer.parseInt(words[1]));
+                }
+                line = br.readLine();
+            }
+            fis.close();
+            isr.close();
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return paramMap;
+    }
+
+    private void handleBestConfig(ConformanceResultCase resultCase) {
+        double rate = resultCase.numWeakBehaviors/resultCase.duration;
+        if (!bestConfigs.containsKey(resultCase.testName) || bestConfigs.get(resultCase.testName).getRate() < rate) {
+            HashMap<String, Integer> paramMap = buildParamMapFromFile();
+            bestConfigs.put(resultCase.testName, new TuningBestResult(resultCase.testName, rate, paramMap));
+        }
+    }
+
     public void testComplete() {
         if(testThread != null) {
             testThread.interrupt();
@@ -1107,7 +1140,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Transfer over the tuning result case
                     TuningResultCase currTuningResult = new TuningResultCase(currNewTestCase.getTestName(), currParamValue, currResultValue,
                             Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors));
-
                     currTuningResults.add(currTuningResult);
 
                     if(curConfigIndex == numConfigs - 1) {
@@ -1125,7 +1157,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         tuningTestLoop();
                     }
                 }
-                else if (currTestType.equals(RunType.MULTI_TUNING) || currTestType.equals(RunType.MULTI_EXPLORER)) {
+                else if (currTestType.equals(RunType.MULTI_TUNING) ||
+                        currTestType.equals(RunType.MULTI_EXPLORER) ||
+                        currTestType.equals(RunType.TUNE_AND_CONFORM_STAGE_1)) {
                     // Save param value
                     String currParamValue = convertFileToString(PARAMETERS_FILE + ".txt");
                     // Save result value
@@ -1147,6 +1181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     ConformanceResultCase currConformanceResult = new ConformanceResultCase(conformanceTestViewObject.currentTestName.getText().toString(), currParamValue, currResultValue,
                             Integer.parseInt(numSeqBehaviors), Integer.parseInt(numInterleavedBehaviors), Integer.parseInt(numWeakBehaviors), Double.parseDouble(duration));
                     conformanceTestResults.add(currConformanceResult);
+                    handleBestConfig(currConformanceResult);
                     if(curTestIndex == runningTests.size() - 1) {
                         multiTestResultCases.put(Integer.toString(curConfigIndex), conformanceTestResults);
 
@@ -1173,27 +1208,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             // Parameter
                             conformanceTuningResultWriter.name("params");
                             conformanceTuningResultWriter.beginObject();
-
-                            FileInputStream fis = openFileInput(PARAMETERS_FILE + ".txt");
-                            InputStreamReader isr = new InputStreamReader(fis);
-                            BufferedReader br = new BufferedReader(isr);
-
-                            String line = br.readLine();
-                            while (line != null) {
-                                String[] words = line.split("=");
-                                if (!nonOverrideableParams.containsKey(words[0])) {
-                                    conformanceTuningResultWriter.name(words[0]).value(Integer.parseInt(words[1]));
-                                }
-                                line = br.readLine();
+                            HashMap<String, Integer> paramMap = buildParamMapFromFile();
+                            for (Map.Entry<String, Integer> entry : paramMap.entrySet()) {
+                                conformanceTuningResultWriter.name(entry.getKey()).value(entry.getValue());
                             }
-                            fis.close();
-                            isr.close();
-                            br.close();
-
                             conformanceTuningResultWriter.endObject();
-
                             conformanceTuningResultWriter.endObject();
-
                         }
                         catch (IOException e) {
                             e.printStackTrace();
@@ -1208,6 +1228,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         System.out.println("Cur Config: " + curConfigIndex);
                         System.out.println("Num Configs: " + numConfigs);
                         if(curConfigIndex == numConfigs) { // All tuning tests completed
+                            for (Map.Entry<String, TuningBestResult> entry : bestConfigs.entrySet()) {
+                                System.out.println(entry.getKey());
+                                System.out.println(entry.getValue().getRate());
+                                System.out.println(entry.getValue().getParamMap());
+                            }
 
                             Toast.makeText(MainActivity.this, "All tests have been completed!", Toast.LENGTH_LONG).show();
 

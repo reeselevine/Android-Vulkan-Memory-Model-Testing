@@ -67,6 +67,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/conformanceConformanceTestListHeader"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Conformance Tests"
@@ -74,6 +75,7 @@
                         android:textColor="@color/gray"/>
 
                     <LinearLayout
+                        android:id="@+id/conformanceConformanceTestListLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -801,9 +803,10 @@
                         android:id="@+id/conformanceTestExplorerButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_8sdp"
+                        android:layout_margin="@dimen/_4sdp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/lightgray"
+                        android:textSize="@dimen/_8sdp"
                         android:text="Explorer"
                         android:textColor="@color/black"/>
 
@@ -811,10 +814,22 @@
                         android:id="@+id/conformanceTestTuningButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_8sdp"
+                        android:layout_margin="@dimen/_4sdp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/teal_200"
+                        android:textSize="@dimen/_8sdp"
                         android:text="Tuning"
+                        android:textColor="@color/black"/>
+
+                    <Button
+                        android:id="@+id/conformanceTestTuneAndConformButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_4sdp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/lightgray"
+                        android:textSize="@dimen/_8sdp"
+                        android:text="Tune/Conform"
                         android:textColor="@color/black"/>
 
                 </LinearLayout>

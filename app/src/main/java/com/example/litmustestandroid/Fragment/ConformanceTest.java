@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 public class ConformanceTest  extends Fragment {
 
-    private Button explorerButton, tuningButton, defaultParamButton, stressParamButton, tuningSendResultButton;
+    private Button explorerButton, tuningButton, tuneAndConformButton, defaultParamButton, stressParamButton, tuningSendResultButton;
     private RunType testMode = RunType.MULTI_TUNING;
 
     @Nullable
@@ -108,14 +108,32 @@ public class ConformanceTest  extends Fragment {
             }
         });
 
+        ArrayList<CheckBox> conformanceCheckBoxes = conformanceTestViews(fragmentView);
+        ArrayList<CheckBox> tuningCheckBoxes = tuningTestViews(fragmentView);
+        ArrayList<CheckBox> allTestCheckBoxes = new ArrayList<>();
+        allTestCheckBoxes.addAll(conformanceCheckBoxes);
+        allTestCheckBoxes.addAll(tuningCheckBoxes);
+
+        Button selectConformanceTestsButton = fragmentView.findViewById(R.id.selectConformanceTestsButton);
+        Button selectAllTestsButton = fragmentView.findViewById(R.id.selectAllTestsButton);
+
+        TextView conformanceTestListHeader = fragmentView.findViewById(R.id.conformanceConformanceTestListHeader);
+        LinearLayout conformanceTestListLayout = fragmentView.findViewById(R.id.conformanceConformanceTestListLayout);
+
         explorerButton = fragmentView.findViewById(R.id.conformanceTestExplorerButton);
         tuningButton = fragmentView.findViewById(R.id.conformanceTestTuningButton);
+        tuneAndConformButton = fragmentView.findViewById(R.id.conformanceTestTuneAndConformButton);
 
         explorerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 explorerButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                tuneAndConformButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 tuningButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                selectConformanceTestsButton.setVisibility(View.VISIBLE);
+                selectAllTestsButton.setVisibility(View.VISIBLE);
+                conformanceTestListHeader.setVisibility(View.VISIBLE);
+                conformanceTestListLayout.setVisibility(View.VISIBLE);
                 explorerParameterLayout.setVisibility(View.VISIBLE);
                 explorerParameterItemLayout.setVisibility(View.VISIBLE);
                 conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
@@ -128,23 +146,39 @@ public class ConformanceTest  extends Fragment {
             @Override
             public void onClick(View v) {
                 tuningButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                tuneAndConformButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
                 explorerButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                selectConformanceTestsButton.setVisibility(View.VISIBLE);
+                selectAllTestsButton.setVisibility(View.VISIBLE);
+                conformanceTestListHeader.setVisibility(View.VISIBLE);
+                conformanceTestListLayout.setVisibility(View.VISIBLE);
                 tuningParameterLayout.setVisibility(View.VISIBLE);
                 tuningParameterItemLayout.setVisibility(View.VISIBLE);
-
                 conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
                 explorerParameterLayout.setVisibility(View.GONE);
                 testMode = RunType.MULTI_TUNING;
             }
         });
 
-        ArrayList<CheckBox> conformanceCheckBoxes = conformanceTestViews(fragmentView);
-        ArrayList<CheckBox> tuningCheckBoxes = tuningTestViews(fragmentView);
-        ArrayList<CheckBox> allTestCheckBoxes = new ArrayList<>();
-        allTestCheckBoxes.addAll(conformanceCheckBoxes);
-        allTestCheckBoxes.addAll(tuningCheckBoxes);
+        tuneAndConformButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tuneAndConformButton.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                tuningButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                explorerButton.setBackgroundColor(getResources().getColor(R.color.lightgray));
+                selectConformanceTestsButton.setVisibility(View.GONE);
+                selectAllTestsButton.setVisibility(View.GONE);
+                conformanceTestListHeader.setVisibility(View.GONE);
+                conformanceTestListLayout.setVisibility(View.GONE);
+                tuningParameterLayout.setVisibility(View.VISIBLE);
+                tuningParameterItemLayout.setVisibility(View.VISIBLE);
+                conformanceTestViewObject.resultLayout.setVisibility(View.GONE);
+                explorerParameterLayout.setVisibility(View.GONE);
+                testMode = RunType.TUNE_AND_CONFORM_STAGE_1;
+                setTests(conformanceCheckBoxes, false);
+            }
+        });
 
-        Button selectConformanceTestsButton = fragmentView.findViewById(R.id.selectConformanceTestsButton);
         selectConformanceTestsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,7 +194,6 @@ public class ConformanceTest  extends Fragment {
             }
         });
 
-        Button selectAllTestsButton = fragmentView.findViewById(R.id.selectAllTestsButton);
         selectAllTestsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

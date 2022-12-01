@@ -5,10 +5,12 @@ import java.util.HashMap;
 public class TuningBestResult {
 
     private String testName;
+    private double rate;
     private HashMap<String, Integer> paramMap;
 
-    public TuningBestResult(String testName, HashMap<String, Integer> paramMap) {
+    public TuningBestResult(String testName, double rate, HashMap<String, Integer> paramMap) {
         this.testName = testName;
+        this.rate = rate;
         this.paramMap = paramMap;
     }
 
@@ -18,5 +20,9 @@ public class TuningBestResult {
 
     public HashMap<String, Integer> getParamMap() {
         return paramMap;
+    }
+
+    public double getRate() {
+        return rate;
     }
 }
