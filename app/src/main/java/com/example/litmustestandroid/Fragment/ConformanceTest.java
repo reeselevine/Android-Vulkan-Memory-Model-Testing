@@ -282,7 +282,7 @@ public class ConformanceTest  extends Fragment {
         paramMap.put(SHUFFLE_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerShufflePct));
         paramMap.put(BARRIER_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerBarrierPct));
         paramMap.put(SCRATCH_MEMORY_SIZE, fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize));
-        paramMap.put(MEM_STRIDE, fragmentView.findViewById(R.id.conformanceTestExplorerScratchMemorySize));
+        paramMap.put(MEM_STRIDE, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStride));
         paramMap.put(MEM_STRESS_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressPct));
         paramMap.put(MEM_STRESS_ITERATIONS, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressIterations));
         paramMap.put(MEM_STRESS_STORE_FIRST_PCT, fragmentView.findViewById(R.id.conformanceTestExplorerMemoryStressStoreFirstPct));

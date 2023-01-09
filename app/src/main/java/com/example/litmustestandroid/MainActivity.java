@@ -566,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         exploreParamMap.put(SHUFFLE_PCT, exploreMenuView.findViewById(R.id.testExploreShufflePct));
         exploreParamMap.put(BARRIER_PCT, exploreMenuView.findViewById(R.id.testExploreBarrierPct));
         exploreParamMap.put(SCRATCH_MEMORY_SIZE, exploreMenuView.findViewById(R.id.testExploreScratchMemorySize));
-        exploreParamMap.put(MEM_STRIDE, exploreMenuView.findViewById(R.id.testExploreScratchMemorySize));
+        exploreParamMap.put(MEM_STRIDE, exploreMenuView.findViewById(R.id.testExploreMemoryStride));
         exploreParamMap.put(MEM_STRESS_PCT, exploreMenuView.findViewById(R.id.testExploreMemoryStressPct));
         exploreParamMap.put(MEM_STRESS_ITERATIONS, exploreMenuView.findViewById(R.id.testExploreMemoryStressIterations));
         exploreParamMap.put(MEM_STRESS_STORE_FIRST_PCT, exploreMenuView.findViewById(R.id.testExploreMemoryStressStoreFirstPct));
