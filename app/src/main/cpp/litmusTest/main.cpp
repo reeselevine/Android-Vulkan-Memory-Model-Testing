@@ -187,11 +187,17 @@ void run(JNIEnv* env, jobject obj, string &shader_file, string &result_shader_fi
     jclass clazz = env->GetObjectClass(obj);
     jmethodID iterationMethod = env->GetMethodID(clazz, "iterationProgress", "(Ljava/lang/String;)V");
     jmethodID deviceMethod = env->GetMethodID(clazz, "setGPUName", "(Ljava/lang/String;)V");
+    jmethodID vendorMethod = env->GetMethodID(clazz, "setGPUVendorId", "(Ljava/lang/String;)V");
 
     string gpuStr = device.properties().deviceName;
     const char* gpuChar =  gpuStr.c_str();
     jstring gpuName = env->NewStringUTF(gpuChar);
     env->CallVoidMethod(obj, deviceMethod, gpuName);
+
+    uint32_t gpuVendorInt = device.properties().vendorID;
+    string gpuVendorStr = to_string(gpuVendorInt);
+    jstring gpuVendor = env->NewStringUTF(gpuVendorStr.c_str());
+    env->CallVoidMethod(obj, vendorMethod, gpuVendor);
 
     // run iterations
     chrono::time_point<std::chrono::system_clock> start, end, itStart, itEnd;

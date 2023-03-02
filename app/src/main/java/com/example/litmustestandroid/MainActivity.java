@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.JsonWriter;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RunType currTestType;
     private NewTestCase currNewTestCase;
     private String GPUName = "";
+    private String GPUVendorId = "";
     private TestThread testThread;
     private LockTestThread lockTestThread;
 
@@ -885,6 +887,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i(TAG, gpuName);
     }
 
+    public void setGPUVendorId(String vendorId) {
+        Log.i(TAG, vendorId);
+        GPUVendorId = vendorId;
+    }
+
     public void sendResultEmail(RunType testMode) {
         Log.i(TAG, "Sending result via email");
 
@@ -1173,7 +1180,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         conformanceTestViewObject.resultLayout.setVisibility(View.VISIBLE);
         // Close result writer
         try {
-            conformanceTuningResultWriter.name("gpu").value(GPUName);
+            conformanceTuningResultWriter.name("platformInfo");
+            conformanceTuningResultWriter.beginObject();
+            conformanceTuningResultWriter.name("gpu");
+            conformanceTuningResultWriter.beginObject();
+            conformanceTuningResultWriter.name("vendor").value(GPUVendorId);
+            conformanceTuningResultWriter.name("architecture").value("");
+            conformanceTuningResultWriter.name("device").value("");
+            conformanceTuningResultWriter.name("description").value(GPUName);
+            conformanceTuningResultWriter.endObject();
+            conformanceTuningResultWriter.name("deviceInfo");
+            conformanceTuningResultWriter.beginObject();
+            conformanceTuningResultWriter.name("vendor").value(Build.MANUFACTURER);
+            conformanceTuningResultWriter.name("device").value(Build.MODEL);
+            conformanceTuningResultWriter.name("osVersion").value(Build.VERSION.SDK_INT + " (" + Build.VERSION.RELEASE +")");
+            conformanceTuningResultWriter.endObject();
+            conformanceTuningResultWriter.name("framework").value("vulkan");
+            conformanceTuningResultWriter.endObject();
             conformanceTuningResultWriter.name("randomSeed").value(tuningRandomSeed);
             conformanceTuningResultWriter.endObject();
             conformanceTuningResultWriter.endArray();
